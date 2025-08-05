@@ -84,7 +84,6 @@ export function getStockStatusColor(status: string): string {
 }
 
 export function calculateDeliveryEstimate(address: string): string {
-  // Simple logic - in real app, this would use actual distance/location data
   const nairobiAreas = ['nairobi', 'westlands', 'karen', 'kileleshwa', 'lavington'];
   const isNairobi = nairobiAreas.some(area => 
     address.toLowerCase().includes(area)

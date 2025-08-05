@@ -1,119 +1,24 @@
 
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Product } from '../types';
 
-interface CartItem {
-  productId: string;
-  variationId?: string;
+export interface CartItem {
+  id: string;
+  product: Product;
   quantity: number;
-  price: number;
-  name: string;
-  image: string;
 }
-
-interface CartState {
-  items: CartItem[];
-  total: number;
-}
-
-type CartAction = 
-  | { type: 'ADD_ITEM'; payload: CartItem }
-  | { type: 'REMOVE_ITEM'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { productId: string; quantity: number } }
-  | { type: 'CLEAR_CART' };
 
 interface CartContextType {
   items: CartItem[];
-  total: number;
-  addItem: (item: CartItem) => void;
-  removeItem: (productId: string) => void;
+  addToCart: (product: Product, quantity?: number) => void;
+  removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
-  itemCount: number;
+  getTotalItems: () => number;
+  getTotalPrice: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-
-function cartReducer(state: CartState, action: CartAction): CartState {
-  switch (action.type) {
-    case 'ADD_ITEM': {
-      const existingItem = state.items.find(item => item.productId === action.payload.productId);
-      
-      if (existingItem) {
-        const updatedItems = state.items.map(item =>
-          item.productId === action.payload.productId
-            ? { ...item, quantity: item.quantity + action.payload.quantity }
-            : item
-        );
-        const total = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        return { items: updatedItems, total };
-      }
-      
-      const newItems = [...state.items, action.payload];
-      const total = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      return { items: newItems, total };
-    }
-    
-    case 'REMOVE_ITEM': {
-      const newItems = state.items.filter(item => item.productId !== action.payload);
-      const total = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      return { items: newItems, total };
-    }
-    
-    case 'UPDATE_QUANTITY': {
-      const newItems = state.items.map(item =>
-        item.productId === action.payload.productId
-          ? { ...item, quantity: action.payload.quantity }
-          : item
-      ).filter(item => item.quantity > 0);
-      const total = newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      return { items: newItems, total };
-    }
-    
-    case 'CLEAR_CART':
-      return { items: [], total: 0 };
-    
-    default:
-      return state;
-  }
-}
-
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [], total: 0 });
-
-  const addItem = (item: CartItem) => {
-    dispatch({ type: 'ADD_ITEM', payload: item });
-  };
-
-  const removeItem = (productId: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: productId });
-  };
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
-  };
-
-  const clearCart = () => {
-    dispatch({ type: 'CLEAR_CART' });
-  };
-
-  const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0);
-
-  const value: CartContextType = {
-    items: state.items,
-    total: state.total,
-    addItem,
-    removeItem,
-    updateQuantity,
-    clearCart,
-    itemCount,
-  };
-
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
-}
 
 export function useCart() {
   const context = useContext(CartContext);
@@ -121,4 +26,91 @@ export function useCart() {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
+}
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        setItems(JSON.parse(savedCart));
+      } catch (error) {
+        console.error('Error loading cart from localStorage:', error);
+      }
+    }
+  }, []);
+
+  // Save cart to localStorage whenever items change
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(items));
+  }, [items]);
+
+  const addToCart = (product: Product, quantity: number = 1) => {
+    setItems(currentItems => {
+      const existingItem = currentItems.find(item => item.product.id === product.id);
+      
+      if (existingItem) {
+        return currentItems.map(item =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        );
+      }
+      
+      return [...currentItems, { id: product.id, product, quantity }];
+    });
+  };
+
+  const removeFromCart = (productId: string) => {
+    setItems(currentItems => currentItems.filter(item => item.product.id !== productId));
+  };
+
+  const updateQuantity = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(productId);
+      return;
+    }
+
+    setItems(currentItems =>
+      currentItems.map(item =>
+        item.product.id === productId
+          ? { ...item, quantity }
+          : item
+      )
+    );
+  };
+
+  const clearCart = () => {
+    setItems([]);
+  };
+
+  const getTotalItems = () => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const getTotalPrice = () => {
+    return items.reduce((total, item) => {
+      const price = item.product.salePrice || item.product.price;
+      return total + (price * item.quantity);
+    }, 0);
+  };
+
+  const value = {
+    items,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getTotalItems,
+    getTotalPrice,
+  };
+
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  );
 }

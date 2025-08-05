@@ -1,62 +1,46 @@
 export interface Product {
   id: string;
   name: string;
-  description: string;
   price: number;
-  originalPrice?: number;
-  images: string[];
+  salePrice?: number;
+  description: string;
+  image: string;
+  images?: string[];
   category: string;
-  subcategory?: string;
   brand?: string;
-  inStock: boolean;
-  stockCount: number;
-  rating: number;
-  reviewCount: number;
-  features: string[];
-  specifications: Record<string, string>;
+  stock: number;
+  features?: string[];
+  specifications?: Record<string, string>;
+  rating?: number;
+  reviews?: Review[];
   isNew?: boolean;
-  isFeatured?: boolean;
-  tags: string[];
-  variations?: ProductVariation[];
-  relatedProducts?: string[];
-  videoUrl?: string;
-  threeSixtyView?: string;
+  isBestSeller?: boolean;
 }
 
-export interface ProductVariation {
+export interface Review {
   id: string;
-  name: string;
-  price: number;
-  inStock: boolean;
-  attributes: Record<string, string>;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: Date;
 }
 
 export interface Category {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  image: string;
-  productCount: number;
-  subcategories?: Category[];
-}
-
-export interface CartItem {
-  productId: string;
-  variationId?: string;
-  quantity: number;
-  price: number;
+  description?: string;
+  image?: string;
+  parentId?: string;
 }
 
 export interface User {
   id: string;
-  name: string;
   email: string;
-  phone: string;
+  name: string;
+  phone?: string;
   address?: Address;
-  orderHistory: Order[];
-  wishlist: string[];
-  loyaltyPoints: number;
 }
 
 export interface Address {
@@ -64,52 +48,39 @@ export interface Address {
   city: string;
   county: string;
   postalCode: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
+  country: string;
 }
 
 export interface Order {
   id: string;
   userId: string;
-  items: CartItem[];
+  items: OrderItem[];
   total: number;
-  status: 'pending' | 'processing' | 'out-for-delivery' | 'delivered' | 'cancelled';
-  deliveryAddress: Address;
-  deliveryMethod: 'delivery' | 'pickup';
+  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  shippingAddress: Address;
+  billingAddress?: Address;
   paymentMethod: string;
-  paymentStatus: 'pending' | 'paid' | 'failed';
   createdAt: Date;
-  estimatedDelivery?: Date;
-  trackingNumber?: string;
+  updatedAt: Date;
 }
 
-export interface Review {
-  id: string;
+export interface OrderItem {
   productId: string;
-  userId: string;
-  userName: string;
-  rating: number;
-  comment: string;
-  images?: string[];
-  videoUrl?: string;
-  createdAt: Date;
-  helpful: number;
+  productName: string;
+  price: number;
+  quantity: number;
 }
 
 export interface BlogPost {
   id: string;
   title: string;
   slug: string;
-  excerpt: string;
   content: string;
+  excerpt: string;
+  image: string;
   author: string;
-  publishedAt: Date;
-  category: string;
+  publishDate: Date;
   tags: string[];
-  featuredImage: string;
-  readTime: number;
 }
 
 export interface FAQ {
@@ -117,11 +88,4 @@ export interface FAQ {
   question: string;
   answer: string;
   category: string;
-  helpful: number;
-}
-
-export interface StockStatus {
-  inStock: boolean;
-  stockCount: number;
-  status: 'in-stock' | 'low-stock' | 'out-of-stock';
 }
