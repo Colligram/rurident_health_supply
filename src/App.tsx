@@ -247,7 +247,9 @@ function App() {
                     <>
                       <Header />
                       <main className="flex-1">
-                        <CheckoutPage />
+                        <div className="min-h-screen flex items-center justify-center">
+                          <p className="text-gray-600">Wishlist Page - Coming Soon</p>
+                        </div>
                       </main>
                       <Footer />
                       <ChatBot />
@@ -260,7 +262,9 @@ function App() {
                     <>
                       <Header />
                       <main className="flex-1">
-                        <CheckoutPage />
+                        <div className="min-h-screen flex items-center justify-center">
+                          <p className="text-gray-600">Account Page - Coming Soon</p>
+                        </div>
                       </main>
                       <Footer />
                       <ChatBot />
@@ -273,10 +277,30 @@ function App() {
                     <>
                       <Header />
                       <main className="flex-1">
-                        <CheckoutPage />
+                        <div className="min-h-screen flex items-center justify-center">
+                          <p className="text-gray-600">Order Tracking Page - Coming Soon</p>
+                        </div>
                       </main>
                       <Footer />
                       <ChatBot />
+                    </>
+                  } 
+                />
+                
+                {/* Fallback route */}
+                <Route 
+                  path="*" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1 min-h-screen flex items-center justify-center">
+                        <div className="text-center">
+                          <h1 className="text-4xl font-bold text-gray-800 mb-4">404 - Page Not Found</h1>
+                          <p className="text-gray-600 mb-8">The page you're looking for doesn't exist.</p>
+                          <a href="/" className="btn-primary">Go Home</a>
+                        </div>
+                      </main>
+                      <Footer />
                     </>
                   } 
                 />
