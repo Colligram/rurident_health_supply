@@ -34,6 +34,10 @@ function App() {
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/faq" element={<FAQPage />} />
+                <Route path="/cart" element={<CheckoutPage />} />
+                <Route path="/wishlist" element={<CheckoutPage />} />
+                <Route path="/account" element={<CheckoutPage />} />
+                <Route path="/track" element={<CheckoutPage />} />
               </Routes>
             </main>
             <Footer />

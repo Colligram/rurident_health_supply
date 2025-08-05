@@ -1,5 +1,13 @@
+
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { CartItem } from '../types';
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+}
 
 interface CartState {
   items: CartItem[];
@@ -7,109 +15,107 @@ interface CartState {
 }
 
 type CartAction =
-  | { type: 'ADD_ITEM'; payload: CartItem }
+  | { type: 'ADD_ITEM'; payload: Omit<CartItem, 'quantity'> }
   | { type: 'REMOVE_ITEM'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { productId: string; quantity: number } }
+  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
   | { type: 'CLEAR_CART' };
 
-const CartContext = createContext<{
-  state: CartState;
-  dispatch: React.Dispatch<CartAction>;
-  addItem: (item: CartItem) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  clearCart: () => void;
-  items: CartItem[];
-  total: number;
-} | null>(null);
+const initialState: CartState = {
+  items: [],
+  total: 0,
+};
 
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
-      const existingItem = state.items.find(
-        item => item.productId === action.payload.productId
-      );
+      const existingItem = state.items.find(item => item.id === action.payload.id);
       
       if (existingItem) {
         const updatedItems = state.items.map(item =>
-          item.productId === action.payload.productId
-            ? { ...item, quantity: item.quantity + action.payload.quantity }
+          item.id === action.payload.id
+            ? { ...item, quantity: item.quantity + 1 }
             : item
         );
         return {
           items: updatedItems,
-          total: updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+          total: updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
         };
       }
       
-      const newItems = [...state.items, action.payload];
+      const newItems = [...state.items, { ...action.payload, quantity: 1 }];
       return {
         items: newItems,
-        total: newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        total: newItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
       };
     }
     
     case 'REMOVE_ITEM': {
-      const filteredItems = state.items.filter(item => item.productId !== action.payload);
+      const updatedItems = state.items.filter(item => item.id !== action.payload);
       return {
-        items: filteredItems,
-        total: filteredItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        items: updatedItems,
+        total: updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
       };
     }
     
     case 'UPDATE_QUANTITY': {
       const updatedItems = state.items.map(item =>
-        item.productId === action.payload.productId
+        item.id === action.payload.id
           ? { ...item, quantity: action.payload.quantity }
           : item
       ).filter(item => item.quantity > 0);
       
       return {
         items: updatedItems,
-        total: updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        total: updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
       };
     }
     
     case 'CLEAR_CART':
-      return { items: [], total: 0 };
+      return initialState;
     
     default:
       return state;
   }
 }
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [], total: 0 });
+interface CartContextType extends CartState {
+  addItem: (item: Omit<CartItem, 'quantity'>) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+}
 
-  const addItem = (item: CartItem) => {
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  const addItem = (item: Omit<CartItem, 'quantity'>) => {
     dispatch({ type: 'ADD_ITEM', payload: item });
   };
 
-  const removeItem = (productId: string) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: productId });
+  const removeItem = (id: string) => {
+    dispatch({ type: 'REMOVE_ITEM', payload: id });
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
+  const updateQuantity = (id: string, quantity: number) => {
+    dispatch({ type: 'UPDATE_QUANTITY', payload: { id, quantity } });
   };
 
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
   };
 
+  const value: CartContextType = {
+    ...state,
+    addItem,
+    removeItem,
+    updateQuantity,
+    clearCart,
+  };
+
   return (
-    <CartContext.Provider
-      value={{
-        state,
-        dispatch,
-        addItem,
-        removeItem,
-        updateQuantity,
-        clearCart,
-        items: state.items,
-        total: state.total,
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
@@ -117,7 +123,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export function useCart() {
   const context = useContext(CartContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useCart must be used within a CartProvider');
   }
   return context;
