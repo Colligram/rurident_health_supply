@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -20,12 +19,12 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
             onClick={onClose}
             className="p-2 text-gray-600 hover:text-gray-900"
           >
-            <XMarkIcon className="h-6 w-6" />
+            <span className="text-xl">✕</span>
           </button>
         </div>
         
         <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
           <input
             type="text"
             value={query}

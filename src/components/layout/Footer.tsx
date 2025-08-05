@@ -1,11 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  PhoneIcon, 
-  EnvelopeIcon, 
-  MapPinIcon,
-  ClockIcon
-} from '@heroicons/react/24/outline';
 
 const footerLinks = {
   products: [
@@ -60,7 +54,7 @@ export function Footer() {
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <MapPinIcon className="h-5 w-5 text-primary-400 mt-0.5 flex-shrink-0" />
+                <span className="text-primary-400 mt-0.5">📍</span>
                 <div>
                   <p className="text-gray-300">Mepalux Plaza Nairobi</p>
                   <p className="text-gray-300">River Road, 3rd Floor</p>
@@ -69,7 +63,7 @@ export function Footer() {
               </div>
               
               <div className="flex items-center space-x-3">
-                <PhoneIcon className="h-5 w-5 text-primary-400 flex-shrink-0" />
+                <span className="text-primary-400">📞</span>
                 <div className="space-y-1">
                   <a href="tel:0703416433" className="text-gray-300 hover:text-white transition-colors block">
                     0703 416 433
@@ -84,7 +78,7 @@ export function Footer() {
               </div>
               
               <div className="flex items-center space-x-3">
-                <ClockIcon className="h-5 w-5 text-primary-400 flex-shrink-0" />
+                <span className="text-primary-400">⏰</span>
                 <div>
                   <p className="text-gray-300">Mon - Fri: 8:00 AM - 6:00 PM</p>
                   <p className="text-gray-300">Sat: 9:00 AM - 4:00 PM</p>

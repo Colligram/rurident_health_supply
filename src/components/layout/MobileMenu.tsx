@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -21,7 +20,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
             onClick={onClose}
             className="p-2 text-gray-600 hover:text-gray-900"
           >
-            <XMarkIcon className="h-6 w-6" />
+            <span className="text-xl">✕</span>
           </button>
         </div>
         

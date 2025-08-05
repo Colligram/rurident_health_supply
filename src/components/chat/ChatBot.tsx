@@ -1,9 +1,4 @@
 import React, { useState } from 'react';
-import { 
-  ChatBubbleLeftRightIcon, 
-  XMarkIcon, 
-  PaperAirplaneIcon 
-} from '@heroicons/react/24/outline';
 
 interface Message {
   id: string;
@@ -82,7 +77,7 @@ export function ChatBot() {
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition-colors z-50"
       >
-        <ChatBubbleLeftRightIcon className="h-6 w-6" />
+     <span className="text-lg">✕</span>
       </button>
     );
   }
@@ -99,7 +94,7 @@ export function ChatBot() {
           onClick={() => setIsOpen(false)}
           className="text-white hover:text-primary-200"
         >
-          <XMarkIcon className="h-5 w-5" />
+     <span>➤</span>
         </button>
       </div>
 
