@@ -4,7 +4,7 @@ import { HiArrowRight, HiPlay } from 'react-icons/hi';
 
 export function HeroSection() {
   return (
-    <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white overflow-hidden">
+    <section className="relative bg-gradient-to-br from-primary-500 via-primary-600 to-accent-600 text-white overflow-hidden">
       <div className="absolute inset-0 bg-black opacity-20"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-primary-600/90 to-transparent"></div>
       
@@ -25,15 +25,15 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 to="/products"
-                className="btn-primary inline-flex items-center justify-center group"
+                className="btn-primary btn-glow inline-flex items-center justify-center group"
               >
                 Shop Now
-                <HiArrowRight className="ml-2 h-4 w-4" />
+                <HiArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               
               <Link
                 to="/location"
-                className="btn-secondary bg-white/10 border-white/30 text-white hover:bg-white/20 inline-flex items-center justify-center"
+                className="bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 border-2 border-white/30 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center justify-center backdrop-blur-sm"
               >
                 Visit Our Store
               </Link>
@@ -86,8 +86,9 @@ export function HeroSection() {
       </div>
       
       {/* Decorative Elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary-400 rounded-full opacity-10 -translate-y-32 translate-x-32"></div>
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-300 rounded-full opacity-10 translate-y-24 -translate-x-24"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-accent-400 to-primary-400 rounded-full opacity-20 -translate-y-32 translate-x-32 blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-primary-300 to-accent-300 rounded-full opacity-20 translate-y-24 -translate-x-24 blur-2xl"></div>
+      <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-gradient-to-r from-accent-500 to-primary-500 rounded-full opacity-10 blur-2xl"></div>
     </section>
   );
 }

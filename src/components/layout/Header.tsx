@@ -28,20 +28,20 @@ export function Header() {
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50">
       {/* Top bar */}
-      <div className="bg-primary-600 text-white py-2">
+      <div className="bg-gradient-to-r from-orange-500 to-orange-700 text-white py-2">
         <div className="container-max">
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center space-x-4">
-              <HiLocationMarker className="h-4 w-4" />
-              <span>Mepalux Plaza, River Road, 3rd Floor, Suite 304</span>
+              <HiLocationMarker className="h-4 w-4 text-white" />
+              <span className="text-white">Mepalux Plaza, River Road, 3rd Floor, Suite 304</span>
             </div>
             <div className="flex items-center space-x-4">
-              <a href="tel:0703416433" className="flex items-center hover:text-primary-200">
-                <HiPhone className="h-4 w-4 mr-1" />
+              <a href="tel:0703416433" className="flex items-center hover:text-orange-200 text-white">
+                <HiPhone className="h-4 w-4 mr-1 text-white" />
                 0703 416 433
               </a>
-              <span className="hidden sm:inline">|</span>
-              <span className="hidden sm:inline">Free Delivery in Nairobi</span>
+              <span className="hidden sm:inline text-white">|</span>
+              <span className="hidden sm:inline text-white">Free Delivery in Nairobi</span>
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-700 rounded-lg flex items-center justify-center shadow-lg hover:shadow-xl">
                 <span className="text-white font-bold text-xl">R</span>
               </div>
               <div>
@@ -69,10 +69,10 @@ export function Header() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`text-sm font-medium transition-colors hover:text-primary-600 ${
+                className={`text-sm font-medium transition-colors duration-300 ease-in-out py-1 px-3 rounded-lg ${
                   location.pathname === item.href
-                    ? 'text-primary-600 border-b-2 border-primary-600 pb-1'
-                    : 'text-gray-700'
+                    ? 'text-white bg-gradient-to-r from-orange-500 to-orange-700 shadow-glow-orange'
+                    : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50'
                 }`}
               >
                 {item.name}
@@ -85,7 +85,7 @@ export function Header() {
             {/* Search */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
+              className="p-2 text-gray-600 hover:text-orange-600 transition-colors duration-300 ease-in-out shadow-md hover:shadow-glow-orange rounded-full"
             >
               <HiSearch className="h-5 w-5" />
             </button>
@@ -93,11 +93,11 @@ export function Header() {
             {/* Wishlist */}
             <Link
               to="/wishlist"
-              className="p-2 text-gray-600 hover:text-primary-600 transition-colors relative"
+              className="p-2 text-gray-600 hover:text-orange-600 transition-colors duration-300 ease-in-out relative shadow-md hover:shadow-glow-orange rounded-full"
             >
               <HiHeart className="h-5 w-5" />
               {wishlistItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-sm">
                   {wishlistItems.length}
                 </span>
               )}
@@ -106,11 +106,11 @@ export function Header() {
             {/* Cart */}
             <Link
               to="/cart"
-              className="p-2 text-gray-600 hover:text-primary-600 transition-colors relative"
+              className="p-2 text-gray-600 hover:text-orange-600 transition-colors duration-300 ease-in-out relative shadow-md hover:shadow-glow-orange rounded-full"
             >
               <HiShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-orange-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-sm">
                   {cartItemCount}
                 </span>
               )}
@@ -119,7 +119,7 @@ export function Header() {
             {/* User Account */}
             <Link
               to="/account"
-              className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
+              className="p-2 text-gray-600 hover:text-orange-600 transition-colors duration-300 ease-in-out shadow-md hover:shadow-glow-orange rounded-full"
             >
               <HiUser className="h-5 w-5" />
             </Link>
@@ -127,7 +127,7 @@ export function Header() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-gray-600 hover:text-primary-600"
+              className="lg:hidden p-2 text-gray-600 hover:text-orange-600 transition-colors duration-300 ease-in-out shadow-md hover:shadow-glow-orange rounded-full"
             >
               <HiMenu className="h-5 w-5" />
             </button>

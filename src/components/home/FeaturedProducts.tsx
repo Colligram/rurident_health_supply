@@ -68,7 +68,7 @@ export function FeaturedProducts() {
   };
 
   return (
-    <section className="section-padding bg-gray-50">
+    <section className="section-padding bg-gradient-to-br from-gray-50 to-primary-50">
       <div className="container-max">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -78,10 +78,10 @@ export function FeaturedProducts() {
             Discover our most popular and highly-rated dental equipment and supplies.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredProducts.map((product) => (
-            <div key={product.id} className="card group relative overflow-hidden">
+            <div key={product.id} className="card group relative overflow-hidden hover:shadow-xl transition-shadow duration-300">
               {/* Badges */}
               <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
                 {product.isNew && (
@@ -100,15 +100,15 @@ export function FeaturedProducts() {
                   </span>
                 )}
               </div>
-              
+
               {/* Wishlist Button */}
               <button
                 onClick={() => toggleItem(product.id)}
-                className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
               >
                 <span className="text-red-500">♥</span>
               </button>
-              
+
               {/* Product Image */}
               <Link to={`/product/${product.id}`} className="block">
                 <div className="relative overflow-hidden">
@@ -119,7 +119,7 @@ export function FeaturedProducts() {
                   />
                 </div>
               </Link>
-              
+
               {/* Product Info */}
               <div className="p-4">
                 <div className="mb-2">
@@ -127,13 +127,13 @@ export function FeaturedProducts() {
                     {product.category}
                   </span>
                 </div>
-                
+
                 <Link to={`/product/${product.id}`}>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2 hover:text-primary-600 transition-colors line-clamp-2">
                     {product.name}
                   </h3>
                 </Link>
-                
+
                 {/* Rating */}
                 <div className="flex items-center mb-3">
                   <div className="flex items-center">
@@ -143,7 +143,7 @@ export function FeaturedProducts() {
                     {product.rating} ({product.reviewCount})
                   </span>
                 </div>
-                
+
                 {/* Price */}
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -157,7 +157,7 @@ export function FeaturedProducts() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Stock Status */}
                 <div className="mb-4">
                   <span className={`text-xs px-2 py-1 rounded-full ${
@@ -175,12 +175,12 @@ export function FeaturedProducts() {
                     }
                   </span>
                 </div>
-                
+
                 {/* Add to Cart Button */}
                 <button
                   onClick={() => handleAddToCart(product)}
                   disabled={product.stockCount === 0}
-                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center py-2 px-4 rounded-md shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 transition-all duration-200"
                 >
                   <span className="mr-2">🛒</span>
                   Add to Cart
@@ -189,11 +189,11 @@ export function FeaturedProducts() {
             </div>
           ))}
         </div>
-        
+
         <div className="text-center mt-12">
           <Link
             to="/products"
-            className="btn-secondary inline-flex items-center"
+            className="btn-secondary inline-flex items-center py-2 px-6 rounded-md shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-all duration-200"
           >
             View All Products
             <span className="ml-2">→</span>

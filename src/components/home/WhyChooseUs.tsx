@@ -26,7 +26,7 @@ export function WhyChooseUs() {
   ];
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-gradient-to-br from-white via-primary-25 to-accent-25">
       <div className="container-max">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">

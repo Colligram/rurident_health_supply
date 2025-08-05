@@ -12,7 +12,7 @@ export function NewsletterSection() {
   };
 
   return (
-    <section className="section-padding bg-primary-600 text-white">
+    <section className="section-padding bg-gradient-to-br from-primary-500 via-primary-600 to-accent-600 text-white relative overflow-hidden">
       <div className="container-max">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8">
@@ -25,7 +25,7 @@ export function NewsletterSection() {
               delivered straight to your inbox.
             </p>
           </div>
-          
+
           {subscribed ? (
             <div className="bg-green-500 text-white p-6 rounded-lg max-w-md mx-auto">
               <h3 className="text-lg font-semibold mb-2">Thank you for subscribing!</h3>
@@ -44,7 +44,7 @@ export function NewsletterSection() {
                 />
                 <button
                   type="submit"
-                  className="bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                  className="bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-lg glow-on-hover"
                 >
                   Subscribe
                 </button>
@@ -54,7 +54,7 @@ export function NewsletterSection() {
               </p>
             </form>
           )}
-          
+
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
               <h3 className="font-semibold mb-2">Weekly Updates</h3>
