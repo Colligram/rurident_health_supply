@@ -1,0 +1,145 @@
+[plugin:vite:esbuild] Transform failed with 16 errors:
+/home/runner/workspace/src/utils/index.ts:59:16: ERROR: Multiple exports with the same name "cn"
+/home/runner/workspace/src/utils/index.ts:59:16: ERROR: The symbol "cn" has already been declared
+/home/runner/workspace/src/utils/index.ts:63:16: ERROR: Multiple exports with the same name "formatPrice"
+/home/runner/workspace/src/utils/index.ts:63:16: ERROR: The symbol "formatPrice" has already been declared
+/home/runner/workspace/src/utils/index.ts:71:16: ERROR: Multiple exports with the same name "formatDate"
+...
+/home/runner/workspace/src/utils/index.ts:59:16
+Multiple exports with the same name "cn"
+57 |  import { twMerge } from 'tailwind-merge';
+58 |  
+59 |  export function cn(...inputs: ClassValue[]) {
+   |                  ^
+60 |    return twMerge(clsx(inputs));
+61 |  }
+
+The symbol "cn" has already been declared
+57 |  import { twMerge } from 'tailwind-merge';
+58 |  
+59 |  export function cn(...inputs: ClassValue[]) {
+   |                  ^
+60 |    return twMerge(clsx(inputs));
+61 |  }
+
+Multiple exports with the same name "formatPrice"
+61 |  }
+62 |  
+63 |  export function formatPrice(price: number): string {
+   |                  ^
+64 |    return new Intl.NumberFormat('en-KE', {
+65 |      style: 'currency',
+
+The symbol "formatPrice" has already been declared
+61 |  }
+62 |  
+63 |  export function formatPrice(price: number): string {
+   |                  ^
+64 |    return new Intl.NumberFormat('en-KE', {
+65 |      style: 'currency',
+
+Multiple exports with the same name "formatDate"
+69 |  }
+70 |  
+71 |  export function formatDate(date: Date): string {
+   |                  ^
+72 |    return new Intl.DateTimeFormat('en-KE', {
+73 |      year: 'numeric',
+
+The symbol "formatDate" has already been declared
+69 |  }
+70 |  
+71 |  export function formatDate(date: Date): string {
+   |                  ^
+72 |    return new Intl.DateTimeFormat('en-KE', {
+73 |      year: 'numeric',
+
+Multiple exports with the same name "slugify"
+77 |  }
+78 |  
+79 |  export function slugify(text: string): string {
+   |                  ^
+80 |    return text
+81 |      .toLowerCase()
+
+The symbol "slugify" has already been declared
+77 |  }
+78 |  
+79 |  export function slugify(text: string): string {
+   |                  ^
+80 |    return text
+81 |      .toLowerCase()
+
+Multiple exports with the same name "truncateText"
+85 |  }
+86 |  
+87 |  export function truncateText(text: string, maxLength: number): string {
+   |                  ^
+88 |    if (text.length <= maxLength) return text;
+89 |    return text.slice(0, maxLength).replace(/\s+\S*$/, '') + '...';
+
+The symbol "truncateText" has already been declared
+85 |  }
+86 |  
+87 |  export function truncateText(text: string, maxLength: number): string {
+   |                  ^
+88 |    if (text.length <= maxLength) return text;
+89 |    return text.slice(0, maxLength).replace(/\s+\S*$/, '') + '...';
+
+Multiple exports with the same name "debounce"
+90 |  }
+91 |  
+92 |  export function debounce<T extends (...args: any[]) => any>(
+   |                  ^
+93 |    func: T,
+94 |    delay: number
+
+The symbol "debounce" has already been declared
+90 |  }
+91 |  
+92 |  export function debounce<T extends (...args: any[]) => any>(
+   |                  ^
+93 |    func: T,
+94 |    delay: number
+
+Multiple exports with the same name "generateId"
+101|  }
+102|  
+103|  export function generateId(): string {
+   |                  ^
+104|    return Math.random().toString(36).substr(2, 9);
+105|  }
+
+The symbol "generateId" has already been declared
+101|  }
+102|  
+103|  export function generateId(): string {
+   |                  ^
+104|    return Math.random().toString(36).substr(2, 9);
+105|  }
+
+Multiple exports with the same name "calculateDiscount"
+105|  }
+106|  
+107|  export function calculateDiscount(originalPrice: number, salePrice: number): number {
+   |                  ^
+108|    return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+109|  }
+
+The symbol "calculateDiscount" has already been declared
+105|  }
+106|  
+107|  export function calculateDiscount(originalPrice: number, salePrice: number): number {
+   |                  ^
+108|    return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+109|  }
+    at failureErrorWithLog (/home/runner/workspace/node_modules/esbuild/lib/main.js:1649:15)
+    at /home/runner/workspace/node_modules/esbuild/lib/main.js:847:29
+    at responseCallbacks.<computed> (/home/runner/workspace/node_modules/esbuild/lib/main.js:703:9)
+    at handleIncomingPacket (/home/runner/workspace/node_modules/esbuild/lib/main.js:762:9)
+    at Socket.readFromStdout (/home/runner/workspace/node_modules/esbuild/lib/main.js:679:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23
