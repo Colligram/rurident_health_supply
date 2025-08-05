@@ -8,6 +8,7 @@ interface ProductsContextType {
   updateProduct: (id: string, product: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
   getProduct: (id: string) => Product | undefined;
+  toggleProductSelection: (id: string) => void;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
@@ -104,12 +105,19 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     return products.find(product => product.id === id);
   };
 
+  const toggleProductSelection = (id: string) => {
+    // This function is used for UI selection state, not for the actual data
+    // Implementation depends on your selection requirements
+    console.log('Toggle selection for product:', id);
+  };
+
   const value = {
     products,
     addProduct,
     updateProduct,
     deleteProduct,
-    getProduct
+    getProduct,
+    toggleProductSelection
   };
 
   return (

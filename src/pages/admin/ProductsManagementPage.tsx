@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
-import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiDownload } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiDownload, FiPackage } from 'react-icons/fi';
 import { formatPrice } from '../../utils';
 import { useProducts } from '../../context/ProductsContext';
 
