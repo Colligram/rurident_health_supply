@@ -15,6 +15,12 @@ import { FAQPage } from './pages/FAQPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { ProductsManagementPage } from './pages/admin/ProductsManagementPage';
+import { AddProductPage } from './pages/admin/AddProductPage';
+import { EditProductPage } from './pages/admin/EditProductPage';
+import { OrdersManagementPage } from './pages/admin/OrdersManagementPage';
+import { CustomersManagementPage } from './pages/admin/CustomersManagementPage';
+import { AnalyticsPage } from './pages/admin/AnalyticsPage';
+import { SettingsPage } from './pages/admin/SettingsPage';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
@@ -58,9 +64,7 @@ function App() {
                   path="/admin/products/new" 
                   element={
                     <ProtectedRoute>
-                      <div className="min-h-screen flex items-center justify-center">
-                        <p className="text-gray-600">Add Product Page - Coming Soon</p>
-                      </div>
+                      <AddProductPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -68,9 +72,7 @@ function App() {
                   path="/admin/products/:id/edit" 
                   element={
                     <ProtectedRoute>
-                      <div className="min-h-screen flex items-center justify-center">
-                        <p className="text-gray-600">Edit Product Page - Coming Soon</p>
-                      </div>
+                      <EditProductPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -78,9 +80,7 @@ function App() {
                   path="/admin/orders" 
                   element={
                     <ProtectedRoute>
-                      <div className="min-h-screen flex items-center justify-center">
-                        <p className="text-gray-600">Orders Management Page - Coming Soon</p>
-                      </div>
+                      <OrdersManagementPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -88,9 +88,7 @@ function App() {
                   path="/admin/customers" 
                   element={
                     <ProtectedRoute>
-                      <div className="min-h-screen flex items-center justify-center">
-                        <p className="text-gray-600">Customers Management Page - Coming Soon</p>
-                      </div>
+                      <CustomersManagementPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -98,9 +96,7 @@ function App() {
                   path="/admin/analytics" 
                   element={
                     <ProtectedRoute>
-                      <div className="min-h-screen flex items-center justify-center">
-                        <p className="text-gray-600">Analytics Page - Coming Soon</p>
-                      </div>
+                      <AnalyticsPage />
                     </ProtectedRoute>
                   } 
                 />
@@ -108,9 +104,7 @@ function App() {
                   path="/admin/settings" 
                   element={
                     <ProtectedRoute>
-                      <div className="min-h-screen flex items-center justify-center">
-                        <p className="text-gray-600">Settings Page - Coming Soon</p>
-                      </div>
+                      <SettingsPage />
                     </ProtectedRoute>
                   } 
                 />
