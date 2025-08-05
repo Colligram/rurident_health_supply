@@ -32,7 +32,7 @@ export function HeroSection() {
               </Link>
               
               <Link
-                to="/contact"
+                to="/location"
                 className="btn-secondary bg-white/10 border-white/30 text-white hover:bg-white/20 inline-flex items-center justify-center"
               >
                 Visit Our Store
