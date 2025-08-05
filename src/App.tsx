@@ -27,7 +27,12 @@ function App() {
     <AdminAuthProvider>
       <CartProvider>
         <WishlistProvider>
-          <Router>
+          <Router 
+            future={{ 
+              v7_startTransition: true,
+              v7_relativeSplatPath: true 
+            }}
+          >
             <div className="min-h-screen bg-gray-50">
               <ScrollToTop />
               <Routes>
