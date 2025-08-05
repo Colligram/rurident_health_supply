@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
@@ -32,84 +33,253 @@ function App() {
               <Routes>
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
-                <Route path="/admin/dashboard" element={
-                  <ProtectedRoute>
-                    <AdminDashboardPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/products" element={
-                  <ProtectedRoute>
-                    <ProductsManagementPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/products/new" element={
-                  <ProtectedRoute>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <p className="text-gray-600">Add Product Page - Coming Soon</p>
-                    </div>
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/products/:id/edit" element={
-                  <ProtectedRoute>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <p className="text-gray-600">Edit Product Page - Coming Soon</p>
-                    </div>
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/orders" element={
-                  <ProtectedRoute>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <p className="text-gray-600">Orders Management Page - Coming Soon</p>
-                    </div>
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/customers" element={
-                  <ProtectedRoute>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <p className="text-gray-600">Customers Management Page - Coming Soon</p>
-                    </div>
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/analytics" element={
-                  <ProtectedRoute>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <p className="text-gray-600">Analytics Page - Coming Soon</p>
-                    </div>
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin/settings" element={
-                  <ProtectedRoute>
-                    <div className="min-h-screen flex items-center justify-center">
-                      <p className="text-gray-600">Settings Page - Coming Soon</p>
-                    </div>
-                  </ProtectedRoute>
-                } />
+                <Route 
+                  path="/admin/dashboard" 
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboardPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/products" 
+                  element={
+                    <ProtectedRoute>
+                      <ProductsManagementPage />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/products/new" 
+                  element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen flex items-center justify-center">
+                        <p className="text-gray-600">Add Product Page - Coming Soon</p>
+                      </div>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/products/:id/edit" 
+                  element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen flex items-center justify-center">
+                        <p className="text-gray-600">Edit Product Page - Coming Soon</p>
+                      </div>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/orders" 
+                  element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen flex items-center justify-center">
+                        <p className="text-gray-600">Orders Management Page - Coming Soon</p>
+                      </div>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/customers" 
+                  element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen flex items-center justify-center">
+                        <p className="text-gray-600">Customers Management Page - Coming Soon</p>
+                      </div>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/analytics" 
+                  element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen flex items-center justify-center">
+                        <p className="text-gray-600">Analytics Page - Coming Soon</p>
+                      </div>
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/settings" 
+                  element={
+                    <ProtectedRoute>
+                      <div className="min-h-screen flex items-center justify-center">
+                        <p className="text-gray-600">Settings Page - Coming Soon</p>
+                      </div>
+                    </ProtectedRoute>
+                  } 
+                />
 
-                {/* Public Routes */}
-                <Route path="/*" element={
-                  <div className="min-h-screen bg-gray-50">
-                    <Header />
-                    <main className="flex-1">
-                      <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/products" element={<ProductsPage />} />
-                        <Route path="/products/:category" element={<ProductsPage />} />
-                        <Route path="/product/:id" element={<ProductDetailPage />} />
-                        <Route path="/checkout" element={<CheckoutPage />} />
-                        <Route path="/cart" element={<CartPage />} />
-                        <Route path="/contact" element={<ContactPage />} />
-                        <Route path="/location" element={<LocationPage />} />
-                        <Route path="/blog" element={<BlogPage />} />
-                        <Route path="/faq" element={<FAQPage />} />
-                        <Route path="/wishlist" element={<CheckoutPage />} />
-                        <Route path="/account" element={<CheckoutPage />} />
-                        <Route path="/track" element={<CheckoutPage />} />
-                      </Routes>
-                    </main>
-                    <Footer />
-                    <ChatBot />
-                  </div>
-                } />
+                {/* Public Routes with Layout */}
+                <Route 
+                  path="/" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <HomePage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/products" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <ProductsPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/products/:category" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <ProductsPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/product/:id" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <ProductDetailPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/checkout" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <CheckoutPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/cart" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <CartPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/contact" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <ContactPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/location" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <LocationPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/blog" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <BlogPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/faq" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <FAQPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/wishlist" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <CheckoutPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/account" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <CheckoutPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
+                <Route 
+                  path="/track" 
+                  element={
+                    <>
+                      <Header />
+                      <main className="flex-1">
+                        <CheckoutPage />
+                      </main>
+                      <Footer />
+                      <ChatBot />
+                    </>
+                  } 
+                />
               </Routes>
             </div>
           </Router>
