@@ -9,8 +9,7 @@
     "react-router-dom": "^6.26.1",
     "@heroicons/react": "^2.0.18",
     "clsx": "^1.2.1",
-    "tailwind-merge": "^1.14.0"
-    "react": "^18.0.0",
+    "tailwind-merge": "^1.14.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@vitejs/plugin-react": "^4.0.0",
