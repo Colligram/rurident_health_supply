@@ -1,18 +1,9 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
+import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiDownload } from 'react-icons/fi';
 import { formatPrice } from '../../utils';
-import { 
-  FiPlus, 
-  FiEdit, 
-  FiTrash2, 
-  FiSearch, 
-  FiFilter, 
-  FiMoreVertical,
-  FiEye,
-  FiPackage
-} from 'react-icons/fi';
+import { useProducts } from '../../context/ProductsContext';
 
 // Mock products data - in production this would come from your backend
 const mockProducts = [
@@ -59,7 +50,7 @@ const mockProducts = [
 ];
 
 export function ProductsManagementPage() {
-  const [products, setProducts] = useState(mockProducts);
+  const { products, deleteProduct, toggleProductSelection } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -91,14 +82,13 @@ export function ProductsManagementPage() {
 
   const handleDeleteProduct = (productId: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter(p => p.id !== productId));
-      setSelectedProducts(selectedProducts.filter(id => id !== productId));
+      deleteProduct(productId);
     }
   };
 
   const handleBulkDelete = () => {
     if (selectedProducts.length > 0 && confirm(`Are you sure you want to delete ${selectedProducts.length} products?`)) {
-      setProducts(products.filter(p => !selectedProducts.includes(p.id)));
+      selectedProducts.forEach(productId => deleteProduct(productId));
       setSelectedProducts([]);
     }
   };
@@ -252,24 +242,24 @@ export function ProductsManagementPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
+                  <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <input
                         type="checkbox"
                         checked={selectedProducts.includes(product.id)}
-                        onChange={(e) => handleSelectProduct(product.id, e.target.checked)}
-                        className="rounded border-gray-300 focus:ring-primary-500"
+                        onChange={() => toggleProductSelection(product.id)}
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <img
-                          src={product.image}
+                          src={product.images[0] || 'https://via.placeholder.com/48'}
                           alt={product.name}
-                          className="w-12 h-12 rounded-lg object-cover mr-4"
+                          className="w-12 h-12 rounded-lg object-cover mr-3"
                         />
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{product.name}</div>
+                          <div className="font-medium text-gray-900">{product.name}</div>
                           <div className="text-sm text-gray-500">ID: {product.id}</div>
                         </div>
                       </div>
@@ -278,7 +268,7 @@ export function ProductsManagementPage() {
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">{formatPrice(product.price)}</td>
                     <td className="px-6 py-4 text-sm text-gray-900">{product.stock}</td>
                     <td className="px-6 py-4">
-                      {getStatusBadge(product.status, product.stock)}
+                      {getStatusBadge(product.inStock ? 'active' : 'out_of_stock', product.stock)}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium">
                       <div className="flex items-center space-x-3">
@@ -310,7 +300,7 @@ export function ProductsManagementPage() {
               </tbody>
             </table>
           </div>
-          
+
           {filteredProducts.length === 0 && (
             <div className="text-center py-12">
               <FiPackage className="w-12 h-12 text-gray-400 mx-auto mb-4" />

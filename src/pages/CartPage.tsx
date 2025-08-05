@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { HiTrash, HiMinus, HiPlus } from 'react-icons/hi';
@@ -45,7 +44,7 @@ export function CartPage() {
                     alt={item.name}
                     className="w-16 h-16 object-cover rounded-lg"
                   />
-                  
+
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{item.name}</h3>
                     <p className="text-primary-600 font-semibold">
@@ -84,7 +83,7 @@ export function CartPage() {
         <div className="lg:col-span-1">
           <div className="card p-6 sticky top-4">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
-            
+
             <div className="space-y-2 mb-4">
               <div className="flex justify-between">
                 <span>Subtotal</span>
@@ -105,7 +104,7 @@ export function CartPage() {
             <Link to="/checkout" className="btn-primary w-full mb-4">
               Proceed to Checkout
             </Link>
-            
+
             <Link to="/products" className="btn-secondary w-full">
               Continue Shopping
             </Link>

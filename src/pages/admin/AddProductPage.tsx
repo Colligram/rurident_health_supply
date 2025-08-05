@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { FiArrowLeft, FiUpload, FiX } from 'react-icons/fi';
+import { useProducts } from '../../context/ProductsContext';
 
 interface ProductFormData {
   name: string;
@@ -19,6 +20,7 @@ interface ProductFormData {
 
 export function AddProductPage() {
   const navigate = useNavigate();
+  const { addProduct } = useProducts();
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     category: '',
@@ -114,6 +116,15 @@ export function AddProductPage() {
     }));
   };
 
+  const handleFileUpload = (index: number, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      updateImageUrl(index, result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -121,15 +132,12 @@ export function AddProductPage() {
     const cleanedData = {
       ...formData,
       features: formData.features.filter(f => f.trim()),
-      images: formData.images.filter(img => img.trim()),
-      id: Math.random().toString(36).substr(2, 9),
-      createdAt: new Date().toISOString()
+      images: formData.images.filter(img => img.trim())
     };
 
-    // In a real app, this would be an API call
-    console.log('Adding product:', cleanedData);
+    // Add to products context
+    addProduct(cleanedData);
     
-    // Simulate success
     alert('Product added successfully!');
     navigate('/admin/products');
   };
@@ -382,7 +390,7 @@ export function AddProductPage() {
                           value={image}
                           onChange={(e) => updateImageUrl(index, e.target.value)}
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
-                          placeholder="Enter image URL"
+                          placeholder="Enter image URL or upload file below"
                         />
                         {formData.images.length > 1 && (
                           <button
@@ -393,6 +401,20 @@ export function AddProductPage() {
                             <FiX className="w-4 h-4" />
                           </button>
                         )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleFileUpload(index, file);
+                            }
+                          }}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                        />
+                        <span className="text-xs text-gray-500">or</span>
                       </div>
                       {image && (
                         <img
