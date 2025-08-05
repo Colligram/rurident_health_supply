@@ -51,7 +51,7 @@ export function Footer() {
               Leading supplier of dental equipment, chairs, consumables and student kits in Kenya. 
               Serving hospitals, clinics, technicians and dental students nationwide with quality products and reliable service.
             </p>
-            
+
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
@@ -62,7 +62,7 @@ export function Footer() {
                   <p className="text-gray-300">Opp. Bata Mini Price, Suite 304</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <HiPhone className="text-primary-400 h-5 w-5 flex-shrink-0" />
                 <div className="space-y-1">
@@ -77,7 +77,7 @@ export function Footer() {
                   </a>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <HiClock className="text-primary-400 h-5 w-5 flex-shrink-0" />
                 <div>
@@ -154,7 +154,7 @@ export function Footer() {
                 </Link>
               ))}
             </div>
-            
+
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm">
                 © 2024 Rurident Health Supplies. All rights reserved.

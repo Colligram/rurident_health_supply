@@ -6,8 +6,9 @@ import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CheckoutPage } from './pages/CheckoutPage';
-import { AboutPage } from './pages/AboutPage';
+import { CartPage } from './pages/CartPage';
 import { ContactPage } from './pages/ContactPage';
+import { LocationPage } from './pages/LocationPage';
 import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
 import { CartProvider } from './context/CartContext';
@@ -30,11 +31,11 @@ function App() {
                 <Route path="/products/:category" element={<ProductsPage />} />
                 <Route path="/product/:id" element={<ProductDetailPage />} />
                 <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/about" element={<AboutPage />} />
+                <Route path="/cart" element={<CartPage />} />
                 <Route path="/contact" element={<ContactPage />} />
+                <Route path="/location" element={<LocationPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/faq" element={<FAQPage />} />
-                <Route path="/cart" element={<CheckoutPage />} />
                 <Route path="/wishlist" element={<CheckoutPage />} />
                 <Route path="/account" element={<CheckoutPage />} />
                 <Route path="/track" element={<CheckoutPage />} />

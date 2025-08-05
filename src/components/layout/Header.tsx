@@ -13,6 +13,7 @@ const navigation = [
   { name: 'Materials', href: '/products/materials' },
   { name: 'X-Ray & Consumables', href: '/products/xray-consumables' },
   { name: 'Student Kits', href: '/products/student-kits' },
+  { name: 'Location', href: '/location' },
 ];
 
 export function Header() {
