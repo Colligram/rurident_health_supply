@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { HiLocationMarker, HiPhone, HiSearch, HiHeart, HiShoppingCart, HiUser, HiMenu } from 'react-icons/hi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { SearchBar } from '../common/SearchBar';
@@ -30,11 +31,12 @@ export function Header() {
         <div className="container-max">
           <div className="flex justify-between items-center text-sm">
             <div className="flex items-center space-x-4">
-              <span>📍 Mepalux Plaza, River Road, 3rd Floor, Suite 304</span>
+              <HiLocationMarker className="h-4 w-4" />
+              <span>Mepalux Plaza, River Road, 3rd Floor, Suite 304</span>
             </div>
             <div className="flex items-center space-x-4">
               <a href="tel:0703416433" className="flex items-center hover:text-primary-200">
-                <span className="mr-1">📞</span>
+                <HiPhone className="h-4 w-4 mr-1" />
                 0703 416 433
               </a>
               <span className="hidden sm:inline">|</span>
@@ -84,7 +86,7 @@ export function Header() {
               onClick={() => setSearchOpen(true)}
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
             >
-              <span className="text-xl">🔍</span>
+              <HiSearch className="h-5 w-5" />
             </button>
 
             {/* Wishlist */}
@@ -92,7 +94,7 @@ export function Header() {
               to="/wishlist"
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors relative"
             >
-              <span className="text-xl">♥</span>
+              <HiHeart className="h-5 w-5" />
               {wishlistItems.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {wishlistItems.length}
@@ -105,7 +107,7 @@ export function Header() {
               to="/cart"
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors relative"
             >
-              <span className="text-xl">🛒</span>
+              <HiShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount}
@@ -118,7 +120,7 @@ export function Header() {
               to="/account"
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
             >
-              <span className="text-xl">👤</span>
+              <HiUser className="h-5 w-5" />
             </Link>
 
             {/* Mobile menu button */}
@@ -126,7 +128,7 @@ export function Header() {
               onClick={() => setMobileMenuOpen(true)}
               className="lg:hidden p-2 text-gray-600 hover:text-primary-600"
             >
-              <span className="text-xl">☰</span>
+              <HiMenu className="h-5 w-5" />
             </button>
           </div>
         </div>

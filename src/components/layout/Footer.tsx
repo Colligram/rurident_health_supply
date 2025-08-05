@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HiLocationMarker, HiPhone, HiClock } from 'react-icons/hi';
 
 const footerLinks = {
   products: [
@@ -54,7 +55,7 @@ export function Footer() {
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <span className="text-primary-400 mt-0.5">📍</span>
+                <HiLocationMarker className="text-primary-400 mt-0.5 h-5 w-5 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300">Mepalux Plaza Nairobi</p>
                   <p className="text-gray-300">River Road, 3rd Floor</p>
@@ -63,7 +64,7 @@ export function Footer() {
               </div>
               
               <div className="flex items-center space-x-3">
-                <span className="text-primary-400">📞</span>
+                <HiPhone className="text-primary-400 h-5 w-5 flex-shrink-0" />
                 <div className="space-y-1">
                   <a href="tel:0703416433" className="text-gray-300 hover:text-white transition-colors block">
                     0703 416 433
@@ -78,7 +79,7 @@ export function Footer() {
               </div>
               
               <div className="flex items-center space-x-3">
-                <span className="text-primary-400">⏰</span>
+                <HiClock className="text-primary-400 h-5 w-5 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300">Mon - Fri: 8:00 AM - 6:00 PM</p>
                   <p className="text-gray-300">Sat: 9:00 AM - 4:00 PM</p>

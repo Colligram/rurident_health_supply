@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HiX, HiSearch } from 'react-icons/hi';
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -19,12 +20,12 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
             onClick={onClose}
             className="p-2 text-gray-600 hover:text-gray-900"
           >
-            <span className="text-xl">✕</span>
+            <HiX className="h-5 w-5" />
           </button>
         </div>
         
         <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">🔍</span>
+          <HiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
             type="text"
             value={query}

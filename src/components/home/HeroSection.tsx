@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HiArrowRight, HiPlay } from 'react-icons/hi';
 
 export function HeroSection() {
   return (
@@ -27,7 +28,7 @@ export function HeroSection() {
                 className="btn-primary inline-flex items-center justify-center group"
               >
                 Shop Now
-                <span className="ml-2">→</span>
+                <HiArrowRight className="ml-2 h-4 w-4" />
               </Link>
               
               <Link
@@ -65,7 +66,7 @@ export function HeroSection() {
               {/* Video Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <button className="bg-white/90 hover:bg-white text-primary-600 rounded-full p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110">
-                  <span className="text-2xl">▶</span>
+                  <HiPlay className="h-6 w-6" />
                 </button>
               </div>
               
