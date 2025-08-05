@@ -1,7 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { StarIcon, HeartIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
-import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
 import { formatPrice } from '../../utils';
@@ -108,11 +106,7 @@ export function FeaturedProducts() {
                 onClick={() => toggleItem(product.id)}
                 className="absolute top-4 right-4 z-10 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
               >
-                {isInWishlist(product.id) ? (
-                  <HeartSolidIcon className="h-5 w-5 text-red-500" />
-                ) : (
-                  <HeartIcon className="h-5 w-5 text-gray-600" />
-                )}
+                <span className="text-red-500">♥</span>
               </button>
               
               {/* Product Image */}
@@ -143,16 +137,7 @@ export function FeaturedProducts() {
                 {/* Rating */}
                 <div className="flex items-center mb-3">
                   <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <StarIcon
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < Math.floor(product.rating)
-                            ? 'text-yellow-400 fill-current'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
+                    <span className="text-yellow-400">★★★★★</span>
                   </div>
                   <span className="text-sm text-gray-600 ml-2">
                     {product.rating} ({product.reviewCount})
@@ -197,7 +182,7 @@ export function FeaturedProducts() {
                   disabled={product.stockCount === 0}
                   className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
-                  <ShoppingCartIcon className="h-5 w-5 mr-2" />
+                  <span className="mr-2">🛒</span>
                   Add to Cart
                 </button>
               </div>
@@ -211,7 +196,7 @@ export function FeaturedProducts() {
             className="btn-secondary inline-flex items-center"
           >
             View All Products
-            <ArrowRightIcon className="ml-2 h-5 w-5" />
+            <span className="ml-2">→</span>
           </Link>
         </div>
       </div>

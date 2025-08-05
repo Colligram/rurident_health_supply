@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const categories = [
   {
@@ -86,7 +85,7 @@ export function FeaturedCategories() {
                   <span className="text-xs text-gray-500">
                     {category.productCount} products
                   </span>
-                  <ArrowRightIcon className="h-4 w-4 text-primary-600 group-hover:translate-x-1 transition-transform" />
+                  <span className="text-primary-600">→</span>
                 </div>
               </div>
             </Link>

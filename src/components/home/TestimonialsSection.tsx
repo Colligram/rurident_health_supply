@@ -1,5 +1,4 @@
 import React from 'react';
-import { StarIcon } from '@heroicons/react/24/solid';
 
 const testimonials = [
   {
@@ -45,9 +44,7 @@ export function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <div key={testimonial.id} className="card p-6">
               <div className="flex items-center mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <StarIcon key={i} className="h-5 w-5 text-yellow-400" />
-                ))}
+                <span className="text-yellow-400">★★★★★</span>
               </div>
               
               <blockquote className="text-gray-700 mb-6 leading-relaxed">

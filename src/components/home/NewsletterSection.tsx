@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { EnvelopeIcon } from '@heroicons/react/24/outline';
 
 export function NewsletterSection() {
   const [email, setEmail] = useState('');
@@ -17,7 +16,7 @@ export function NewsletterSection() {
       <div className="container-max">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8">
-            <EnvelopeIcon className="h-16 w-16 mx-auto mb-4 text-primary-200" />
+            <div className="text-6xl mb-4">📧</div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Stay Updated with Dental Innovations
             </h2>

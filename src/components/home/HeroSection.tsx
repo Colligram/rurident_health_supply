@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRightIcon, PlayIcon } from '@heroicons/react/24/outline';
 
 export function HeroSection() {
   return (
@@ -28,7 +27,7 @@ export function HeroSection() {
                 className="btn-primary inline-flex items-center justify-center group"
               >
                 Shop Now
-                <ArrowRightIcon className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <span className="ml-2">→</span>
               </Link>
               
               <Link
@@ -66,7 +65,7 @@ export function HeroSection() {
               {/* Video Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <button className="bg-white/90 hover:bg-white text-primary-600 rounded-full p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110">
-                  <PlayIcon className="h-8 w-8 ml-1" />
+                  <span className="text-2xl">▶</span>
                 </button>
               </div>
               

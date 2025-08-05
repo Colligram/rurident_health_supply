@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  MagnifyingGlassIcon, 
-  ShoppingCartIcon, 
-  HeartIcon, 
-  UserIcon,
-  Bars3Icon,
-  XMarkIcon,
-  PhoneIcon
-} from '@heroicons/react/24/outline';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { SearchBar } from '../common/SearchBar';
@@ -43,7 +34,7 @@ export function Header() {
             </div>
             <div className="flex items-center space-x-4">
               <a href="tel:0703416433" className="flex items-center hover:text-primary-200">
-                <PhoneIcon className="h-4 w-4 mr-1" />
+                <span className="mr-1">📞</span>
                 0703 416 433
               </a>
               <span className="hidden sm:inline">|</span>
@@ -93,7 +84,7 @@ export function Header() {
               onClick={() => setSearchOpen(true)}
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
             >
-              <MagnifyingGlassIcon className="h-6 w-6" />
+              <span className="text-xl">🔍</span>
             </button>
 
             {/* Wishlist */}
@@ -101,7 +92,7 @@ export function Header() {
               to="/wishlist"
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors relative"
             >
-              <HeartIcon className="h-6 w-6" />
+              <span className="text-xl">♥</span>
               {wishlistItems.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {wishlistItems.length}
@@ -114,7 +105,7 @@ export function Header() {
               to="/cart"
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors relative"
             >
-              <ShoppingCartIcon className="h-6 w-6" />
+              <span className="text-xl">🛒</span>
               {cartItemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount}
@@ -127,7 +118,7 @@ export function Header() {
               to="/account"
               className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
             >
-              <UserIcon className="h-6 w-6" />
+              <span className="text-xl">👤</span>
             </Link>
 
             {/* Mobile menu button */}
@@ -135,7 +126,7 @@ export function Header() {
               onClick={() => setMobileMenuOpen(true)}
               className="lg:hidden p-2 text-gray-600 hover:text-primary-600"
             >
-              <Bars3Icon className="h-6 w-6" />
+              <span className="text-xl">☰</span>
             </button>
           </div>
         </div>

@@ -1,41 +1,33 @@
 import React from 'react';
-import { 
-  TruckIcon, 
-  ShieldCheckIcon, 
-  PhoneIcon, 
-  CurrencyDollarIcon,
-  ClockIcon,
-  UserGroupIcon
-} from '@heroicons/react/24/outline';
 
 const features = [
   {
-    icon: TruckIcon,
+    icon: '🚚',
     title: 'Fast Delivery',
     description: '24-hour delivery within Nairobi and nationwide shipping available.'
   },
   {
-    icon: ShieldCheckIcon,
+    icon: '🛡️',
     title: 'Quality Guaranteed',
     description: 'All products are genuine and come with manufacturer warranties.'
   },
   {
-    icon: PhoneIcon,
+    icon: '📞',
     title: '24/7 Support',
     description: 'Expert technical support and customer service whenever you need it.'
   },
   {
-    icon: CurrencyDollarIcon,
+    icon: '💰',
     title: 'Best Prices',
     description: 'Competitive pricing with flexible payment options including M-Pesa.'
   },
   {
-    icon: ClockIcon,
+    icon: '⏰',
     title: '10+ Years Experience',
     description: 'Trusted by dental professionals across Kenya for over a decade.'
   },
   {
-    icon: UserGroupIcon,
+    icon: '👥',
     title: 'Expert Team',
     description: 'Knowledgeable staff to help you choose the right equipment for your needs.'
   }
@@ -61,7 +53,7 @@ export function WhyChooseUs() {
               className="text-center group hover:bg-gray-50 p-6 rounded-xl transition-all duration-300"
             >
               <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-full mb-4 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300">
-                <feature.icon className="h-8 w-8" />
+                <span className="text-2xl">{feature.icon}</span>
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
                 {feature.title}
