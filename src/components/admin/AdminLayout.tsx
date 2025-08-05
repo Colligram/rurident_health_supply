@@ -11,7 +11,7 @@ import {
   FiLogOut, 
   FiMenu, 
   FiX,
-  FiBarChart3
+  FiTrendingUp
 } from 'react-icons/fi';
 
 interface AdminLayoutProps {
@@ -34,7 +34,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Products', href: '/admin/products', icon: FiPackage },
     { name: 'Orders', href: '/admin/orders', icon: FiShoppingCart },
     { name: 'Customers', href: '/admin/customers', icon: FiUsers },
-    { name: 'Analytics', href: '/admin/analytics', icon: FiBarChart3 },
+    { name: 'Analytics', href: '/admin/analytics', icon: FiTrendingUp },
     { name: 'Settings', href: '/admin/settings', icon: FiSettings },
   ];
 
