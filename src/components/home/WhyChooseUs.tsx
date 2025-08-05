@@ -1,66 +1,50 @@
+
 import React from 'react';
 
-const features = [
-  {
-    icon: '🚚',
-    title: 'Fast Delivery',
-    description: '24-hour delivery within Nairobi and nationwide shipping available.'
-  },
-  {
-    icon: '🛡️',
-    title: 'Quality Guaranteed',
-    description: 'All products are genuine and come with manufacturer warranties.'
-  },
-  {
-    icon: '📞',
-    title: '24/7 Support',
-    description: 'Expert technical support and customer service whenever you need it.'
-  },
-  {
-    icon: '💰',
-    title: 'Best Prices',
-    description: 'Competitive pricing with flexible payment options including M-Pesa.'
-  },
-  {
-    icon: '⏰',
-    title: '10+ Years Experience',
-    description: 'Trusted by dental professionals across Kenya for over a decade.'
-  },
-  {
-    icon: '👥',
-    title: 'Expert Team',
-    description: 'Knowledgeable staff to help you choose the right equipment for your needs.'
-  }
-];
-
 export function WhyChooseUs() {
+  const features = [
+    {
+      icon: '🚚',
+      title: 'Fast Delivery',
+      description: 'Same day delivery in Nairobi, next day countrywide'
+    },
+    {
+      icon: '✅',
+      title: 'Quality Guaranteed',
+      description: 'All products are genuine and come with warranty'
+    },
+    {
+      icon: '💰',
+      title: 'Best Prices',
+      description: 'Competitive pricing with bulk discounts available'
+    },
+    {
+      icon: '🎯',
+      title: 'Expert Support',
+      description: '24/7 customer support from dental equipment specialists'
+    }
+  ];
+
   return (
-    <section className="section-padding bg-white">
+    <section className="py-16 bg-white">
       <div className="container-max">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Why Choose Rurident?
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            We're committed to providing the best dental supplies and service in Kenya.
+          <p className="text-lg text-gray-600">
+            Your trusted partner for dental equipment and supplies
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <div
-              key={index}
-              className="text-center group hover:bg-gray-50 p-6 rounded-xl transition-all duration-300"
-            >
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 text-primary-600 rounded-full mb-4 group-hover:bg-primary-600 group-hover:text-white transition-all duration-300">
-                <span className="text-2xl">{feature.icon}</span>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+            <div key={index} className="text-center">
+              <div className="text-4xl mb-4">{feature.icon}</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
+              <p className="text-gray-600">{feature.description}</p>
             </div>
           ))}
         </div>
