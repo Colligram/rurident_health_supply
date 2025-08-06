@@ -24,10 +24,12 @@ const connectDB = async () => {
   try {
     const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&appName=RURIDENT01";
     
-    // Create a MongoClient with simplified configuration
+    // Create a MongoClient with simplified configuration - no TLS enforcement
     const client = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 10000,
+      ssl: false,
+      sslValidate: false
     });
     
     // Connect the client to the server

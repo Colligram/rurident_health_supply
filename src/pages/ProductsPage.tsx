@@ -18,6 +18,22 @@ export function ProductsPage() {
   const [priceRange, setPriceRange] = useState('all'); // Added for price filtering
   const [showInStockOnly, setShowInStockOnly] = useState(false); // Added for stock filtering
 
+  // Show loading state
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 py-8">
+        <div className="container-max">
+          <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading products...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   // Get unique categories from products
   const categories = ['all', ...new Set((products && Array.isArray(products)) ? products.map(p => p.category) : [])];
 
@@ -171,16 +187,6 @@ export function ProductsPage() {
               Showing {filteredProducts.length} of {products?.length || 0} products
             </p>
           </div>
-
-          {/* Loading State */}
-          {loading && (
-            <div className="flex justify-center items-center py-20">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading products...</p>
-              </div>
-            </div>
-          )}
 
           {/* Error State */}
           {error && !loading && (
