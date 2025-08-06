@@ -1,26 +1,32 @@
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5000', 'https://*.replit.dev', 'https://*.replit.app'],
+  credentials: true
+}));
 app.use(express.json());
 
 // MongoDB connection
 let db;
 const connectDB = async () => {
   try {
-    const uri = "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&appName=RURIDENT01";
+    const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&tls=true&appName=RURIDENT01";
     
-    // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+    // Create a MongoClient with proper configuration
     const client = new MongoClient(uri, {
+      tls: true,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000,
       serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -69,6 +75,10 @@ app.get('/api/products', async (req, res) => {
 
 app.post('/api/products', async (req, res) => {
   try {
+    if (!db) {
+      return res.status(503).json({ error: 'Database unavailable' });
+    }
+    
     const product = {
       ...req.body,
       createdAt: new Date(),
@@ -85,6 +95,10 @@ app.post('/api/products', async (req, res) => {
 
 app.put('/api/products/:id', async (req, res) => {
   try {
+    if (!db) {
+      return res.status(503).json({ error: 'Database unavailable' });
+    }
+    
     const { id } = req.params;
     const updates = {
       ...req.body,
@@ -109,6 +123,10 @@ app.put('/api/products/:id', async (req, res) => {
 
 app.delete('/api/products/:id', async (req, res) => {
   try {
+    if (!db) {
+      return res.status(503).json({ error: 'Database unavailable' });
+    }
+    
     const { id } = req.params;
     const result = await db.collection('products').deleteOne({ _id: new ObjectId(id) });
     
