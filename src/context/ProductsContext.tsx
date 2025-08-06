@@ -1,25 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { databaseService } from '../services/database';
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  salePrice?: number;
-  originalPrice?: number;
-  images: string[];
-  category: string;
-  inStock: boolean;
-  stock: number;
-  rating: number;
-  reviewCount: number;
-  specifications?: Record<string, any>;
-  features?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { apiService, Product } from '../services/database';
 
 interface ProductsContextType {
   products: Product[];
@@ -43,20 +24,12 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
-      await databaseService.connect();
-      const dbProducts = await databaseService.getProducts();
-      
-      const formattedProducts = dbProducts.map(product => ({
-        ...product,
-        id: product._id.toString(),
-        _id: undefined // Remove MongoDB _id field
-      }));
-      
-      setProducts(formattedProducts);
+      const fetchedProducts = await apiService.getProducts();
+      setProducts(fetchedProducts);
     } catch (err) {
       console.error('Error loading products:', err);
       setError('Failed to load products');
-      // Fallback to empty array if database fails
+      // Fallback to empty array if API fails
       setProducts([]);
     } finally {
       setIsLoading(false);
@@ -65,28 +38,18 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     refreshProducts();
-    
-    // Cleanup on unmount
-    return () => {
-      databaseService.disconnect();
-    };
   }, []);
 
   const addProduct = async (productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       setError(null);
-      await databaseService.connect();
+      const result = await apiService.addProduct(productData);
       
-      const newProduct = {
-        ...productData,
-        id: Date.now().toString(), // Temporary ID
-      };
-
-      const result = await databaseService.addProduct(newProduct);
-      
-      if (result.acknowledged) {
+      if (result.success) {
         // Refresh products to get the latest data
         await refreshProducts();
+      } else {
+        throw new Error('Failed to add product');
       }
     } catch (err) {
       console.error('Error adding product:', err);
@@ -98,11 +61,9 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
   const updateProduct = async (id: string, updates: Partial<Product>) => {
     try {
       setError(null);
-      await databaseService.connect();
+      const success = await apiService.updateProduct(id, updates);
       
-      const result = await databaseService.updateProduct(id, updates);
-      
-      if (result.acknowledged) {
+      if (success) {
         // Update local state
         setProducts(prev => 
           prev.map(product => 
@@ -111,6 +72,8 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
               : product
           )
         );
+      } else {
+        throw new Error('Failed to update product');
       }
     } catch (err) {
       console.error('Error updating product:', err);
@@ -122,13 +85,13 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
   const deleteProduct = async (id: string) => {
     try {
       setError(null);
-      await databaseService.connect();
+      const success = await apiService.deleteProduct(id);
       
-      const result = await databaseService.deleteProduct(id);
-      
-      if (result.acknowledged) {
+      if (success) {
         // Update local state
         setProducts(prev => prev.filter(product => product.id !== id));
+      } else {
+        throw new Error('Failed to delete product');
       }
     } catch (err) {
       console.error('Error deleting product:', err);

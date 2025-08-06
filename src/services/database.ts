@@ -1,76 +1,91 @@
 
-import { MongoClient, Db, Collection } from 'mongodb';
+// Backend API service to communicate with our server
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  salePrice?: number;
+  originalPrice?: number;
+  images: string[];
+  category: string;
+  inStock: boolean;
+  stock: number;
+  rating: number;
+  reviewCount: number;
+  specifications?: Record<string, any>;
+  features?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
-class DatabaseService {
-  private client: MongoClient | null = null;
-  private db: Db | null = null;
+class APIService {
+  private baseURL = '/api';
 
-  async connect(): Promise<void> {
-    if (this.client) return;
-
-    const uri = process.env.MONGODB_URI;
-    const dbName = process.env.DATABASE_NAME || 'rurident_db';
-
-    if (!uri) {
-      throw new Error('MongoDB URI not found in environment variables');
-    }
-
-    this.client = new MongoClient(uri);
-    await this.client.connect();
-    this.db = this.client.db(dbName);
-    console.log('Connected to MongoDB');
-  }
-
-  async disconnect(): Promise<void> {
-    if (this.client) {
-      await this.client.close();
-      this.client = null;
-      this.db = null;
-    }
-  }
-
-  getCollection(name: string): Collection {
-    if (!this.db) {
-      throw new Error('Database not connected');
-    }
-    return this.db.collection(name);
-  }
-
-  // Products methods
-  async getProducts() {
-    const collection = this.getCollection('products');
-    return await collection.find({}).toArray();
-  }
-
-  async addProduct(product: any) {
-    const collection = this.getCollection('products');
-    const result = await collection.insertOne({
-      ...product,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
-    return result;
-  }
-
-  async updateProduct(id: string, updates: any) {
-    const collection = this.getCollection('products');
-    const result = await collection.updateOne(
-      { _id: id },
-      { 
-        $set: {
-          ...updates,
-          updatedAt: new Date()
-        }
+  async getProducts(): Promise<Product[]> {
+    try {
+      const response = await fetch(`${this.baseURL}/products`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
       }
-    );
-    return result;
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
   }
 
-  async deleteProduct(id: string) {
-    const collection = this.getCollection('products');
-    const result = await collection.deleteOne({ _id: id });
-    return result;
+  async addProduct(product: Omit<Product, 'id'>): Promise<{ success: boolean; id?: string }> {
+    try {
+      const response = await fetch(`${this.baseURL}/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+
+      const result = await response.json();
+      return { success: true, id: result.id };
+    } catch (error) {
+      console.error('Error adding product:', error);
+      return { success: false };
+    }
+  }
+
+  async updateProduct(id: string, updates: Partial<Product>): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.baseURL}/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error('Error updating product:', error);
+      return false;
+    }
+  }
+
+  async deleteProduct(id: string): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.baseURL}/products/${id}`, {
+        method: 'DELETE',
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      return false;
+    }
   }
 }
 
-export const databaseService = new DatabaseService();
+export const apiService = new APIService();
