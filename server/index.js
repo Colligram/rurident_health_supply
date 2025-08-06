@@ -7,7 +7,7 @@ import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 import cors from 'cors';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
@@ -24,12 +24,10 @@ const connectDB = async () => {
   try {
     const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&appName=RURIDENT01";
     
-    // Create a MongoClient with simplified configuration - no TLS enforcement
+    // Create a MongoClient with Replit-compatible configuration
     const client = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 10000,
-      tls: false,
-      tlsInsecure: true
+      connectTimeoutMS: 10000
     });
     
     // Connect the client to the server
@@ -139,9 +137,19 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
+// Serve static files from the dist directory
+app.use(express.static('dist'));
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Serve React app for all non-API routes
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile('index.html', { root: 'dist' });
+  }
 });
 
 // Start server
