@@ -47,7 +47,8 @@ export function ProductsPage() {
   };
 
   const toggleWishlist = (product: any) => {
-    const isInWishlist = wishlist?.some(item => item.id === product.id) || false;
+    if (!wishlist) return;
+    const isInWishlist = wishlist.some(item => item.id === product.id);
     if (isInWishlist) {
       removeFromWishlist(product.id);
     } else {
@@ -56,7 +57,7 @@ export function ProductsPage() {
   };
 
   const isInWishlist = (productId: string) => {
-    return wishlist?.some(item => item.id === productId) || false;
+    return wishlist ? wishlist.some(item => item.id === productId) : false;
   };
 
   return (

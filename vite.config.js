@@ -24,5 +24,13 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['mongodb']
+  },
+  ssr: {
+    noExternal: []
+  },
+  build: {
+    rollupOptions: {
+      external: ['mongodb', 'crypto', 'util', 'fs', 'path']
+    }
   }
 })

@@ -17,13 +17,14 @@ app.use(express.json());
 let db;
 const connectDB = async () => {
   try {
-    const client = new MongoClient(process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/?retryWrites=true&w=majority&appName=RURIDENT01");
+    const client = new MongoClient(process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/?retryWrites=true&w=majority&appName=RURIDENT01&ssl=true&tls=true&tlsInsecure=false");
     await client.connect();
     db = client.db('rurident_db');
     console.log('Connected to MongoDB');
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    process.exit(1);
+    // Don't exit process, continue without database for development
+    console.log('Continuing without database connection...');
   }
 };
 
