@@ -81,7 +81,28 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    refreshProducts();
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        console.log('Fetching products...');
+        const response = await fetch('/api/products');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Products fetched:', data);
+        setProducts(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const value: ProductsContextType = {
