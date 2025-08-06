@@ -17,7 +17,7 @@ app.use(express.json());
 let db;
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/rurident_db?retryWrites=true&w=majority&appName=RURIDENT01";
+    const mongoUri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&tls=true&appName=RURIDENT01";
     
     const client = new MongoClient(mongoUri, {
       ssl: true,
@@ -28,7 +28,7 @@ const connectDB = async () => {
     });
     
     await client.connect();
-    db = client.db('rurident_db');
+    db = client.db('ruridentdb');
     console.log('Connected to MongoDB successfully');
   } catch (error) {
     console.error('MongoDB connection failed:', error.message);
