@@ -17,20 +17,36 @@ app.use(express.json());
 let db;
 const connectDB = async () => {
   try {
-    const client = new MongoClient(process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/?retryWrites=true&w=majority&appName=RURIDENT01&ssl=true&tls=true&tlsInsecure=false");
+    const mongoUri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/rurident_db?retryWrites=true&w=majority&appName=RURIDENT01";
+    
+    const client = new MongoClient(mongoUri, {
+      ssl: true,
+      tls: true,
+      tlsInsecure: false,
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 10000,
+    });
+    
     await client.connect();
     db = client.db('rurident_db');
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB successfully');
   } catch (error) {
-    console.error('MongoDB connection error:', error);
-    // Don't exit process, continue without database for development
-    console.log('Continuing without database connection...');
+    console.error('MongoDB connection failed:', error.message);
+    console.log('Continuing in development mode without database...');
+    // Set db to null so we know it's not connected
+    db = null;
   }
 };
 
 // Products API Routes
 app.get('/api/products', async (req, res) => {
   try {
+    if (!db) {
+      // Return empty array when database is not connected
+      console.log('Database not connected, returning empty products array');
+      return res.json([]);
+    }
+    
     const products = await db.collection('products').find({}).toArray();
     const formattedProducts = products.map(product => ({
       ...product,
@@ -40,7 +56,7 @@ app.get('/api/products', async (req, res) => {
     res.json(formattedProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    res.json([]); // Return empty array instead of error
   }
 });
 

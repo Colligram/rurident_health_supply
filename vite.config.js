@@ -9,6 +9,7 @@ export default defineConfig({
     port: 5000,
     allowedHosts: 'all',
     hmr: {
+      host: 'localhost',
       port: 5000
     },
     proxy: {
@@ -17,21 +18,17 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       }
-    },
-    headers: {
-      'Content-Security-Policy': "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
     }
   },
   define: {
     global: 'globalThis',
   },
   optimizeDeps: {
-    exclude: ['mongodb'],
-    include: []
+    exclude: ['mongodb', 'util', 'crypto', 'fs', 'path']
   },
   build: {
     rollupOptions: {
-      external: ['mongodb']
+      external: ['mongodb', 'util', 'crypto', 'fs', 'path']
     }
   }
 })

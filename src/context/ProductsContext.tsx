@@ -23,39 +23,54 @@ const ProductsContext = createContext<ProductsContextType | undefined>(undefined
 
 export function ProductsProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const refreshProducts = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const fetchedProducts = await apiService.getProducts();
-      setProducts(fetchedProducts);
-    } catch (err) {
-      console.error('Error loading products:', err);
-      setError('Failed to load products');
-      // Fallback to empty array if API fails
-      setProducts([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    // Safely fetch products with error handling
-    const loadProducts = async () => {
+    const fetchProducts = async () => {
       try {
-        await refreshProducts();
-      } catch (error) {
-        console.error('Failed to load products:', error);
-        // Set products to empty array on error to prevent undefined issues
-        setProducts([]);
+        setLoading(true);
+        setError(null);
+        const result = await apiService.getProducts();
+        if (result.success && result.data) {
+          setProducts(result.data || []);
+        } else {
+          console.warn('No products data received, using empty array');
+          setProducts([]);
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setProducts([]); // Always set to empty array on error
+        setError('Failed to load products');
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadProducts();
+    fetchProducts();
   }, []);
+
+  const refreshProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const fetchedProducts = await apiService.getProducts();
+      if (fetchedProducts.success && fetchedProducts.data) {
+        setProducts(fetchedProducts.data);
+      } else {
+        console.warn('No products data received during refresh, using empty array');
+        setProducts([]);
+        setError('Failed to refresh products');
+      }
+    } catch (err) {
+      console.error('Error loading products:', err);
+      setProducts([]); // Fallback to empty array if API fails
+      setError('Failed to load products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const addProduct = async (productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
@@ -127,7 +142,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     updateProduct,
     deleteProduct,
     getProduct,
-    isLoading,
+    isLoading: loading, // Use the correct state variable name
     error,
     refreshProducts,
   };

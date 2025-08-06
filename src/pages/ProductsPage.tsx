@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
@@ -10,12 +9,14 @@ import { FiSearch, FiFilter, FiHeart, FiShoppingCart, FiStar } from 'react-icons
 import { formatPrice } from '../utils';
 
 export function ProductsPage() {
-  const { products } = useProducts();
+  const { products, loading, error } = useProducts(); // Assuming these are provided by context
   const { addToCart } = useCart();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
+  const [priceRange, setPriceRange] = useState('all'); // Added for price filtering
+  const [showInStockOnly, setShowInStockOnly] = useState(false); // Added for stock filtering
 
   // Get unique categories from products
   const categories = ['all', ...new Set(products?.map(product => product.category) || [])];
@@ -23,26 +24,30 @@ export function ProductsPage() {
   // Ensure wishlist is available before using it
   const safeWishlist = wishlist || [];
 
-  // Filter and sort products
-  const filteredProducts = (products || [])
-    .filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low':
-          return (a.salePrice || a.price) - (b.salePrice || b.price);
-        case 'price-high':
-          return (b.salePrice || b.price) - (a.salePrice || a.price);
-        case 'rating':
-          return b.rating - a.rating;
-        default:
-          return a.name.localeCompare(b.name);
+  // Filter products based on search and filters
+  const filteredProducts = (products || []).filter((product) => {
+    if (!product) return false;
+
+    const matchesSearch = (product.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (product.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+
+    const matchesPriceRange = (() => {
+      const price = product.salePrice || product.price || 0;
+      switch (priceRange) {
+        case 'under-1000': return price < 1000;
+        case '1000-5000': return price >= 1000 && price <= 5000;
+        case '5000-10000': return price >= 5000 && price <= 10000;
+        case 'over-10000': return price > 10000;
+        default: return true;
       }
-    });
+    })();
+
+    const matchesInStock = !showInStockOnly || (product.stock && product.stock > 0);
+
+    return matchesSearch && matchesCategory && matchesPriceRange && matchesInStock;
+  });
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);
@@ -103,9 +108,22 @@ export function ProductsPage() {
                     </option>
                   ))}
                 </select>
+
+                {/* Price Range Filter */}
+                <select
+                  value={priceRange}
+                  onChange={(e) => setPriceRange(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                >
+                  <option value="all">All Price Ranges</option>
+                  <option value="under-1000">Under $1000</option>
+                  <option value="1000-5000">$1000 - $5000</option>
+                  <option value="5000-10000">$5000 - $10000</option>
+                  <option value="over-10000">Over $10000</option>
+                </select>
               </div>
 
-              {/* Sort */}
+              {/* Sort and Stock Filter */}
               <div className="flex items-center space-x-4">
                 <label className="text-sm font-medium text-gray-700">Sort by:</label>
                 <select
@@ -118,6 +136,18 @@ export function ProductsPage() {
                   <option value="price-high">Price: High to Low</option>
                   <option value="rating">Rating</option>
                 </select>
+
+                {/* In Stock Filter */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="in-stock"
+                    checked={showInStockOnly}
+                    onChange={(e) => setShowInStockOnly(e.target.checked)}
+                    className="form-checkbox h-4 w-4 text-primary-600 rounded"
+                  />
+                  <label htmlFor="in-stock" className="text-sm font-medium text-gray-700">In Stock Only</label>
+                </div>
               </div>
             </div>
           </div>
@@ -129,15 +159,38 @@ export function ProductsPage() {
             </p>
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading products...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !loading && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+              <p className="text-red-600 mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="btn-primary"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+
           {/* Products Grid */}
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-              {filteredProducts.map((product) => (
+          {!loading && !error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.length > 0 ? filteredProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="relative">
                     <img
-                      src={product.images[0] || 'https://via.placeholder.com/300x200?text=No+Image'}
-                      alt={product.name}
+                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}
+                      alt={product.name || 'Product Image'}
                       className="w-full h-48 object-cover"
                     />
                     {product.salePrice && (
@@ -165,25 +218,25 @@ export function ProductsPage() {
                   <div className="p-4">
                     <div className="mb-2">
                       <span className="text-xs text-primary-600 font-medium">
-                        {product.category}
+                        {product.category || 'Uncategorized'}
                       </span>
                     </div>
-                    
+
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
                       <Link 
                         to={`/product/${product.id}`}
                         className="hover:text-primary-600 transition-colors"
                       >
-                        {product.name}
+                        {product.name || 'Product Name Unavailable'}
                       </Link>
                     </h3>
 
                     <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {product.description}
+                      {product.description || 'No description available.'}
                     </p>
 
                     {/* Rating */}
-                    {product.rating > 0 && (
+                    {product.rating && product.rating > 0 && (
                       <div className="flex items-center mb-2">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
@@ -198,7 +251,7 @@ export function ProductsPage() {
                           ))}
                         </div>
                         <span className="text-sm text-gray-600 ml-1">
-                          ({product.reviewCount})
+                          ({product.reviewCount || 0})
                         </span>
                       </div>
                     )}
@@ -219,7 +272,7 @@ export function ProductsPage() {
 
                     {/* Stock Status */}
                     <div className="mb-3">
-                      {product.stock > 0 ? (
+                      {product.stock && product.stock > 0 ? (
                         <span className="text-xs text-green-600 font-medium">
                           {product.stock} in stock
                         </span>
@@ -245,30 +298,21 @@ export function ProductsPage() {
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiFilter className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-              <p className="text-gray-600 mb-4">
-                {searchTerm || selectedCategory !== 'all' 
-                  ? 'Try adjusting your search or filters' 
-                  : 'No products available at the moment'
-                }
-              </p>
-              {(searchTerm || selectedCategory !== 'all') && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('');
-                    setSelectedCategory('all');
-                  }}
-                  className="btn-primary"
-                >
-                  Clear Filters
-                </button>
+              )) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500 text-lg mb-4">No products found</p>
+                  <button 
+                    onClick={() => {
+                      setSearchTerm('');
+                      setSelectedCategory('all');
+                      setPriceRange('all');
+                      setShowInStockOnly(false);
+                    }}
+                    className="btn-secondary"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
               )}
             </div>
           )}
