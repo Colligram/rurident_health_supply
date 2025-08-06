@@ -121,6 +121,12 @@ export function AdminLoginPage() {
 
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>Authorized personnel only</p>
+            <Link 
+              to="/" 
+              className="inline-block mt-3 text-primary-600 hover:text-primary-700 font-medium"
+            >
+              ← Back to Client Site
+            </Link>
           </div>
         </div>
       </div>

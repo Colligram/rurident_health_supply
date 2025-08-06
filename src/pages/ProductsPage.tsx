@@ -12,16 +12,16 @@ import { formatPrice } from '../utils';
 export function ProductsPage() {
   const { products } = useProducts();
   const { addToCart } = useCart();
-  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { wishlist = [], addToWishlist, removeFromWishlist } = useWishlist();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
 
   // Get unique categories from products
-  const categories = ['all', ...new Set(products.map(product => product.category))];
+  const categories = ['all', ...new Set(products?.map(product => product.category) || [])];
 
   // Filter and sort products
-  const filteredProducts = products
+  const filteredProducts = (products || [])
     .filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            product.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -122,7 +122,7 @@ export function ProductsPage() {
           {/* Results Count */}
           <div className="mb-6">
             <p className="text-gray-600">
-              Showing {filteredProducts.length} of {products.length} products
+              Showing {filteredProducts.length} of {products?.length || 0} products
             </p>
           </div>
 
