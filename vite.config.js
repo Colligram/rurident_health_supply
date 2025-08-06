@@ -10,7 +10,7 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '127.0.0.1',
-      '7afebb57-0054-43ae-9b29-a18fc1082131-00-iivyikg5rfnr.kirk.replit.dev'  // ← your Replit URL
+      'ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev'  // ← your current Replit URL
     ]
   }
 })
