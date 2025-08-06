@@ -133,21 +133,28 @@ export function AddProductPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Filter out empty features and images
     const cleanedData = {
       ...formData,
       features: formData.features.filter(f => f.trim()),
-      images: formData.images.filter(img => img.trim())
+      images: formData.images.filter(img => img.trim()),
+      inStock: formData.stock > 0,
+      rating: 0,
+      reviewCount: 0
     };
 
-    // Add to products context
-    addProduct(cleanedData);
-    
-    alert('Product added successfully!');
-    navigate('/admin/products');
+    try {
+      // Add to products context which will call the API
+      await addProduct(cleanedData);
+      alert('Product added successfully!');
+      navigate('/admin/products');
+    } catch (error) {
+      console.error('Error adding product:', error);
+      alert('Failed to add product. Please try again.');
+    }
   };
 
   return (

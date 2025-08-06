@@ -12,7 +12,7 @@ import { formatPrice } from '../utils';
 export function ProductsPage() {
   const { products } = useProducts();
   const { addToCart } = useCart();
-  const { wishlist = [], addToWishlist, removeFromWishlist } = useWishlist();
+  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
@@ -47,7 +47,7 @@ export function ProductsPage() {
   };
 
   const toggleWishlist = (product: any) => {
-    const isInWishlist = wishlist.some(item => item.id === product.id);
+    const isInWishlist = wishlist?.some(item => item.id === product.id) || false;
     if (isInWishlist) {
       removeFromWishlist(product.id);
     } else {
@@ -56,7 +56,7 @@ export function ProductsPage() {
   };
 
   const isInWishlist = (productId: string) => {
-    return wishlist.some(item => item.id === productId);
+    return wishlist?.some(item => item.id === productId) || false;
   };
 
   return (
