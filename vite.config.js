@@ -9,7 +9,6 @@ export default defineConfig({
     port: 5000,
     allowedHosts: 'all',
     hmr: {
-      host: 'localhost',
       port: 5000
     },
     proxy: {
@@ -32,13 +31,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: (id) => {
-        return ['mongodb', 'crypto', 'util', 'fs', 'path', 'os', 'stream'].includes(id);
-      }
+      external: ['mongodb']
     }
-  },
-  define: {
-    'process.env.NODE_ENV': '"development"',
-    'global': 'globalThis'
   }
 })
