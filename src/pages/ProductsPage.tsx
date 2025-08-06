@@ -67,6 +67,22 @@ export function ProductsPage() {
     return safeWishlist.some(item => item.id === productId);
   };
 
+  // Sorting logic needs to be applied after filtering
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return (a.salePrice || a.price || 0) - (b.salePrice || b.price || 0);
+      case 'price-high':
+        return (b.salePrice || b.price || 0) - (a.salePrice || a.price || 0);
+      case 'name':
+        return (a.name || '').localeCompare(b.name || '');
+      case 'rating':
+        return (b.rating || 0) - (a.rating || 0);
+      default:
+        return 0;
+    }
+  });
+
   return (
     <>
       <Header />
@@ -173,7 +189,7 @@ export function ProductsPage() {
           {error && !loading && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
               <p className="text-red-600 mb-4">{error}</p>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="btn-primary"
               >
@@ -185,7 +201,7 @@ export function ProductsPage() {
           {/* Products Grid */}
           {!loading && !error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.length > 0 ? filteredProducts.map((product) => (
+              {sortedProducts.length > 0 ? sortedProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
                   <div className="relative">
                     <img
@@ -223,7 +239,7 @@ export function ProductsPage() {
                     </div>
 
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
-                      <Link 
+                      <Link
                         to={`/product/${product.id}`}
                         className="hover:text-primary-600 transition-colors"
                       >
@@ -301,7 +317,7 @@ export function ProductsPage() {
               )) : (
                 <div className="col-span-full text-center py-12">
                   <p className="text-gray-500 text-lg mb-4">No products found</p>
-                  <button 
+                  <button
                     onClick={() => {
                       setSearchTerm('');
                       setSelectedCategory('all');

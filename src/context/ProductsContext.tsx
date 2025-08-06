@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService, Product } from '../services/database';
 
@@ -24,7 +23,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     try {
       const result = await apiService.getProducts();
-      if (result.success && result.data) {
+      if (result.success && result.data && Array.isArray(result.data)) {
         setProducts(result.data);
       } else {
         setProducts([]);
