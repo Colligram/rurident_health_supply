@@ -1,0 +1,171 @@
+framework-6d8af3b1b418571d.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'battery'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'web-share'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+framework-6d8af3b1b418571d.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-6d8af3b1b418571d.js:1
+(anonymous) @ framework-6d8af3b1b418571d.js:1
+uD @ framework-6d8af3b1b418571d.js:1
+uI @ framework-6d8af3b1b418571d.js:1
+uM @ framework-6d8af3b1b418571d.js:1
+uS @ framework-6d8af3b1b418571d.js:1
+C @ framework-6d8af3b1b418571d.js:1
+z @ framework-6d8af3b1b418571d.js:1
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'battery'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'layout-animations'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'legacy-image-formats'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'navigation-override'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'oversized-images'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'publickey-credentials'.
+ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Unrecognized feature: 'web-share'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:151          GET https://ecde95be-2287-4dd3-9ff2-e2a4e8e42d82-00-2j800u1ht1e7i.picard.replit.dev:5000/ 403 (Forbidden)
+(anonymous) @ workspace_iframe.html?initialPath=%2F&id=%3Ar15b%3A:151
