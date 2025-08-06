@@ -247,7 +247,7 @@ export function ProductsManagementPage() {
                       <input
                         type="checkbox"
                         checked={selectedProducts.includes(product.id)}
-                        onChange={() => toggleProductSelection(product.id)}
+                        onChange={(e) => handleSelectProduct(product.id, e.target.checked)}
                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                     </td>
