@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5000,
+    allowedHosts: 'all',
     hmr: {
       host: 'localhost',
       port: 5000
@@ -31,6 +32,12 @@ export default defineConfig({
   build: {
     rollupOptions: {
       external: ['mongodb', 'crypto', 'util', 'fs', 'path']
+    }
+  },
+  resolve: {
+    alias: {
+      util: 'rollup-plugin-node-polyfills/polyfills/util',
+      crypto: 'rollup-plugin-node-polyfills/polyfills/crypto-browserify'
     }
   }
 })
