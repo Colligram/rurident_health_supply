@@ -11,8 +11,10 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5000', 'https://*.replit.dev', 'https://*.replit.app'],
-  credentials: true
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
@@ -20,18 +22,12 @@ app.use(express.json());
 let db;
 const connectDB = async () => {
   try {
-    const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&tls=true&appName=RURIDENT01";
+    const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&appName=RURIDENT01";
     
-    // Create a MongoClient with proper configuration
+    // Create a MongoClient with simplified configuration
     const client = new MongoClient(uri, {
-      tls: true,
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 10000,
-      serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-      }
     });
     
     // Connect the client to the server

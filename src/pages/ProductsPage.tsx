@@ -19,18 +19,15 @@ export function ProductsPage() {
   const [showInStockOnly, setShowInStockOnly] = useState(false); // Added for stock filtering
 
   // Get unique categories from products
-  const categories = ['all', ...new Set(products?.map(product => product.category) || [])];
+  const categories = ['all', ...new Set((products && Array.isArray(products)) ? products.map(p => p.category) : [])];
 
   // Ensure wishlist is available before using it
   const safeWishlist = wishlist || [];
 
   // Filter products based on search and filters
-  const filteredProducts = (products || []).filter((product) => {
-    if (!product) return false;
-
-    const matchesSearch = (product.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (product.description || '').toLowerCase().includes(searchTerm.toLowerCase());
-
+  const filteredProducts = (products && Array.isArray(products)) ? products.filter(product => {
+    const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
 
     const matchesPriceRange = (() => {
@@ -47,7 +44,7 @@ export function ProductsPage() {
     const matchesInStock = !showInStockOnly || (product.stock && product.stock > 0);
 
     return matchesSearch && matchesCategory && matchesPriceRange && matchesInStock;
-  });
+  }) : [];
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);
