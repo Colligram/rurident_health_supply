@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
@@ -35,32 +35,42 @@ export function ProductsPage() {
   }
 
   // Get unique categories from products
-  const categories = ['all', ...new Set((products && Array.isArray(products)) ? products.map(p => p.category) : [])];
+  const categories = useMemo(() => {
+    if (!products || !Array.isArray(products)) return ['all'];
+    return ['all', ...new Set(products.map(p => p.category))];
+  }, [products]);
+
 
   // Ensure wishlist is available before using it
   const safeWishlist = wishlist || [];
 
-  // Filter products based on search and filters
-  const filteredProducts = (products && Array.isArray(products)) ? products.filter(product => {
-    const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+  // Filter products based on search term, category, price range, and stock
+  const filteredProducts = useMemo(() => {
+    if (!products || !Array.isArray(products)) return [];
 
-    const matchesPriceRange = (() => {
-      const price = product.salePrice || product.price || 0;
-      switch (priceRange) {
-        case 'under-1000': return price < 1000;
-        case '1000-5000': return price >= 1000 && price <= 5000;
-        case '5000-10000': return price >= 5000 && price <= 10000;
-        case 'over-10000': return price > 10000;
-        default: return true;
-      }
-    })();
+    return products.filter(product => {
+      const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.description?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
 
-    const matchesInStock = !showInStockOnly || (product.stock && product.stock > 0);
+      // Price filtering
+      const matchesPrice = (() => {
+        const price = product.salePrice || product.price || 0;
+        switch (priceRange) {
+          case 'under-1000': return price < 1000;
+          case '1000-5000': return price >= 1000 && price <= 5000;
+          case '5000-10000': return price >= 5000 && price <= 10000;
+          case 'over-10000': return price > 10000;
+          default: return true;
+        }
+      })();
 
-    return matchesSearch && matchesCategory && matchesPriceRange && matchesInStock;
-  }) : [];
+      // Stock filtering
+      const matchesStock = showInStockOnly ? (product.stock || 0) > 0 : true;
+
+      return matchesSearch && matchesCategory && matchesPrice && matchesStock;
+    });
+  }, [products, searchTerm, selectedCategory, priceRange, showInStockOnly]);
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);
@@ -80,21 +90,25 @@ export function ProductsPage() {
     return safeWishlist.some(item => item.id === productId);
   };
 
-  // Sorting logic needs to be applied after filtering
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-low':
-        return (a.salePrice || a.price || 0) - (b.salePrice || b.price || 0);
-      case 'price-high':
-        return (b.salePrice || b.price || 0) - (a.salePrice || a.price || 0);
-      case 'name':
-        return (a.name || '').localeCompare(b.name || '');
-      case 'rating':
-        return (b.rating || 0) - (a.rating || 0);
-      default:
-        return 0;
-    }
-  });
+  // Sort products
+  const sortedProducts = useMemo(() => {
+    if (!filteredProducts || filteredProducts.length === 0) return [];
+
+    return [...filteredProducts].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '');
+        case 'price-low':
+          return (a.salePrice || a.price || 0) - (b.salePrice || b.price || 0);
+        case 'price-high':
+          return (b.salePrice || b.price || 0) - (a.salePrice || a.price || 0);
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        default:
+          return 0;
+      }
+    });
+  }, [filteredProducts, sortBy]);
 
   return (
     <>

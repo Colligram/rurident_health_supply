@@ -28,8 +28,8 @@ const connectDB = async () => {
     const client = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 10000,
-      ssl: false,
-      sslValidate: false
+      tls: false,
+      tlsInsecure: true
     });
     
     // Connect the client to the server
@@ -148,7 +148,9 @@ app.get('/api/health', (req, res) => {
 const startServer = async () => {
   await connectDB();
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Local: http://localhost:${PORT}`);
+    console.log(`Network: http://0.0.0.0:${PORT}`);
   });
 };
 

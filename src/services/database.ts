@@ -23,17 +23,22 @@ class APIService {
 
   async getProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
     try {
-      const response = await fetch('/api/products');
+      const response = await fetch(`${this.baseURL}/products`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       if (!response.ok) {
-        // If server is not available, return mock data
+        // If server is not available, return empty data
         if (response.status === 404 || response.status >= 500) {
-          console.warn('Server unavailable, using mock data');
-          return { success: true, data: [] }; // Return empty array for now
+          console.warn('Server unavailable, using empty data');
+          return { success: true, data: [] };
         }
         throw new Error('Failed to fetch products');
       }
       const data = await response.json();
-      return { success: true, data };
+      return { success: true, data: Array.isArray(data) ? data : [] };
     } catch (error) {
       console.error('Error fetching products:', error);
       // Return empty array instead of error to prevent app crashes
