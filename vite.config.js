@@ -18,26 +18,27 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       }
+    },
+    headers: {
+      'Content-Security-Policy': "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
     }
   },
   define: {
     global: 'globalThis',
   },
   optimizeDeps: {
-    exclude: ['mongodb']
-  },
-  ssr: {
-    noExternal: []
+    exclude: ['mongodb'],
+    include: []
   },
   build: {
     rollupOptions: {
-      external: ['mongodb', 'crypto', 'util', 'fs', 'path']
+      external: (id) => {
+        return ['mongodb', 'crypto', 'util', 'fs', 'path', 'os', 'stream'].includes(id);
+      }
     }
   },
-  resolve: {
-    alias: {
-      util: 'rollup-plugin-node-polyfills/polyfills/util',
-      crypto: 'rollup-plugin-node-polyfills/polyfills/crypto-browserify'
-    }
+  define: {
+    'process.env.NODE_ENV': '"development"',
+    'global': 'globalThis'
   }
 })

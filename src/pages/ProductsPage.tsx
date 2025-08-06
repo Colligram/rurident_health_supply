@@ -20,6 +20,9 @@ export function ProductsPage() {
   // Get unique categories from products
   const categories = ['all', ...new Set(products?.map(product => product.category) || [])];
 
+  // Ensure wishlist is available before using it
+  const safeWishlist = wishlist || [];
+
   // Filter and sort products
   const filteredProducts = (products || [])
     .filter(product => {
@@ -47,8 +50,7 @@ export function ProductsPage() {
   };
 
   const toggleWishlist = (product: any) => {
-    if (!wishlist) return;
-    const isInWishlist = wishlist.some(item => item.id === product.id);
+    const isInWishlist = safeWishlist.some(item => item.id === product.id);
     if (isInWishlist) {
       removeFromWishlist(product.id);
     } else {
@@ -57,7 +59,7 @@ export function ProductsPage() {
   };
 
   const isInWishlist = (productId: string) => {
-    return wishlist ? wishlist.some(item => item.id === productId) : false;
+    return safeWishlist.some(item => item.id === productId);
   };
 
   return (

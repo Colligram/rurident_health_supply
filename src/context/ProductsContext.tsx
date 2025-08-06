@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { apiService, Product } from '../services/database';
 
@@ -37,14 +36,25 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    refreshProducts();
+    // Safely fetch products with error handling
+    const loadProducts = async () => {
+      try {
+        await refreshProducts();
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        // Set products to empty array on error to prevent undefined issues
+        setProducts([]);
+      }
+    };
+
+    loadProducts();
   }, []);
 
   const addProduct = async (productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
       setError(null);
       const result = await apiService.addProduct(productData);
-      
+
       if (result.success) {
         // Refresh products to get the latest data
         await refreshProducts();
@@ -62,7 +72,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
       const success = await apiService.updateProduct(id, updates);
-      
+
       if (success) {
         // Update local state
         setProducts(prev => 
@@ -86,7 +96,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
       const success = await apiService.deleteProduct(id);
-      
+
       if (success) {
         // Update local state
         setProducts(prev => prev.filter(product => product.id !== id));
