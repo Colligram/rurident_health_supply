@@ -26,7 +26,7 @@ const initialProducts: Product[] = [
   {
     id: '1',
     name: 'Premium Dental Chair Unit',
-    category: 'Dental Chairs',
+    category: 'Clinical Machines & Equipment',
     price: 450000,
     salePrice: 425000,
     description: 'State-of-the-art dental chair with advanced features for professional dental practices.',
@@ -43,7 +43,7 @@ const initialProducts: Product[] = [
   {
     id: '2',
     name: 'Digital X-Ray System',
-    category: 'Equipment',
+    category: 'Clinical Machines & Equipment',
     price: 280000,
     description: 'Advanced digital X-ray system for precise dental imaging.',
     images: ['https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400'],
@@ -59,7 +59,7 @@ const initialProducts: Product[] = [
   {
     id: '3',
     name: 'Complete Student Kit',
-    category: 'Student Kits',
+    category: 'Complete Student Kits',
     price: 25000,
     description: 'Comprehensive dental student kit with all essential instruments.',
     images: ['https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400'],
@@ -70,6 +70,54 @@ const initialProducts: Product[] = [
     rating: 4.5,
     reviewCount: 45,
     originalPrice: 30000,
+    inStock: true
+  },
+  {
+    id: '4',
+    name: 'Mouth Mirror Set (Plain & Magnifying)',
+    category: 'Diagnostic Instruments',
+    price: 2500,
+    description: 'Professional mouth mirrors for dental examination.',
+    images: ['https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400'],
+    stock: 25,
+    brand: 'DentScope',
+    features: ['Anti-fog coating', 'Ergonomic handle', 'Autoclavable'],
+    specifications: { 'Mirror Size': '22mm', 'Material': 'Stainless steel', 'Warranty': '1 year' },
+    rating: 4.6,
+    reviewCount: 12,
+    originalPrice: 2500,
+    inStock: true
+  },
+  {
+    id: '5',
+    name: 'Composite Resin Kit',
+    category: 'Restorative Materials',
+    price: 15000,
+    description: 'High-quality nanohybrid composite resin for anterior and posterior restorations.',
+    images: ['https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400'],
+    stock: 18,
+    brand: 'ResinTech',
+    features: ['Universal shade', 'Low shrinkage', 'High polish retention'],
+    specifications: { 'Shade': 'A2', 'Volume': '4g', 'Shelf Life': '3 years' },
+    rating: 4.7,
+    reviewCount: 28,
+    originalPrice: 15000,
+    inStock: true
+  },
+  {
+    id: '6',
+    name: 'Extraction Forceps Set',
+    category: 'Surgical / Extraction Instruments',
+    price: 8500,
+    description: 'Complete set of extraction forceps for maxillary and mandibular teeth.',
+    images: ['https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400'],
+    stock: 8,
+    brand: 'SurgiDent',
+    features: ['Non-slip grip', 'Precise alignment', 'Corrosion resistant'],
+    specifications: { 'Material': 'Surgical steel', 'Set Size': '6 pieces', 'Warranty': '2 years' },
+    rating: 4.8,
+    reviewCount: 15,
+    originalPrice: 8500,
     inStock: true
   }
 ];

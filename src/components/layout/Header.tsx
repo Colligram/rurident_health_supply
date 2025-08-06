@@ -8,10 +8,11 @@ import { MobileMenu } from './MobileMenu';
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Dental Chairs', href: '/products/dental-chairs' },
-  { name: 'Equipment', href: '/products/equipment' },
-  { name: 'Materials', href: '/products/materials' },
-  { name: 'X-Ray & Consumables', href: '/products/xray-consumables' },
+  { name: 'Clinical Tools', href: '/products/dental-clinic-tools' },
+  { name: 'Laboratory', href: '/products/dental-laboratory' },
+  { name: 'Materials', href: '/products/dental-materials' },
+  { name: 'Machines & Equipment', href: '/products/dental-machines' },
+  { name: 'Infection Control', href: '/products/infection-control' },
   { name: 'Student Kits', href: '/products/student-kits' },
   { name: 'Location', href: '/location' },
 ];

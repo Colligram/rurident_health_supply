@@ -38,14 +38,22 @@ export function AddProductPage() {
   const [newSpecValue, setNewSpecValue] = useState('');
 
   const categories = [
-    'Dental Chairs',
-    'Equipment',
-    'Student Kits',
-    'Materials',
-    'Consumables',
-    'Instruments',
-    'Sterilization',
-    'X-Ray Equipment'
+    'Diagnostic Instruments',
+    'Operative / Restorative Instruments', 
+    'Endodontic (RCT) Instruments',
+    'Surgical / Extraction Instruments',
+    'Prosthodontic Instruments',
+    'Orthodontic Instruments',
+    'Lab Consumables',
+    'Lab Polishing & Finishing',
+    'Gypsum Products',
+    'Laboratory Machines',
+    'Restorative Materials',
+    'Impression & Casting Materials',
+    'Clinical Machines & Equipment',
+    'Sterilization Equipment',
+    'Sterilization Consumables',
+    'Complete Student Kits'
   ];
 
   const handleInputChange = (field: keyof ProductFormData, value: any) => {

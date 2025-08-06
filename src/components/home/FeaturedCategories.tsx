@@ -3,42 +3,50 @@ import { Link } from 'react-router-dom';
 
 const categories = [
   {
-    id: 'dental-chairs',
-    name: 'Dental Chairs',
-    description: 'Premium dental chairs and units',
+    id: 'dental-clinic-tools',
+    name: 'Clinical Tools & Instruments',
+    description: 'Diagnostic, operative, and surgical instruments',
     image: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
-    productCount: 45,
-    href: '/products/dental-chairs'
+    productCount: 150,
+    href: '/products/dental-clinic-tools'
   },
   {
-    id: 'equipment',
-    name: 'Equipment',
-    description: 'Professional dental equipment',
-    image: 'https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400',
-    productCount: 120,
-    href: '/products/equipment'
-  },
-  {
-    id: 'materials',
-    name: 'Materials',
-    description: 'Quality dental materials',
-    image: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
-    productCount: 200,
-    href: '/products/materials'
-  },
-  {
-    id: 'xray-consumables',
-    name: 'X-Ray & Consumables',
-    description: 'X-Ray equipment and consumables',
+    id: 'dental-laboratory',
+    name: 'Laboratory Equipment',
+    description: 'Professional lab tools and machines',
     image: 'https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400',
     productCount: 85,
-    href: '/products/xray-consumables'
+    href: '/products/dental-laboratory'
+  },
+  {
+    id: 'dental-materials',
+    name: 'Dental Materials',
+    description: 'Restorative and impression materials',
+    image: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
+    productCount: 120,
+    href: '/products/dental-materials'
+  },
+  {
+    id: 'dental-machines',
+    name: 'Machines & Digital Equipment',
+    description: 'Dental chairs, handpieces, and digital systems',
+    image: 'https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400',
+    productCount: 45,
+    href: '/products/dental-machines'
+  },
+  {
+    id: 'infection-control',
+    name: 'Infection Control',
+    description: 'Sterilization equipment and consumables',
+    image: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
+    productCount: 60,
+    href: '/products/infection-control'
   },
   {
     id: 'student-kits',
     name: 'Student Kits',
     description: 'Complete kits for dental students',
-    image: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
+    image: 'https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400',
     productCount: 25,
     href: '/products/student-kits'
   }

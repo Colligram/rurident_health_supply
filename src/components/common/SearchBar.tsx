@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { HiX, HiSearch } from 'react-icons/hi';
+import { searchableItems } from '../../data/mockData';
 
 interface SearchBarProps {
   isOpen: boolean;
@@ -8,6 +9,15 @@ interface SearchBarProps {
 
 export function SearchBar({ isOpen, onClose }: SearchBarProps) {
   const [query, setQuery] = useState('');
+
+  const searchSuggestions = useMemo(() => {
+    if (!query.trim()) return [];
+    return searchableItems
+      .filter(item => item.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 5);
+  }, [query]);
+
+  const popularSearches = ['Dental Chair', 'Composite Resin', 'Extraction Forceps', 'Alginate', 'LED Curing Light'];
 
   if (!isOpen) return null;
 
@@ -36,11 +46,28 @@ export function SearchBar({ isOpen, onClose }: SearchBarProps) {
           />
         </div>
         
-        {query && (
+        {searchSuggestions.length > 0 && (
+          <div className="mt-4">
+            <p className="text-sm text-gray-600 mb-2">Search suggestions:</p>
+            <div className="space-y-1">
+              {searchSuggestions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  className="w-full text-left px-3 py-2 bg-gray-50 text-gray-700 rounded-lg text-sm hover:bg-gray-100 transition-colors"
+                  onClick={() => setQuery(suggestion)}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {!query && (
           <div className="mt-4">
             <p className="text-sm text-gray-600 mb-2">Popular searches:</p>
             <div className="flex flex-wrap gap-2">
-              {['Dental Chair', 'X-Ray Machine', 'Student Kit', 'Composite', 'Handpiece'].map((term) => (
+              {popularSearches.map((term) => (
                 <button
                   key={term}
                   className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200"
