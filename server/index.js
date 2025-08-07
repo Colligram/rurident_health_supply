@@ -5,6 +5,8 @@ dotenv.config();
 import express from 'express';
 import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 import cors from 'cors';
+import { existsSync } from 'fs';
+import path from 'path';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -27,7 +29,11 @@ const connectDB = async () => {
     // Create a MongoClient with Replit-compatible configuration
     const client = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 10000
+      connectTimeoutMS: 10000,
+      ssl: true,
+      sslValidate: false,
+      tlsAllowInvalidCertificates: true,
+      tlsAllowInvalidHostnames: true
     });
     
     // Connect the client to the server
@@ -137,18 +143,28 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// Serve static files from the dist directory
-app.use(express.static('dist'));
+// Serve static files from the dist directory (if it exists)
+import { existsSync } from 'fs';
+import path from 'path';
+
+if (existsSync('dist')) {
+  app.use(express.static('dist'));
+}
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Serve React app for all non-API routes
+// Serve React app for all non-API routes (if dist exists)
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
-    res.sendFile('index.html', { root: 'dist' });
+    const distPath = path.join(process.cwd(), 'dist', 'index.html');
+    if (existsSync(distPath)) {
+      res.sendFile(distPath);
+    } else {
+      res.status(404).json({ error: 'Frontend not built. Run "npm run build" first.' });
+    }
   }
 });
 
