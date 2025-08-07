@@ -31,7 +31,7 @@ class APIService {
         // Add timeout to prevent hanging requests
         signal: AbortSignal.timeout(10000)
       });
-      
+
       if (!response.ok) {
         // If server is not available, return empty data
         if (response.status === 404 || response.status >= 500) {
@@ -40,7 +40,7 @@ class APIService {
         }
         throw new Error(`HTTP ${response.status}: Failed to fetch products`);
       }
-      
+
       const data = await response.json();
       return { success: true, data: Array.isArray(data) ? data : [] };
     } catch (error) {
