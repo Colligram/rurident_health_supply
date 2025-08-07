@@ -24,14 +24,14 @@ app.use(express.json());
 let db;
 const connectDB = async () => {
   try {
-    const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&appName=RURIDENT01";
+    const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&appName=RURIDENT01&ssl=true&tlsAllowInvalidCertificates=true";
     
     // Create a MongoClient with Replit-compatible configuration
     const client = new MongoClient(uri, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
-      tls: true,
-      tlsInsecure: true
+      maxPoolSize: 10,
+      minPoolSize: 1
     });
     
     // Connect the client to the server

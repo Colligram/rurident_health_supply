@@ -77,11 +77,11 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run server"
+args = "npm install && npm run dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "npm run server"
 
 [[workflows.workflow]]
 name = "Production Build & Run"
