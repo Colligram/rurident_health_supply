@@ -28,19 +28,29 @@ class APIService {
         headers: {
           'Content-Type': 'application/json',
         },
+        // Add timeout to prevent hanging requests
+        signal: AbortSignal.timeout(10000)
       });
+      
       if (!response.ok) {
         // If server is not available, return empty data
         if (response.status === 404 || response.status >= 500) {
           console.warn('Server unavailable, using empty data');
           return { success: true, data: [] };
         }
-        throw new Error('Failed to fetch products');
+        throw new Error(`HTTP ${response.status}: Failed to fetch products`);
       }
+      
       const data = await response.json();
       return { success: true, data: Array.isArray(data) ? data : [] };
     } catch (error) {
-      console.error('Error fetching products:', error);
+      if (error.name === 'TimeoutError') {
+        console.warn('Request timeout, using empty data');
+      } else if (error.name === 'TypeError') {
+        console.warn('Network error (server may be down), using empty data');
+      } else {
+        console.error('Error fetching products:', error);
+      }
       // Return empty array instead of error to prevent app crashes
       return { success: true, data: [] };
     }

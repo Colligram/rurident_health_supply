@@ -24,7 +24,7 @@ localPort = 5000
 externalPort = 5000
 
 [workflows]
-runButton = "Full Stack Development"
+runButton = "Development Mode"
 
 [[workflows.workflow]]
 name = "Start Development Server"
@@ -69,3 +69,29 @@ args = "npm run build"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd server && npm install && node index.js"
+
+[[workflows.workflow]]
+name = "Development Mode"
+author = 46063403
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run server"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+
+[[workflows.workflow]]
+name = "Production Build & Run"
+author = 46063403
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run server"

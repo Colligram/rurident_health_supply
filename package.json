@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "fullstack": "concurrently \"npm run server\" \"npm run dev\""
+    "fullstack": "concurrently \"npm run server\" \"npm run dev\"",
+    "check-build": "if [ -d 'dist' ]; then echo 'Build exists'; else echo 'Build missing - run npm run build'; fi"
   },
   "dependencies": {
     "clsx": "^2.1.1",

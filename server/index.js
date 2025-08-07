@@ -30,9 +30,8 @@ const connectDB = async () => {
     const client = new MongoClient(uri, {
       serverSelectionTimeoutMS: 5000,
       connectTimeoutMS: 10000,
-      ssl: true,
-      tlsAllowInvalidCertificates: true,
-      tlsAllowInvalidHostnames: true
+      tls: true,
+      tlsInsecure: true
     });
     
     // Connect the client to the server
@@ -143,13 +142,22 @@ app.delete('/api/products/:id', async (req, res) => {
 });
 
 // Serve static files from the dist directory (if it exists)
-if (existsSync('dist')) {
+const distExists = existsSync('dist');
+if (distExists) {
   app.use(express.static('dist'));
+  console.log('Frontend build found - serving static files');
+} else {
+  console.log('Frontend build not found - API only mode');
 }
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    frontendBuild: distExists ? 'available' : 'not_built',
+    database: db ? 'connected' : 'disconnected'
+  });
 });
 
 // Serve React app for all non-API routes (if dist exists)
@@ -159,7 +167,10 @@ app.get('*', (req, res) => {
     if (existsSync(distPath)) {
       res.sendFile(distPath);
     } else {
-      res.status(404).json({ error: 'Frontend not built. Run "npm run build" first.' });
+      res.status(200).json({ 
+        message: 'Frontend not built. This is normal in development mode.',
+        suggestion: 'Use the frontend dev server on port 3000 for development, or run "npm run build" for production.'
+      });
     }
   }
 });
