@@ -144,9 +144,6 @@ app.delete('/api/products/:id', async (req, res) => {
 });
 
 // Serve static files from the dist directory (if it exists)
-import { existsSync } from 'fs';
-import path from 'path';
-
 if (existsSync('dist')) {
   app.use(express.static('dist'));
 }
