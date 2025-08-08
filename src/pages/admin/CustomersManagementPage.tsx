@@ -92,6 +92,7 @@ const mockCustomers: Customer[] = [
   }
 ];
 
+export { mockCustomers };
 export function CustomersManagementPage() {
   const navigate = useNavigate();
   const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
