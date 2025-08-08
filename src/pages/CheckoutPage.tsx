@@ -115,26 +115,7 @@ export function CheckoutPage() {
 
     try {
       const orderId = 'ORDER_' + Date.now();
-      
-      // Create order in database first
-      const orderData = {
-        orderId: orderId,
-        customerInfo: customerInfo,
-        items: items.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image
-        })),
-        total: total,
-        paymentMethod: paymentMethod,
-        paymentStatus: 'pending' as const,
-        status: 'pending' as const
-      };
 
-      const orderResult = await orderService.createOrder(orderData);
-      
       if (paymentMethod === 'mpesa') {
         const paymentRequest: MpesaPaymentRequest = {
           phoneNumber: customerInfo.phone,
@@ -144,19 +125,31 @@ export function CheckoutPage() {
         };
 
         const result = await mpesaService.initiateSTKPush(paymentRequest);
-        
+
         if (result.success) {
-          // Update order payment status to completed
-          await orderService.updateOrderStatus(orderResult.id, 'processing', 'completed');
+          // Only now create the order in the database
+          const orderData = {
+            orderId: orderId,
+            customerInfo: customerInfo,
+            items: items.map(item => ({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              image: item.image
+            })),
+            total: total,
+            paymentMethod: paymentMethod,
+            paymentStatus: 'completed' as const,
+            status: 'processing' as const
+          };
+          await orderService.createOrder(orderData);
           setPaymentSuccess(true);
-          // Simulate successful order processing
           setTimeout(() => {
             clearCart();
             navigate('/');
           }, 3000);
         } else {
-          // Update order payment status to failed
-          await orderService.updateOrderStatus(orderResult.id, 'cancelled', 'failed');
           setPaymentError(result.message || 'Payment failed. Please try again.');
         }
       } else {

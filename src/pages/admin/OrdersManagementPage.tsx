@@ -27,6 +27,8 @@ export function OrdersManagementPage() {
   // Load orders from database
   useEffect(() => {
     loadOrders();
+    const interval = setInterval(loadOrders, 10000); // Poll every 10 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const loadOrders = async () => {
