@@ -77,7 +77,7 @@ export function FeaturedCategories() {
                 to={category.href}
                 className="group flex-shrink-0 w-80 md:w-96"
               >
-                <div className="relative backdrop-blur-lg bg-white/60 border border-white/40 rounded-2xl shadow-xl p-6 md:p-8 
+                <div className="relative glassmorphism tilt-left backdrop-blur-lg bg-white/60 border border-white/40 rounded-2xl shadow-xl p-6 md:p-8 
                               hover:shadow-2xl hover:border-orange-200 transition-all duration-300 
                               transform hover:-translate-y-2 hover:scale-105 
                               bg-gradient-to-br from-white/70 to-orange-50/40
