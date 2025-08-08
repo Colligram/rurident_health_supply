@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { HiLocationMarker, HiPhone, HiSearch, HiHeart, HiShoppingCart, HiUser, HiMenu, HiChevronDown } from 'react-icons/hi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -28,9 +28,11 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [navSearch, setNavSearch] = useState('');
   const location = useLocation();
   const { items } = useCart();
   const { items: wishlistItems } = useWishlist();
+  const navigate = useNavigate();
 
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -131,7 +133,33 @@ export function Header() {
 
           {/* Search and Actions */}
           <div className="flex items-center space-x-4">
-            {/* Search */}
+            {/* Nav Search (desktop only) */}
+            <form
+              className="hidden lg:flex items-center relative"
+              onSubmit={e => {
+                e.preventDefault();
+                if (navSearch.trim()) {
+                  navigate(`/products?search=${encodeURIComponent(navSearch.trim())}`);
+                  setNavSearch('');
+                }
+              }}
+            >
+              <input
+                type="text"
+                value={navSearch}
+                onChange={e => setNavSearch(e.target.value)}
+                placeholder="Search..."
+                className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm w-48"
+              />
+              <button
+                type="submit"
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-600"
+                tabIndex={-1}
+              >
+                <HiSearch className="h-5 w-5" />
+              </button>
+            </form>
+            {/* Search Modal Button */}
             <button
               onClick={() => setSearchOpen(true)}
               className="p-2 text-gray-600 hover:text-orange-600 transition-colors duration-300 ease-in-out shadow-md hover:shadow-glow-orange rounded-full"
