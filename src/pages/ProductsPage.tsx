@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -113,9 +111,7 @@ export function ProductsPage() {
   }, [filteredProducts, sortBy]);
 
   return (
-    <>
-      <Header />
-      <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50")
         <div className="container-max section-padding">
           {/* Page Header */}
           <div className="text-center mb-8">
@@ -352,8 +348,6 @@ export function ProductsPage() {
             </div>
           )}
         </div>
-      </div>
-      <Footer />
-    </>
+    </div>
   );
 }

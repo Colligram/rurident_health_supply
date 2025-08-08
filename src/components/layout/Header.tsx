@@ -21,8 +21,7 @@ const navigation = [
     ]
   },
   { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' },
-  { name: 'Location', href: '/location' },
+  { name: 'Contact & Location', href: '/contact' },
 ];
 
 export function Header() {

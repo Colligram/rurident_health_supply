@@ -11,9 +11,9 @@ export function HomePage() {
   return (
     <div className="min-h-screen">
       <HeroSection />
-      <TrustBadges />
       <FeaturedCategories />
       <FeaturedProducts />
+      <TrustBadges />
       <WhyChooseUs />
       <TestimonialsSection />
       <NewsletterSection />

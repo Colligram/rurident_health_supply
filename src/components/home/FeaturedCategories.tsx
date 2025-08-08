@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HiArrowRight } from 'react-icons/hi';
 
 const categories = [
   {
