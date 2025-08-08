@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { useProducts } from '../context/ProductsContext';
@@ -9,6 +9,7 @@ import { FiSearch, FiFilter, FiHeart, FiShoppingCart, FiStar } from 'react-icons
 import { formatPrice } from '../utils';
 
 export function ProductsPage() {
+  const navigate = useNavigate();
   const { products, loading, error } = useProducts(); // Assuming these are provided by context
   const { addToCart } = useCart();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
@@ -74,7 +75,11 @@ export function ProductsPage() {
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);
-    alert('Product added to cart!');
+    // Show success message and navigate to cart
+    const confirmGoToCart = window.confirm(`${product.name} added to cart! Go to cart now?`);
+    if (confirmGoToCart) {
+      navigate('/cart');
+    }
   };
 
   const toggleWishlist = (product: any) => {
