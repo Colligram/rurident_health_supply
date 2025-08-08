@@ -22,7 +22,6 @@ const navigation = [
   },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
-  { name: 'Location', href: '/location' },
 ];
 
 export function Header() {
