@@ -6,7 +6,7 @@ export function AboutPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-700 text-white">
-        <div className="container-max section-padding">
+        <div className="container-max py-8 md:py-10">
           <div className="text-center">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
               About Rurident Health Supplies
@@ -19,7 +19,7 @@ export function AboutPage() {
       </div>
 
       {/* Main Content */}
-      <div className="container-max section-padding">
+      <div className="container-max py-8 md:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 lg:mb-16">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">

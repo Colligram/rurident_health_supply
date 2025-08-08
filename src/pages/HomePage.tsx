@@ -14,7 +14,6 @@ export function HomePage() {
       <TrustBadges />
       <FeaturedCategories />
       <FeaturedProducts />
-      <WhyChooseUs />
       <TestimonialsSection />
       <NewsletterSection />
     </div>

@@ -31,10 +31,10 @@ export function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="container-max section-padding">
+    <div className="min-h-screen bg-gray-50 pt-10">
+      <div className="container-max py-8 md:py-10">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
             <p className="text-gray-600">
@@ -51,7 +51,7 @@ export function CartPage() {
 
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
           {/* Cart Items */}
-          <div className="xl:col-span-3">
+          <div className="xl:col-span-3 w-full">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="divide-y divide-gray-100">
                 {items.map((item) => (
@@ -133,7 +133,7 @@ export function CartPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="xl:col-span-1">
+          <div className="xl:col-span-1 w-full mt-8 xl:mt-0">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
 

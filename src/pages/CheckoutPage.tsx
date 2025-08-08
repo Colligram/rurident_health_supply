@@ -25,6 +25,7 @@ interface CustomerInfo {
   city: string;
   county: string;
   postalCode: string;
+  nairobiArea?: string; // Added for Nairobi area
 }
 
 export function CheckoutPage() {
@@ -192,8 +193,8 @@ export function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="container-max section-padding">
+    <div className="min-h-screen bg-gray-50 pt-10">
+      <div className="container-max py-8 md:py-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -288,14 +289,14 @@ export function CheckoutPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Address *
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={customerInfo.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none ${
                       formErrors.address ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    placeholder="Street address"
+                    placeholder="Describe your shipment location (e.g. near house no. 10, behind XYZ shop)"
+                    rows={3}
                   />
                   {formErrors.address && <p className="text-red-500 text-sm mt-1">{formErrors.address}</p>}
                 </div>
@@ -314,6 +315,19 @@ export function CheckoutPage() {
                     placeholder="City"
                   />
                   {formErrors.city && <p className="text-red-500 text-sm mt-1">{formErrors.city}</p>}
+                  {/* Nairobi Area Selection */}
+                  {customerInfo.county === 'Nairobi' && (
+                    <div className="mt-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Which part of Nairobi?</label>
+                      <input
+                        type="text"
+                        value={customerInfo.nairobiArea || ''}
+                        onChange={e => handleInputChange('nairobiArea', e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="e.g. Westlands, CBD, Karen, etc."
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div>

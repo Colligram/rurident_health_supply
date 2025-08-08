@@ -111,10 +111,10 @@ export function ProductsPage() {
   }, [filteredProducts, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="container-max section-padding">
+    <div className="min-h-screen bg-gray-50 pt-10">
+      <div className="container-max py-8 md:py-10">
         {/* Page Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-4">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Discover our comprehensive range of dental supplies and equipment

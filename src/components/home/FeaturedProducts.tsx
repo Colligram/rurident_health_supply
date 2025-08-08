@@ -122,7 +122,7 @@ export function FeaturedProducts() {
 
               {/* Product Image Container */}
               <Link to={`/product/${product.id}`} className="block relative">
-                <div className="relative overflow-hidden bg-gray-50 aspect-square">
+                <div className="relative overflow-hidden bg-gray-50 aspect-square w-full h-64 flex items-center justify-center">
                   <img
                     src={product.images?.[0] || 'https://via.placeholder.com/400x400?text=No+Image'}
                     alt={product.name}
