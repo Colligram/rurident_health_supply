@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FiSend } from 'react-icons/fi';
 
 interface Message {
   id: string;
@@ -132,7 +133,7 @@ export function ChatBot() {
             type="submit"
             className="bg-primary-600 text-white p-2 rounded-lg hover:bg-primary-700 transition-colors"
           >
-            <PaperAirplaneIcon className="h-4 w-4" />
+            <FiSend className="h-4 w-4" />
           </button>
         </div>
       </form>
