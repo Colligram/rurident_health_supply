@@ -156,8 +156,8 @@ app.post("/api/products/fill", async (req, res) => {
       category: "Dental Equipment",
       stock: 5,
       inStock: true,
-      rating: 4.5,
-      reviewCount: 10,
+      rating: 4.2,
+      reviewCount: 5,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -168,4 +168,32 @@ app.post("/api/products/fill", async (req, res) => {
       images: [],
       category: "Instruments",
       stock: 50,
-      inStock:
+      inStock: true,
+      rating: 4.2,
+      reviewCount: 5,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  ];
+
+  // Seed the database with sample products
+  try {
+    if (db) {
+      await db.collection("products").insertMany(sampleProducts);
+      res.json({ success: true, message: "Sample products added", count: sampleProducts.length });
+    } else {
+      // Add to in-memory store if DB is not available
+      inMemoryProducts.push(...sampleProducts);
+      res.json({ success: true, message: "Sample products added to memory", count: sampleProducts.length });
+    }
+  } catch (error) {
+    console.error("Error adding sample products:", error);
+    res.status(500).json({ error: "Failed to add sample products" });
+  }
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+  connectToMongo();
+});
