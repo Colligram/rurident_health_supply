@@ -8,9 +8,150 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 let db = null;
+let dbConnected = false;
+let usingInMemory = false;
 
 // In-memory store fallback if DB is unavailable
-let inMemoryProducts = [];
+let inMemoryProducts = [
+  {
+    id: "6751234567890123456789ab",
+    name: "Professional Dental Chair",
+    description: "State-of-the-art fully motorized dental chair with advanced patient positioning and comfort features. Perfect for modern dental practices.",
+    price: 4500,
+    salePrice: 3999,
+    originalPrice: 4500,
+    images: ["https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=500&h=400&fit=crop", "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500&h=400&fit=crop"],
+    category: "Dental Equipment",
+    stock: 8,
+    inStock: true,
+    rating: 4.8,
+    reviewCount: 24,
+    isFeatured: true,
+    isNew: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6751234567890123456789ac",
+    name: "Ultrasonic Scaler Tips Set",
+    description: "Complete set of high-quality ultrasonic scaler tips for effective plaque and tartar removal. Compatible with most dental units.",
+    price: 125,
+    salePrice: 99,
+    originalPrice: 125,
+    images: ["https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=500&h=400&fit=crop"],
+    category: "Dental Instruments",
+    stock: 45,
+    inStock: true,
+    rating: 4.6,
+    reviewCount: 18,
+    isFeatured: true,
+    isNew: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6751234567890123456789ad",
+    name: "LED Dental Curing Light",
+    description: "High-intensity LED curing light with multiple curing modes and wireless operation. Essential for composite restorations.",
+    price: 299,
+    images: ["https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=500&h=400&fit=crop"],
+    category: "Dental Equipment",
+    stock: 15,
+    inStock: true,
+    rating: 4.7,
+    reviewCount: 12,
+    isFeatured: false,
+    isNew: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6751234567890123456789ae",
+    name: "Dental Impression Material",
+    description: "Premium silicone impression material for accurate dental impressions. Fast setting with excellent detail reproduction.",
+    price: 89,
+    salePrice: 75,
+    originalPrice: 89,
+    images: ["https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=500&h=400&fit=crop"],
+    category: "Dental Materials",
+    stock: 32,
+    inStock: true,
+    rating: 4.4,
+    reviewCount: 8,
+    isFeatured: false,
+    isNew: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6751234567890123456789af",
+    name: "Surgical Extraction Kit",
+    description: "Complete surgical extraction kit with elevators, forceps, and surgical instruments for oral surgery procedures.",
+    price: 459,
+    images: ["https://images.unsplash.com/photo-1584362917165-526a968579e8?w=500&h=400&fit=crop"],
+    category: "Surgical Instruments",
+    stock: 12,
+    inStock: true,
+    rating: 4.9,
+    reviewCount: 15,
+    isFeatured: true,
+    isNew: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6751234567890123456789ag",
+    name: "Digital X-Ray Sensor",
+    description: "High-resolution digital x-ray sensor with USB connectivity. Delivers crisp images with reduced radiation exposure.",
+    price: 2199,
+    salePrice: 1899,
+    originalPrice: 2199,
+    images: ["https://images.unsplash.com/photo-1584362917165-526a968579e8?w=500&h=400&fit=crop"],
+    category: "Imaging Equipment",
+    stock: 5,
+    inStock: true,
+    rating: 4.8,
+    reviewCount: 22,
+    isFeatured: true,
+    isNew: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6751234567890123456789ah",
+    name: "Dental Handpiece Set",
+    description: "Professional dental handpiece set including high-speed and low-speed handpieces with LED illumination.",
+    price: 899,
+    images: ["https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500&h=400&fit=crop"],
+    category: "Dental Equipment",
+    stock: 20,
+    inStock: true,
+    rating: 4.5,
+    reviewCount: 31,
+    isFeatured: false,
+    isNew: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    id: "6751234567890123456789ai",
+    name: "Disposable Dental Masks",
+    description: "High-quality 3-ply disposable dental masks with excellent filtration. Box of 50 masks for infection control.",
+    price: 24,
+    salePrice: 19,
+    originalPrice: 24,
+    images: ["https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=500&h=400&fit=crop"],
+    category: "Safety & Protection",
+    stock: 150,
+    inStock: true,
+    rating: 4.3,
+    reviewCount: 67,
+    isFeatured: false,
+    isNew: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
 
 app.use(cors());
 app.use(express.json());
@@ -28,16 +169,25 @@ const client = uri
 
 async function connectToMongo() {
   if (!client) {
-    console.warn("⚠️  MONGODB_URI not set. Using in-memory product store.");
+    if (!usingInMemory) {
+      console.warn("⚠️  MONGODB_URI not set. Using in-memory product store.");
+      usingInMemory = true;
+    }
     return;
   }
   try {
     await client.connect();
     db = client.db(); // auto-selects DB from URI
+    dbConnected = true;
     console.log("✅ Connected to MongoDB");
   } catch (err) {
-    console.error("❌ MongoDB connection failed:", err.message);
+    if (!usingInMemory) {
+      console.error("❌ MongoDB connection failed:", err.message);
+      console.warn("⚠️  Falling back to in-memory product store.");
+      usingInMemory = true;
+    }
     db = null; // fallback to null
+    dbConnected = false;
   }
 }
 
@@ -45,13 +195,17 @@ connectToMongo();
 
 // --- Health ---
 app.get("/api/health", (req, res) => {
-  res.json({ ok: true, dbConnected: Boolean(db) });
+  res.json({ 
+    ok: true, 
+    dbConnected: dbConnected,
+    usingInMemory: usingInMemory,
+    status: dbConnected ? 'database' : 'in-memory' 
+  });
 });
 
 // --- Get Products ---
 app.get("/api/products", async (req, res) => {
   if (!db) {
-    console.log("⚠️  Database not connected, returning in-memory products");
     return res.json(inMemoryProducts);
   }
 
@@ -192,8 +346,11 @@ app.post("/api/products/fill", async (req, res) => {
   }
 });
 
+// Initialize database connection
+connectToMongo();
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
-  connectToMongo();
+  console.log(`Mode: ${usingInMemory ? 'In-Memory Store' : 'Database Connected'}`);
 });
