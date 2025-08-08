@@ -24,9 +24,12 @@ app.use(express.json());
 let db;
 const connectDB = async () => {
   try {
-    const uri = process.env.MONGODB_URI || "mongodb+srv://RURIDENT:j70CGDH45WDcNvFK@rurident01.1zomfpq.mongodb.net/ruridentdb?retryWrites=true&w=majority&appName=RURIDENT01&ssl=true&tlsAllowInvalidCertificates=true";
+    const uri = process.env.MONGODB_URI;
+    if (!uri) {
+      throw new Error('MONGODB_URI is not set');
+    }
     
-    // Create a MongoClient with Replit-compatible configuration
+    // Create a MongoClient with environment-based configuration
     const client = new MongoClient(uri, {
       serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
@@ -161,18 +164,15 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve React app for all non-API routes (if dist exists)
-app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
-    const distPath = path.join(process.cwd(), 'dist', 'index.html');
-    if (existsSync(distPath)) {
-      res.sendFile(distPath);
-    } else {
-      res.status(200).json({ 
-        message: 'Frontend not built. This is normal in development mode.',
-        suggestion: 'Use the frontend dev server on port 3000 for development, or run "npm run build" for production.'
-      });
-    }
+app.get(/^\/(?!api).*/, (req, res) => {
+  const distPath = path.join(process.cwd(), 'dist', 'index.html');
+  if (existsSync(distPath)) {
+    return res.sendFile(distPath);
   }
+  return res.status(200).json({ 
+    message: 'Frontend not built. This is normal in development mode.',
+    suggestion: 'Use the frontend dev server on port 3000 for development, or run "npm run build" for production.'
+  });
 });
 
 // Start server

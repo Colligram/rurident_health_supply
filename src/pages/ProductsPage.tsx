@@ -227,15 +227,15 @@ export function ProductsPage() {
                       className="w-full h-48 object-cover"
                     />
                     {product.salePrice && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium">
-                        Sale
-                      </div>
-                    )}
-                    {!product.inStock && (
-                      <div className="absolute top-2 right-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs font-medium">
-                        Out of Stock
-                      </div>
-                    )}
+  <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+    Sale
+  </div>
+)}
+{(product.stock ?? 0) <= 0 && (
+  <div className="absolute top-2 right-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+    Out of Stock
+  </div>
+)}
                     <button
                       onClick={() => toggleWishlist(product)}
                       className={`absolute top-2 right-2 p-2 rounded-full transition-colors ${
@@ -318,17 +318,17 @@ export function ProductsPage() {
 
                     {/* Add to Cart Button */}
                     <button
-                      onClick={() => handleAddToCart(product)}
-                      disabled={!product.inStock}
-                      className={`w-full py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
-                        product.inStock
-                          ? 'bg-primary-600 text-white hover:bg-primary-700'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
-                    >
-                      <FiShoppingCart className="w-4 h-4" />
-                      <span>{product.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
-                    </button>
+  onClick={() => handleAddToCart(product)}
+  disabled={(product.stock ?? 0) <= 0}
+  className={`w-full py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
+    (product.stock ?? 0) > 0
+      ? 'bg-primary-600 text-white hover:bg-primary-700'
+      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+  }`}
+>
+  <FiShoppingCart className="w-4 h-4" />
+  <span>{(product.stock ?? 0) > 0 ? 'Add to Cart' : 'Out of Stock'}</span>
+</button>
                   </div>
                 </div>
               )) : (
