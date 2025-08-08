@@ -77,10 +77,10 @@ export function FeaturedCategories() {
                 to={category.href}
                 className="group flex-shrink-0 w-80 md:w-96"
               >
-                <div className="relative bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 
+                <div className="relative backdrop-blur-lg bg-white/60 border border-white/40 rounded-2xl shadow-xl p-6 md:p-8 
                               hover:shadow-2xl hover:border-orange-200 transition-all duration-300 
                               transform hover:-translate-y-2 hover:scale-105 
-                              bg-gradient-to-br from-white to-orange-50/30
+                              bg-gradient-to-br from-white/70 to-orange-50/40
                               min-h-[180px] flex flex-col justify-between">
                   
                   {/* Category Icon */}
@@ -137,10 +137,10 @@ export function FeaturedCategories() {
                 to={category.href}
                 className="group"
               >
-                <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4 
-                              hover:shadow-lg hover:border-orange-200 transition-all duration-300 
+                <div className="backdrop-blur-lg bg-white/60 border border-white/40 rounded-xl shadow-lg p-4 
+                              hover:shadow-xl hover:border-orange-200 transition-all duration-300 
                               transform hover:-translate-y-1
-                              bg-gradient-to-br from-white to-orange-50/30">
+                              bg-gradient-to-br from-white/70 to-orange-50/40">
                   
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="text-2xl transform group-hover:scale-110 transition-transform duration-300">

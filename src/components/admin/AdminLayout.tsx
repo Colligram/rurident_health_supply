@@ -43,11 +43,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 z-50 lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}>
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-        <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white shadow-xl">
+        <div className="fixed inset-0 bg-black bg-opacity-40" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-y-0 left-0 flex w-64 flex-col backdrop-blur-lg bg-white/70 border-r border-white/40 shadow-2xl">
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             <h2 className="text-lg font-semibold text-gray-900">Rurident Admin</h2>
             <button
@@ -82,7 +82,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-white border-r border-gray-200 shadow-sm">
+        <div className="flex flex-col flex-grow backdrop-blur-lg bg-white/70 border-r border-white/40 shadow-2xl">
           <div className="flex items-center px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">Rurident Admin</h2>
           </div>
@@ -111,7 +111,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top navigation */}
-        <div className="sticky top-0 z-40 bg-white border-b border-gray-200 px-4 py-3 sm:px-6 lg:px-8">
+        <div className="sticky top-0 z-40 backdrop-blur-lg bg-white/70 border-b border-white/40 px-4 py-3 sm:px-6 lg:px-8 shadow-md">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <button
