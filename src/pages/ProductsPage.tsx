@@ -111,58 +111,56 @@ export function ProductsPage() {
   }, [filteredProducts, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50")
-        <div className="container-max section-padding">
-          {/* Page Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover our comprehensive range of dental supplies and equipment
+    <div className="min-h-screen bg-white">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Compact Header */}
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Dental Supplies & Equipment</h1>
+            <p className="text-sm text-gray-600">
+              {sortedProducts.length} results
             </p>
           </div>
 
-          {/* Filters and Search */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                {/* Search */}
-                <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full sm:w-64"
-                  />
-                </div>
-
-                {/* Category Filter */}
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category === 'all' ? 'All Categories' : category}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Price Range Filter */}
-                <select
-                  value={priceRange}
-                  onChange={(e) => setPriceRange(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  <option value="all">All Price Ranges</option>
-                  <option value="under-1000">Under $1000</option>
-                  <option value="1000-5000">$1000 - $5000</option>
-                  <option value="5000-10000">$5000 - $10000</option>
-                  <option value="over-10000">Over $10000</option>
-                </select>
+          {/* Compact Filters Bar */}
+          <div className="bg-gray-50 p-4 mb-4 rounded-lg border border-gray-200">
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Search */}
+              <div className="relative flex-1 min-w-64">
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search dental products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 w-full text-sm"
+                />
               </div>
+
+              {/* Category Filter */}
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'All Categories' : category}
+                  </option>
+                ))}
+              </select>
+
+              {/* Price Range Filter */}
+              <select
+                value={priceRange}
+                onChange={(e) => setPriceRange(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              >
+                <option value="all">All Prices</option>
+                <option value="under-1000">Under KSh 1,000</option>
+                <option value="1000-5000">KSh 1,000 - 5,000</option>
+                <option value="5000-10000">KSh 5,000 - 10,000</option>
+                <option value="over-10000">Over KSh 10,000</option>
+              </select>
 
               {/* Sort and Stock Filter */}
               <div className="flex items-center space-x-4">
@@ -215,14 +213,14 @@ export function ProductsPage() {
 
           {/* Products Grid */}
           {!loading && !error && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
               {sortedProducts.length > 0 ? sortedProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                  <div className="relative">
+                <div key={product.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200 p-3">
+                  <div className="relative mb-3">
                     <img
-                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}
+                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/200x150?text=No+Image'}
                       alt={product.name || 'Product Image'}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-32 sm:h-40 object-cover rounded"
                     />
                     {product.salePrice && (
                       <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium">

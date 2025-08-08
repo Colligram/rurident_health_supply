@@ -3,16 +3,9 @@ import { Link } from 'react-router-dom';
 import { HiLocationMarker, HiPhone, HiClock } from 'react-icons/hi';
 
 const footerLinks = {
-  products: [
-    { name: 'Dental Chairs', href: '/products/dental-chairs' },
-    { name: 'Equipment', href: '/products/equipment' },
-    { name: 'Materials', href: '/products/materials' },
-    { name: 'X-Ray & Consumables', href: '/products/xray-consumables' },
-    { name: 'Student Kits', href: '/products/student-kits' },
-  ],
   company: [
     { name: 'About Us', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Contact & Location', href: '/contact' },
     { name: 'Blog', href: '/blog' },
     { name: 'FAQ', href: '/faq' },
     { name: 'Reviews', href: '/reviews' },
@@ -35,7 +28,7 @@ export function Footer() {
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-primary-900 text-white">
       <div className="container-max section-padding">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
@@ -86,23 +79,6 @@ export function Footer() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Products */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Products</h3>
-            <ul className="space-y-2">
-              {footerLinks.products.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
           </div>
 
           {/* Company */}

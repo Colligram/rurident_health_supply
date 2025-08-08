@@ -137,6 +137,24 @@
   @apply outline-none ring-2 ring-primary-500 ring-offset-2;
 }
 
+/* Scrolling animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
 /* Print styles */
 @media print {
   .no-print {

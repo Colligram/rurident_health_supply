@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
+import ordersRouter from "./routes/orders.js";
 
 dotenv.config();
 
@@ -14,6 +15,9 @@ let inMemoryProducts = [];
 
 app.use(cors());
 app.use(express.json());
+
+// Routes
+app.use('/api/orders', ordersRouter);
 
 const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/rurident_health_supplies";
 const client = uri

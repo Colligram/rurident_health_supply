@@ -125,8 +125,52 @@ export function CheckoutPage() {
         const result = await mpesaService.initiateSTKPush(paymentRequest);
         
         if (result.success) {
+          // Save order to database
+          const orderData = {
+            orderId: orderId,
+            customerId: customerInfo.email || customerInfo.phone,
+            customerInfo: {
+              fullName: customerInfo.fullName,
+              email: customerInfo.email,
+              phone: customerInfo.phone,
+              address: customerInfo.address,
+              city: customerInfo.city,
+              postalCode: customerInfo.postalCode
+            },
+            items: items.map(item => ({
+              productId: item.productId,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              image: item.image
+            })),
+            total: total,
+            paymentMethod: paymentMethod,
+            paymentStatus: 'completed',
+            orderStatus: 'pending',
+            createdAt: new Date().toISOString(),
+            deliveryMethod: 'standard'
+          };
+
+          try {
+            const response = await fetch('/api/orders', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(orderData)
+            });
+
+            if (response.ok) {
+              console.log('Order saved to database successfully');
+            } else {
+              console.error('Failed to save order to database');
+            }
+          } catch (error) {
+            console.error('Database error:', error);
+          }
+
           setPaymentSuccess(true);
-          // Simulate successful order processing
           setTimeout(() => {
             clearCart();
             navigate('/');

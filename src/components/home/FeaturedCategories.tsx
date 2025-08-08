@@ -55,50 +55,52 @@ const categories = [
 
 export function FeaturedCategories() {
   return (
-    <section className="section-padding bg-white">
+    <section className="section-padding bg-gradient-to-r from-gray-100 to-orange-50 overflow-hidden">
       <div className="container-max">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Shop by Category
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our comprehensive range of dental supplies, equipment and materials 
-            trusted by professionals across Kenya.
+            Discover our comprehensive range of dental supplies and equipment
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              to={category.href}
-              className="group card p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
-            >
-              <div className="relative mb-4 overflow-hidden rounded-lg">
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-              
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
+        {/* Animated scrolling container */}
+        <div className="relative">
+          <div className="flex space-x-4 animate-scroll">
+            {[...categories, ...categories].map((category, index) => (
+              <Link
+                key={`${category.id}-${index}`}
+                to={category.href}
+                className="flex-shrink-0 w-72 sm:w-80 bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg hover:shadow-2xl hover:from-orange-50 hover:to-orange-100 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 border border-gray-200 group"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:from-orange-600 group-hover:to-orange-700 transition-all duration-300">
+                    <span className="text-white font-bold text-lg">{category.name.charAt(0)}</span>
+                  </div>
+                  <div className="text-orange-600 group-hover:text-orange-700 group-hover:translate-x-1 transition-all duration-300">
+                    <HiArrowRight className="h-5 w-5" />
+                  </div>
+                </div>
+                
+                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-700 transition-colors">
                   {category.name}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 mb-4 leading-relaxed">
                   {category.description}
                 </p>
-                <div className="flex items-center justify-between pt-2">
-                  <span className="text-xs text-gray-500">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-orange-600">
                     {category.productCount} products
                   </span>
-                  <span className="text-primary-600">→</span>
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    Shop Now
+                  </span>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </section>
