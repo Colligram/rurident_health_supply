@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -113,17 +111,15 @@ export function ProductsPage() {
   }, [filteredProducts, sortBy]);
 
   return (
-    <>
-      <Header />
-      <div className="min-h-screen bg-gray-50 pt-20">
-        <div className="container-max section-padding">
-          {/* Page Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover our comprehensive range of dental supplies and equipment
-            </p>
-          </div>
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="container-max section-padding">
+        {/* Page Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Discover our comprehensive range of dental supplies and equipment
+          </p>
+        </div>
 
           {/* Filters and Search */}
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
@@ -353,7 +349,5 @@ export function ProductsPage() {
           )}
         </div>
       </div>
-      <Footer />
-    </>
   );
 }

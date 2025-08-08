@@ -8,7 +8,7 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CartPage } from './pages/CartPage';
 import { ContactPage } from './pages/ContactPage';
-import { LocationPage } from './pages/LocationPage';
+
 import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
 import { WishlistPage } from './pages/WishlistPage';
@@ -203,19 +203,7 @@ function App() {
                       </>
                     } 
                   />
-                  <Route 
-                    path="/location" 
-                    element={
-                      <>
-                        <Header />
-                        <main className="flex-1">
-                          <LocationPage />
-                        </main>
-                        <Footer />
-                        <ChatBot />
-                      </>
-                    } 
-                  />
+
                   <Route 
                     path="/blog" 
                     element={

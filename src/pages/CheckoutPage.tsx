@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { mpesaService, MpesaPaymentRequest } from '../services/mpesaService';
+import { orderService } from '../services/orderService';
 import { formatPrice } from '../utils';
 import { 
   HiArrowLeft, 
@@ -114,6 +115,25 @@ export function CheckoutPage() {
     try {
       const orderId = 'ORDER_' + Date.now();
       
+      // Create order in database first
+      const orderData = {
+        orderId: orderId,
+        customerInfo: customerInfo,
+        items: items.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        total: total,
+        paymentMethod: paymentMethod,
+        paymentStatus: 'pending' as const,
+        status: 'pending' as const
+      };
+
+      const orderResult = await orderService.createOrder(orderData);
+      
       if (paymentMethod === 'mpesa') {
         const paymentRequest: MpesaPaymentRequest = {
           phoneNumber: customerInfo.phone,
@@ -125,6 +145,8 @@ export function CheckoutPage() {
         const result = await mpesaService.initiateSTKPush(paymentRequest);
         
         if (result.success) {
+          // Update order payment status to completed
+          await orderService.updateOrderStatus(orderResult.id, 'processing', 'completed');
           setPaymentSuccess(true);
           // Simulate successful order processing
           setTimeout(() => {
@@ -132,6 +154,8 @@ export function CheckoutPage() {
             navigate('/');
           }, 3000);
         } else {
+          // Update order payment status to failed
+          await orderService.updateOrderStatus(orderResult.id, 'cancelled', 'failed');
           setPaymentError(result.message || 'Payment failed. Please try again.');
         }
       } else {
@@ -140,6 +164,7 @@ export function CheckoutPage() {
       }
     } catch (error) {
       setPaymentError('An error occurred while processing your payment. Please try again.');
+      console.error('Payment error:', error);
     } finally {
       setIsProcessing(false);
     }

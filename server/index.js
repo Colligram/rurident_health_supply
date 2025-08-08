@@ -11,6 +11,7 @@ let db = null;
 
 // In-memory store fallback if DB is unavailable
 let inMemoryProducts = [];
+let inMemoryOrders = [];
 
 app.use(cors());
 app.use(express.json());
@@ -189,6 +190,101 @@ app.post("/api/products/fill", async (req, res) => {
   } catch (error) {
     console.error("Error adding sample products:", error);
     res.status(500).json({ error: "Failed to add sample products" });
+  }
+});
+
+// --- Get Orders (Admin) ---
+app.get("/api/orders", async (req, res) => {
+  if (!db) {
+    console.log("⚠️  Database not connected, returning in-memory orders");
+    return res.json(inMemoryOrders);
+  }
+
+  try {
+    const orders = await db.collection("orders").find().sort({ createdAt: -1 }).toArray();
+    const normalized = orders.map(doc => {
+      const id = doc._id?.toString();
+      const { _id, ...rest } = doc;
+      return { id, ...rest };
+    });
+    res.json(normalized);
+  } catch (err) {
+    console.error("❌ Failed to fetch orders:", err.message);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+// --- Create Order ---
+app.post("/api/orders", async (req, res) => {
+  const order = {
+    ...req.body,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    status: 'pending', // Default status
+    paymentStatus: req.body.paymentStatus || 'pending'
+  };
+
+  if (!db) {
+    const newOrder = { ...order, id: new ObjectId().toString() };
+    inMemoryOrders.push(newOrder);
+    return res.status(201).json({ id: newOrder.id, inMemory: true });
+  }
+
+  try {
+    const result = await db.collection("orders").insertOne(order);
+    res.status(201).json({ id: result.insertedId.toString() });
+  } catch (err) {
+    console.error("❌ Failed to create order:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Update Order Status (Admin) ---
+app.put("/api/orders/:id", async (req, res) => {
+  const { id } = req.params;
+  const updates = {
+    ...req.body,
+    updatedAt: new Date()
+  };
+  delete updates.id;
+
+  if (!db) {
+    const idx = inMemoryOrders.findIndex(o => o.id === id);
+    if (idx === -1) return res.status(404).json({ error: "Not found" });
+    inMemoryOrders[idx] = { ...inMemoryOrders[idx], ...updates };
+    return res.json({ success: true, inMemory: true });
+  }
+
+  try {
+    const result = await db
+      .collection("orders")
+      .updateOne({ _id: new ObjectId(id) }, { $set: updates });
+    if (result.matchedCount === 0) return res.status(404).json({ error: "Not found" });
+    res.json({ success: true });
+  } catch (err) {
+    console.error("❌ Failed to update order:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Delete Order (Admin) ---
+app.delete("/api/orders/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!db) {
+    const before = inMemoryOrders.length;
+    inMemoryOrders = inMemoryOrders.filter(o => o.id !== id);
+    if (inMemoryOrders.length === before) return res.status(404).json({ error: "Not found" });
+    return res.json({ success: true, inMemory: true });
+  }
+
+  try {
+    const result = await db.collection("orders").deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) return res.status(404).json({ error: "Not found" });
+    res.json({ success: true });
+  } catch (err) {
+    console.error("❌ Failed to delete order:", err.message);
+    res.status(500).json({ error: "Database error" });
   }
 });
 
