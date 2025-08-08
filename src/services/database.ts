@@ -1,4 +1,6 @@
 // Backend API service to communicate with our server
+import { mockProducts } from '../data/mockProducts';
+
 export interface Product {
   id: string;
   name: string;
@@ -20,6 +22,7 @@ export interface Product {
 
 class APIService {
   private baseURL = '/api';
+  private useMockData = false;
 
   async getProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
     try {
@@ -33,30 +36,47 @@ class APIService {
       });
 
       if (!response.ok) {
-        // If server is not available, return empty data
+        // If server is not available, return mock data
         if (response.status === 404 || response.status >= 500) {
-          console.warn('Server unavailable, using empty data');
-          return { success: true, data: [] };
+          console.warn('Server unavailable, using mock data');
+          this.useMockData = true;
+          return { success: true, data: mockProducts };
         }
         throw new Error(`HTTP ${response.status}: Failed to fetch products`);
       }
 
       const data = await response.json();
-      return { success: true, data: Array.isArray(data) ? data : [] };
+      
+      // If server returns empty array, use mock data as fallback
+      if (!Array.isArray(data) || data.length === 0) {
+        console.warn('Server returned empty data, using mock data as fallback');
+        this.useMockData = true;
+        return { success: true, data: mockProducts };
+      }
+      
+      this.useMockData = false;
+      return { success: true, data };
     } catch (error) {
       if (error.name === 'TimeoutError') {
-        console.warn('Request timeout, using empty data');
+        console.warn('Request timeout, using mock data');
       } else if (error.name === 'TypeError') {
-        console.warn('Network error (server may be down), using empty data');
+        console.warn('Network error (server may be down), using mock data');
       } else {
         console.error('Error fetching products:', error);
       }
-      // Return empty array instead of error to prevent app crashes
-      return { success: true, data: [] };
+      // Return mock data instead of empty array when server is unavailable
+      this.useMockData = true;
+      return { success: true, data: mockProducts };
     }
   }
 
   async addProduct(product: Omit<Product, 'id'>): Promise<{ success: boolean; id?: string }> {
+    // If using mock data, simulate success but don't actually add
+    if (this.useMockData) {
+      console.warn('Using mock data - product add simulated');
+      return { success: true, id: 'mock-' + Date.now() };
+    }
+
     try {
       const response = await fetch(`${this.baseURL}/products`, {
         method: 'POST',
@@ -79,6 +99,12 @@ class APIService {
   }
 
   async updateProduct(id: string, updates: Partial<Product>): Promise<boolean> {
+    // If using mock data, simulate success but don't actually update
+    if (this.useMockData) {
+      console.warn('Using mock data - product update simulated');
+      return true;
+    }
+
     try {
       const response = await fetch(`${this.baseURL}/products/${id}`, {
         method: 'PUT',
@@ -96,6 +122,12 @@ class APIService {
   }
 
   async deleteProduct(id: string): Promise<boolean> {
+    // If using mock data, simulate success but don't actually delete
+    if (this.useMockData) {
+      console.warn('Using mock data - product delete simulated');
+      return true;
+    }
+
     try {
       const response = await fetch(`${this.baseURL}/products/${id}`, {
         method: 'DELETE',

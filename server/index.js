@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
 
 dotenv.config();
 
@@ -9,10 +9,13 @@ const app = express();
 const port = process.env.PORT || 5000;
 let db = null;
 
+// In-memory store fallback if DB is unavailable
+let inMemoryProducts = [];
+
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/rurident_health_supplies";
 const client = uri
   ? new MongoClient(uri, {
       serverApi: {
@@ -22,9 +25,6 @@ const client = uri
       },
     })
   : null;
-
-// In-memory store fallback if DB is unavailable
-let inMemoryProducts = [];
 
 async function connectToMongo() {
   if (!client) {
@@ -52,7 +52,7 @@ app.get("/api/health", (req, res) => {
 app.get("/api/products", async (req, res) => {
   if (!db) {
     console.log("⚠️  Database not connected, returning in-memory products");
-    return res.json(inMemoryProducts.map(p => ({ ...p, id: p.id, _id: undefined })));
+    return res.json(inMemoryProducts);
   }
 
   try {
@@ -71,31 +71,47 @@ app.get("/api/products", async (req, res) => {
 
 // --- Add Product ---
 app.post("/api/products", async (req, res) => {
-  const product = req.body || {};
+  const product = {
+    ...req.body,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    rating: req.body.rating || 0,
+    reviewCount: req.body.reviewCount || 0,
+    inStock: req.body.stock > 0
+  };
+
   if (!db) {
     const newProduct = { ...product, id: new ObjectId().toString() };
     inMemoryProducts.push(newProduct);
-    return res.status(201).json({ id: newProduct.id });
+    return res.status(201).json({ id: newProduct.id, inMemory: true });
   }
+
   try {
     const result = await db.collection("products").insertOne(product);
-    res.status(201).json({ id: result.insertedId });
+    res.status(201).json({ id: result.insertedId.toString() });
   } catch (err) {
     console.error("❌ Failed to add product:", err.message);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: err.message });
   }
 });
 
 // --- Update Product ---
 app.put("/api/products/:id", async (req, res) => {
   const { id } = req.params;
-  const updates = req.body || {};
+  const updates = {
+    ...req.body,
+    updatedAt: new Date(),
+    inStock: req.body.stock > 0
+  };
+  delete updates.id;
+
   if (!db) {
     const idx = inMemoryProducts.findIndex(p => p.id === id);
     if (idx === -1) return res.status(404).json({ error: "Not found" });
     inMemoryProducts[idx] = { ...inMemoryProducts[idx], ...updates };
-    return res.json({ success: true });
+    return res.json({ success: true, inMemory: true });
   }
+
   try {
     const result = await db
       .collection("products")
@@ -104,19 +120,21 @@ app.put("/api/products/:id", async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error("❌ Failed to update product:", err.message);
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ error: err.message });
   }
 });
 
 // --- Delete Product ---
 app.delete("/api/products/:id", async (req, res) => {
   const { id } = req.params;
+
   if (!db) {
     const before = inMemoryProducts.length;
     inMemoryProducts = inMemoryProducts.filter(p => p.id !== id);
     if (inMemoryProducts.length === before) return res.status(404).json({ error: "Not found" });
-    return res.json({ success: true });
+    return res.json({ success: true, inMemory: true });
   }
+
   try {
     const result = await db.collection("products").deleteOne({ _id: new ObjectId(id) });
     if (result.deletedCount === 0) return res.status(404).json({ error: "Not found" });
@@ -136,10 +154,12 @@ app.post("/api/products/fill", async (req, res) => {
       price: 1200,
       images: [],
       category: "Dental Equipment",
-      inStock: true,
       stock: 5,
+      inStock: true,
       rating: 4.5,
       reviewCount: 10,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     {
       name: "Scaler Tip",
@@ -147,29 +167,5 @@ app.post("/api/products/fill", async (req, res) => {
       price: 10,
       images: [],
       category: "Instruments",
-      inStock: true,
       stock: 50,
-      rating: 4.8,
-      reviewCount: 22,
-    },
-  ];
-
-  if (!db) {
-    inMemoryProducts.push(
-      ...sampleProducts.map(p => ({ ...p, id: new ObjectId().toString() }))
-    );
-    return res.json({ success: true, count: sampleProducts.length, inMemory: true });
-  }
-
-  try {
-    await db.collection("products").insertMany(sampleProducts);
-    res.json({ success: true, count: sampleProducts.length });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// --- Start Server ---
-app.listen(port, "0.0.0.0", () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
-});
+      inStock:

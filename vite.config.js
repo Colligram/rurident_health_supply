@@ -9,7 +9,14 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
-        changeOrigin: true
+        changeOrigin: true,
+        secure: false,
+      },
+      '/products': {
+        target: 'http://localhost:5000/api',
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace(/^\/products/, '/products'),
       },
     },
   },
