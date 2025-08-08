@@ -6,162 +6,25 @@ export function ContactPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Contact Information */}
       <div className="container-max py-8 md:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-12 lg:mb-16">
-          {/* Contact Cards */}
-          <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 text-center hover:shadow-xl transition-shadow duration-300">
-            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <HiPhone className="h-8 w-8 text-white" />
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 lg:gap-8 mb-12 lg:mb-16">
+          {/* Only Email Card, compact */}
+          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300 max-w-md mx-auto">
+            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-2">
+              <HiMail className="h-6 w-6 text-white" />
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Call Us</h3>
-            <p className="text-gray-600 mb-4 mobile-friendly">Speak directly with our team</p>
-            <div className="space-y-1">
-              <a 
-                href="tel:0703416433" 
-                className="text-orange-600 hover:text-orange-700 font-medium text-lg sm:text-xl block"
-              >
-                0703 416 433
-              </a>
-              <a 
-                href="tel:0795202687" 
-                className="text-orange-600 hover:text-orange-700 font-medium block"
-              >
-                0795 202 687
-              </a>
-              <a 
-                href="tel:0746280715" 
-                className="text-orange-600 hover:text-orange-700 font-medium block"
-              >
-                0746 280 715
-              </a>
-              {/* WhatsApp Button */}
-              <a
-                href="https://wa.me/254703416433"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center mt-2 px-4 py-2 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
-              >
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M20.52 3.48A11.93 11.93 0 0012 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.18-1.62A11.94 11.94 0 0012 24c6.63 0 12-5.37 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 22c-1.85 0-3.68-.5-5.26-1.44l-.38-.22-3.67.96.98-3.58-.25-.37A9.94 9.94 0 012 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.47-7.14c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.77-1.67-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.5-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.05 1.02-1.05 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.36.71.24 1.26.38 1.7.48.71.15 1.36.13 1.87.08.57-.06 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.08-.12-.28-.2-.58-.35z"/></svg>
-                WhatsApp
-              </a>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 text-center hover:shadow-xl transition-shadow duration-300">
-            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <HiMail className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Email Us</h3>
-            <p className="text-gray-600 mb-4 mobile-friendly">Send us your inquiries</p>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">Email Us</h3>
+            <p className="text-gray-600 mb-2 mobile-friendly text-sm">Send us your inquiries</p>
             <a 
               href="mailto:info@rurident.co.ke" 
-              className="text-orange-600 hover:text-orange-700 font-medium"
+              className="text-orange-600 hover:text-orange-700 font-medium text-sm"
             >
               info@rurident.co.ke
             </a>
           </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8 text-center hover:shadow-xl transition-shadow duration-300">
-            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <HiLocationMarker className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Visit Us</h3>
-            <p className="text-gray-600 mb-4 mobile-friendly">Come to our physical store</p>
-            <p className="text-orange-600 font-medium">
-              Mepalux Plaza, River Road<br/>
-              3rd Floor, Suite 304<br/>
-              Nairobi, Kenya
-            </p>
-          </div>
         </div>
-
-        {/* Main Content Grid */}
+        {/* Main Content Grid - remove contact form */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
-          {/* Contact Form */}
-          <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Send us a Message</h2>
-            <form className="space-y-4 sm:space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2" htmlFor="firstName">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    className="input-field"
-                    placeholder="Your first name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2" htmlFor="lastName">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    className="input-field"
-                    placeholder="Your last name"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-gray-700 font-medium mb-2" htmlFor="email">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className="input-field"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-gray-700 font-medium mb-2" htmlFor="phone">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  className="input-field"
-                  placeholder="+254 700 000 000"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-gray-700 font-medium mb-2" htmlFor="subject">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  className="input-field"
-                  placeholder="How can we help you?"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-gray-700 font-medium mb-2" htmlFor="message">
-                  Message
-                </label>
-                <textarea
-                  id="message"
-                  rows={5}
-                  className="input-field resize-none"
-                  placeholder="Tell us about your dental supply needs..."
-                ></textarea>
-              </div>
-              
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium mobile-button rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                Send Message
-              </button>
-            </form>
-          </div>
-
+          {/* Remove Contact Form section entirely */}
           {/* Additional Information */}
           <div className="space-y-6 lg:space-y-8">
             {/* Business Hours */}
@@ -185,7 +48,6 @@ export function ContactPage() {
                 </div>
               </div>
             </div>
-
             {/* Getting Here */}
             <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Getting Here</h3>
@@ -195,7 +57,6 @@ export function ContactPage() {
                 <p><strong>Landmarks:</strong> Near Bata Mini Price, Suite 304</p>
               </div>
             </div>
-
             {/* Quick Support */}
             <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
               <div className="flex items-center mb-4">
@@ -227,10 +88,7 @@ export function ContactPage() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Google Maps Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* Google Maps Section and Plan Your Visit */}
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="h-96 relative">
               <iframe
@@ -244,7 +102,6 @@ export function ContactPage() {
                 title="Rurident Health Supplies Location"
               ></iframe>
             </div>
-            
             <div className="p-4 bg-gray-50">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Click map to open in Google Maps</span>
@@ -258,52 +115,42 @@ export function ContactPage() {
                 </a>
               </div>
             </div>
-          </div>
-
-          {/* Plan Your Visit */}
-          <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Plan Your Visit</h3>
-            <div className="grid grid-cols-1 gap-4 mb-6">
-              <a
-                href="https://maps.google.com/?q=Rurident+Health+Supplies+Nairobi+Kenya"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary text-center"
-              >
-                Get Directions
-              </a>
-              
-              <a
-                href="tel:0703416433"
-                className="btn-secondary text-center"
-              >
-                Call Us
-              </a>
-              
-              <a
-                href="https://maps.google.com/?q=Rurident+Health+Supplies+Nairobi+Kenya&t=k"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary text-center"
-              >
-                Satellite View
-              </a>
-            </div>
-            
-            {/* Store Information */}
-            <div className="border-t pt-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Store Information</h4>
-              <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <HiLocationMarker className="text-orange-600 h-5 w-5 flex-shrink-0 mt-1" />
-                  <div>
-                    <p className="font-semibold text-gray-900">Address</p>
-                    <p className="text-gray-600">
-                      Rurident Health Supplies<br />
-                      Mepalux Plaza, River Road<br />
-                      3rd Floor, Suite 304<br />
-                      Nairobi, Kenya
-                    </p>
+            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Plan Your Visit</h3>
+              <div className="grid grid-cols-1 gap-4 mb-6">
+                <a
+                  href="https://maps.google.com/?q=Rurident+Health+Supplies+Nairobi+Kenya"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary text-center"
+                >
+                  Get Directions
+                </a>
+                {/* Removed CALL US button here */}
+                <a
+                  href="https://maps.google.com/?q=Rurident+Health+Supplies+Nairobi+Kenya&t=k"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary text-center"
+                >
+                  Satellite View
+                </a>
+              </div>
+              {/* Store Information */}
+              <div className="border-t pt-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Store Information</h4>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <HiLocationMarker className="text-orange-600 h-5 w-5 flex-shrink-0 mt-1" />
+                    <div>
+                      <p className="font-semibold text-gray-900">Address</p>
+                      <p className="text-gray-600">
+                        Rurident Health Supplies<br />
+                        Mepalux Plaza, River Road<br />
+                        3rd Floor, Suite 304<br />
+                        Nairobi, Kenya
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
