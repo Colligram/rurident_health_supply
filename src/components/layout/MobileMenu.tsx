@@ -1,14 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { HiChevronDown } from 'react-icons/hi';
+
+interface NavigationItem {
+  name: string;
+  href: string;
+  dropdown?: Array<{ name: string; href: string }>;
+}
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  navigation: Array<{ name: string; href: string }>;
+  navigation: NavigationItem[];
 }
 
 export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  
   if (!isOpen) return null;
+
+  const toggleExpanded = (itemName: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemName) 
+        ? prev.filter(name => name !== itemName)
+        : [...prev, itemName]
+    );
+  };
 
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
@@ -25,16 +42,47 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
         </div>
         
         <nav className="p-4">
-          <ul className="space-y-4">
+          <ul className="space-y-2">
             {navigation.map((item) => (
               <li key={item.name}>
-                <Link
-                  to={item.href}
-                  onClick={onClose}
-                  className="block py-2 text-gray-900 hover:text-primary-600 font-medium"
-                >
-                  {item.name}
-                </Link>
+                {item.dropdown ? (
+                  <div>
+                    <button
+                      onClick={() => toggleExpanded(item.name)}
+                      className="flex items-center justify-between w-full py-3 text-gray-900 hover:text-primary-600 font-medium"
+                    >
+                      {item.name}
+                      <HiChevronDown 
+                        className={`h-4 w-4 transition-transform duration-200 ${
+                          expandedItems.includes(item.name) ? 'rotate-180' : ''
+                        }`} 
+                      />
+                    </button>
+                    {expandedItems.includes(item.name) && (
+                      <ul className="ml-4 mt-2 space-y-2">
+                        {item.dropdown.map((subItem) => (
+                          <li key={subItem.name}>
+                            <Link
+                              to={subItem.href}
+                              onClick={onClose}
+                              className="block py-2 text-gray-700 hover:text-primary-600"
+                            >
+                              {subItem.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    to={item.href}
+                    onClick={onClose}
+                    className="block py-3 text-gray-900 hover:text-primary-600 font-medium"
+                  >
+                    {item.name}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

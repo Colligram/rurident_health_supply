@@ -23,21 +23,21 @@ export function useWishlist() {
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Product[]>([]);
 
-  // Load wishlist from localStorage on mount
+  // Load wishlist from sessionStorage on mount
   useEffect(() => {
-    const savedWishlist = localStorage.getItem('wishlist');
+    const savedWishlist = sessionStorage.getItem('wishlist');
     if (savedWishlist) {
       try {
         setItems(JSON.parse(savedWishlist));
       } catch (error) {
-        console.error('Error loading wishlist from localStorage:', error);
+        console.error('Error loading wishlist from sessionStorage:', error);
       }
     }
   }, []);
 
-  // Save wishlist to localStorage whenever items change
+  // Save wishlist to sessionStorage whenever items change
   useEffect(() => {
-    localStorage.setItem('wishlist', JSON.stringify(items));
+    sessionStorage.setItem('wishlist', JSON.stringify(items));
   }, [items]);
 
   const addToWishlist = (product: Product) => {

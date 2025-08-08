@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HiArrowRight, HiPlay } from 'react-icons/hi';
+import { HiArrowRight, HiPlay, HiStar, HiShieldCheck, HiTruck, HiSupport } from 'react-icons/hi';
 
 export function HeroSection() {
   return (
@@ -9,7 +9,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-r from-primary-600/90 to-transparent"></div>
       
       <div className="relative container-max section-padding">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[600px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[500px] sm:min-h-[600px]">
           <div className="space-y-8 animate-fade-in">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
@@ -22,10 +22,10 @@ export function HeroSection() {
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
                 to="/products"
-                className="btn-primary btn-glow inline-flex items-center justify-center group"
+                className="btn-primary btn-glow mobile-button inline-flex items-center justify-center group"
               >
                 Shop Now
                 <HiArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -33,24 +33,32 @@ export function HeroSection() {
               
               <Link
                 to="/location"
-                className="bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 border-2 border-white/30 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center justify-center backdrop-blur-sm"
+                className="bg-gradient-to-r from-white/20 to-white/10 hover:from-white/30 hover:to-white/20 border-2 border-white/30 text-white font-medium mobile-button rounded-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 inline-flex items-center justify-center backdrop-blur-sm"
               >
                 Visit Our Store
               </Link>
             </div>
             
-            <div className="flex items-center space-x-8 pt-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold">500+</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6">
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-2xl font-bold text-white">500+</div>
                 <div className="text-primary-200 text-sm">Products</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold">1000+</div>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-2xl font-bold text-white">1000+</div>
                 <div className="text-primary-200 text-sm">Happy Clients</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold">24hr</div>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-2xl font-bold text-white">24hr</div>
                 <div className="text-primary-200 text-sm">Delivery</div>
+              </div>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="flex items-center justify-center text-yellow-400 mb-1">
+                  {[...Array(5)].map((_, i) => (
+                    <HiStar key={i} className="h-4 w-4" />
+                  ))}
+                </div>
+                <div className="text-primary-200 text-sm">5-Star Rated</div>
               </div>
             </div>
           </div>

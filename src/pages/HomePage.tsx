@@ -1,5 +1,6 @@
 import React from 'react';
 import { HeroSection } from '../components/home/HeroSection';
+import { TrustBadges } from '../components/home/TrustBadges';
 import { FeaturedCategories } from '../components/home/FeaturedCategories';
 import { FeaturedProducts } from '../components/home/FeaturedProducts';
 import { TestimonialsSection } from '../components/home/TestimonialsSection';
@@ -10,6 +11,7 @@ export function HomePage() {
   return (
     <div className="min-h-screen">
       <HeroSection />
+      <TrustBadges />
       <FeaturedCategories />
       <FeaturedProducts />
       <WhyChooseUs />
