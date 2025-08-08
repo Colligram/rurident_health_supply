@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ let db = null;
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/rurident_health_supplies";
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -43,10 +43,94 @@ app.get("/api/products", async (req, res) => {
 
   try {
     const products = await db.collection("products").find().toArray();
-    res.json(products);
+    // Convert MongoDB _id to id for frontend compatibility
+    const formattedProducts = products.map(product => ({
+      ...product,
+      id: product._id.toString(),
+      _id: undefined
+    }));
+    res.json(formattedProducts);
   } catch (err) {
     console.error("❌ Failed to fetch products:", err.message);
     res.status(500).json({ error: "Database error" });
+  }
+});
+
+// --- Add Product ---
+app.post("/api/products", async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: "No DB connection" });
+  }
+
+  try {
+    const productData = {
+      ...req.body,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      rating: req.body.rating || 0,
+      reviewCount: req.body.reviewCount || 0,
+      inStock: req.body.stock > 0
+    };
+
+    const result = await db.collection("products").insertOne(productData);
+    res.json({ success: true, id: result.insertedId.toString() });
+  } catch (err) {
+    console.error("❌ Failed to add product:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Update Product ---
+app.put("/api/products/:id", async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: "No DB connection" });
+  }
+
+  try {
+    const { id } = req.params;
+    const updates = {
+      ...req.body,
+      updatedAt: new Date(),
+      inStock: req.body.stock > 0
+    };
+
+    // Remove the id field from updates if it exists
+    delete updates.id;
+
+    const result = await db.collection("products").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updates }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("❌ Failed to update product:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Delete Product ---
+app.delete("/api/products/:id", async (req, res) => {
+  if (!db) {
+    return res.status(500).json({ error: "No DB connection" });
+  }
+
+  try {
+    const { id } = req.params;
+    const result = await db.collection("products").deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("❌ Failed to delete product:", err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -65,6 +149,8 @@ app.post("/api/products/fill", async (req, res) => {
       stock: 5,
       rating: 4.5,
       reviewCount: 10,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
     {
       name: "Scaler Tip",
@@ -76,6 +162,8 @@ app.post("/api/products/fill", async (req, res) => {
       stock: 50,
       rating: 4.8,
       reviewCount: 22,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
   ];
 
