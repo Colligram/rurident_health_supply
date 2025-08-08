@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { FiUser, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 
