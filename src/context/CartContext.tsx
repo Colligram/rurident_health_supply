@@ -3,14 +3,20 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Product } from '../types';
 
 export interface CartItem {
+  productId: string;
   id: string;
+  name: string;
+  price: number;
+  image: string;
   product: Product;
   quantity: number;
 }
 
 interface CartContextType {
   items: CartItem[];
+  total: number;
   addToCart: (product: Product, quantity?: number) => void;
+  removeItem: (productId: string) => void;
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -60,12 +66,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
         );
       }
       
-      return [...currentItems, { id: product.id, product, quantity }];
+      return [...currentItems, { 
+        id: product.id, 
+        productId: product.id,
+        name: product.name,
+        price: product.salePrice || product.price,
+        image: product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/150',
+        product, 
+        quantity 
+      }];
     });
   };
 
   const removeFromCart = (productId: string) => {
     setItems(currentItems => currentItems.filter(item => item.product.id !== productId));
+  };
+
+  const removeItem = (productId: string) => {
+    removeFromCart(productId);
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -98,9 +116,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }, 0);
   };
 
+  const total = getTotalPrice();
+
   const value = {
     items,
+    total,
     addToCart,
+    removeItem,
     removeFromCart,
     updateQuantity,
     clearCart,

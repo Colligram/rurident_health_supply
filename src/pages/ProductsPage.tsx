@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { useProducts } from '../context/ProductsContext';
@@ -12,6 +12,7 @@ export function ProductsPage() {
   const { products, loading, error } = useProducts(); // Assuming these are provided by context
   const { addToCart } = useCart();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
@@ -74,7 +75,8 @@ export function ProductsPage() {
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);
-    alert('Product added to cart!');
+    // Navigate to cart page after adding product
+    navigate('/cart');
   };
 
   const toggleWishlist = (product: any) => {
