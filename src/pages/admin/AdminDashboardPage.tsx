@@ -1,42 +1,82 @@
 
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { FiPackage, FiUsers, FiShoppingCart, FiTrendingUp, FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { useProducts } from '../../context/ProductsContext';
+import { orderService, Order } from '../../services/orderService';
+import { formatPrice } from '../../utils';
+// For customers, use mock data for now
+import { mockCustomers } from './CustomersManagementPage';
 
 export function AdminDashboardPage() {
   const { user } = useAdminAuth();
+  const { products } = useProducts();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [customers, setCustomers] = useState(mockCustomers);
+  const [lastOrderCount, setLastOrderCount] = useState(0);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Fetch orders
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await orderService.getOrders();
+        setOrders(data);
+        // Play sound if new order
+        if (lastOrderCount && data.length > lastOrderCount && audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        }
+        setLastOrderCount(data.length);
+      } catch (err) {
+        // handle error
+      }
+    };
+    fetchOrders();
+    const interval = setInterval(fetchOrders, 10000);
+    return () => clearInterval(interval);
+  }, [lastOrderCount]);
+
+  // Compute stats
+  const today = new Date();
+  const ordersToday = orders.filter(o => {
+    if (!o.createdAt) return false;
+    const d = new Date(o.createdAt);
+    return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
+  });
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.paymentStatus === 'completed' ? o.total : 0), 0);
 
   const stats = [
     {
       name: 'Total Products',
-      value: '156',
-      change: '+12%',
+      value: products.length,
+      change: '',
       changeType: 'increase',
       icon: FiPackage,
       color: 'bg-blue-500'
     },
     {
       name: 'Orders Today',
-      value: '23',
-      change: '+18%',
+      value: ordersToday.length,
+      change: '',
       changeType: 'increase',
       icon: FiShoppingCart,
       color: 'bg-green-500'
     },
     {
       name: 'Customers',
-      value: '1,234',
-      change: '+5%',
+      value: customers.length,
+      change: '',
       changeType: 'increase',
       icon: FiUsers,
       color: 'bg-purple-500'
     },
     {
       name: 'Revenue',
-      value: 'KES 45,600',
-      change: '+25%',
+      value: formatPrice(totalRevenue),
+      change: '',
       changeType: 'increase',
       icon: FiTrendingUp,
       color: 'bg-yellow-500'
@@ -67,11 +107,17 @@ export function AdminDashboardPage() {
     }
   ];
 
+  // Recent activity: show last 5 orders
+  const recentOrders = [...orders]
+    .sort((a, b) => (b.createdAt && a.createdAt ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() : 0))
+    .slice(0, 5);
+
   return (
     <AdminLayout>
+      <audio ref={audioRef} src="/notification.mp3" preload="auto" />
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl p-6 text-white">
+        <div className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-xl p-6 text-white shadow-xl">
           <h1 className="text-2xl font-bold mb-2">
             Welcome back, {user?.name}!
           </h1>
@@ -85,7 +131,7 @@ export function AdminDashboardPage() {
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.name} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <div key={stat.name} className="backdrop-blur-lg bg-white/60 border border-white/40 rounded-xl p-6 shadow-xl">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">{stat.name}</p>
@@ -95,17 +141,13 @@ export function AdminDashboardPage() {
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <div className="mt-4 flex items-center">
-                  <span className="text-green-600 text-sm font-medium">{stat.change}</span>
-                  <span className="text-gray-600 text-sm ml-2">from last week</span>
-                </div>
               </div>
             );
           })}
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div className="backdrop-blur-lg bg-white/60 border border-white/40 rounded-xl p-6 shadow-xl">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {quickActions.map((action) => {
@@ -130,39 +172,27 @@ export function AdminDashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div className="backdrop-blur-lg bg-white/60 border border-white/40 rounded-xl p-6 shadow-xl">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
           <div className="space-y-4">
-            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-              <div className="bg-green-100 p-2 rounded-full mr-3">
-                <FiShoppingCart className="w-4 h-4 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">New order received</p>
-                <p className="text-xs text-gray-600">Order #12345 - KES 15,000</p>
-              </div>
-              <span className="text-xs text-gray-500 ml-auto">2 min ago</span>
-            </div>
-            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-              <div className="bg-blue-100 p-2 rounded-full mr-3">
-                <FiPackage className="w-4 h-4 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">Product updated</p>
-                <p className="text-xs text-gray-600">Dental Chair Unit - Stock updated</p>
-              </div>
-              <span className="text-xs text-gray-500 ml-auto">15 min ago</span>
-            </div>
-            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
-              <div className="bg-purple-100 p-2 rounded-full mr-3">
-                <FiUsers className="w-4 h-4 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">New customer registered</p>
-                <p className="text-xs text-gray-600">Dr. Sarah Johnson</p>
-              </div>
-              <span className="text-xs text-gray-500 ml-auto">1 hour ago</span>
-            </div>
+            {recentOrders.length === 0 ? (
+              <div className="text-gray-500 text-center py-8">No recent orders</div>
+            ) : (
+              recentOrders.map((order) => (
+                <div key={order.id} className="flex items-center p-3 bg-white/40 rounded-lg shadow-sm">
+                  <div className="bg-green-100 p-2 rounded-full mr-3">
+                    <FiShoppingCart className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">New order received</p>
+                    <p className="text-xs text-gray-600">Order #{order.orderId} - {formatPrice(order.total)}</p>
+                  </div>
+                  <span className="text-xs text-gray-500 ml-auto">
+                    {order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

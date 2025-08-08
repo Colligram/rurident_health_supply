@@ -36,15 +36,15 @@ export function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="backdrop-blur-lg bg-white/60 border border-white/40 rounded-2xl shadow-2xl p-8 transition-all duration-300 hover:shadow-3xl" style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)' }}>
           <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-              <FiUser className="w-8 h-8 text-primary-600" />
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 bg-opacity-80 rounded-full flex items-center justify-center mb-4 shadow-lg">
+              <FiUser className="w-8 h-8 text-white drop-shadow" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Login</h1>
-            <p className="text-gray-600 mt-2">Rurident Health Supplies</p>
+            <h1 className="text-3xl font-extrabold text-gray-900 drop-shadow mb-1">Admin Login</h1>
+            <p className="text-lg text-gray-700/80 font-medium">Rurident Health Supplies</p>
           </div>
 
           {error && (
@@ -65,13 +65,13 @@ export function AdminLoginPage() {
                 Email Address
               </label>
               <div className="relative">
-                <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 w-5 h-5" />
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-white/40 bg-white/60 focus:bg-white/80 transition-all duration-200 rounded-lg focus:ring-2 focus:ring-blue-300 focus:border-transparent shadow-inner"
                   placeholder="Enter your email"
                   required
                 />
@@ -83,13 +83,13 @@ export function AdminLoginPage() {
                 Password
               </label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-400 w-5 h-5" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full pl-10 pr-12 py-3 border border-white/40 bg-white/60 focus:bg-white/80 transition-all duration-200 rounded-lg focus:ring-2 focus:ring-purple-300 focus:border-transparent shadow-inner"
                   placeholder="Enter your password"
                   required
                 />
@@ -106,7 +106,7 @@ export function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-primary-700 hover:to-secondary-700 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-pink-600 focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl backdrop-blur"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center">

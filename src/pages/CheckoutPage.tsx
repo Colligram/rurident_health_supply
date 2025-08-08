@@ -25,6 +25,7 @@ interface CustomerInfo {
   city: string;
   county: string;
   postalCode: string;
+  nairobiArea?: string; // Added for Nairobi area
 }
 
 export function CheckoutPage() {
@@ -114,26 +115,7 @@ export function CheckoutPage() {
 
     try {
       const orderId = 'ORDER_' + Date.now();
-      
-      // Create order in database first
-      const orderData = {
-        orderId: orderId,
-        customerInfo: customerInfo,
-        items: items.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image
-        })),
-        total: total,
-        paymentMethod: paymentMethod,
-        paymentStatus: 'pending' as const,
-        status: 'pending' as const
-      };
 
-      const orderResult = await orderService.createOrder(orderData);
-      
       if (paymentMethod === 'mpesa') {
         const paymentRequest: MpesaPaymentRequest = {
           phoneNumber: customerInfo.phone,
@@ -143,19 +125,31 @@ export function CheckoutPage() {
         };
 
         const result = await mpesaService.initiateSTKPush(paymentRequest);
-        
+
         if (result.success) {
-          // Update order payment status to completed
-          await orderService.updateOrderStatus(orderResult.id, 'processing', 'completed');
+          // Only now create the order in the database
+          const orderData = {
+            orderId: orderId,
+            customerInfo: customerInfo,
+            items: items.map(item => ({
+              id: item.id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              image: item.image
+            })),
+            total: total,
+            paymentMethod: paymentMethod,
+            paymentStatus: 'completed' as const,
+            status: 'processing' as const
+          };
+          await orderService.createOrder(orderData);
           setPaymentSuccess(true);
-          // Simulate successful order processing
           setTimeout(() => {
             clearCart();
             navigate('/');
           }, 3000);
         } else {
-          // Update order payment status to failed
-          await orderService.updateOrderStatus(orderResult.id, 'cancelled', 'failed');
           setPaymentError(result.message || 'Payment failed. Please try again.');
         }
       } else {
@@ -192,8 +186,8 @@ export function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="container-max section-padding">
+    <div className="min-h-screen bg-gray-50 pt-10">
+      <div className="container-max py-8 md:py-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -288,14 +282,14 @@ export function CheckoutPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Address *
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={customerInfo.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none ${
                       formErrors.address ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    placeholder="Street address"
+                    placeholder="Describe your shipment location (e.g. near house no. 10, behind XYZ shop)"
+                    rows={3}
                   />
                   {formErrors.address && <p className="text-red-500 text-sm mt-1">{formErrors.address}</p>}
                 </div>
@@ -314,6 +308,19 @@ export function CheckoutPage() {
                     placeholder="City"
                   />
                   {formErrors.city && <p className="text-red-500 text-sm mt-1">{formErrors.city}</p>}
+                  {/* Nairobi Area Selection */}
+                  {customerInfo.county === 'Nairobi' && (
+                    <div className="mt-3">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Which part of Nairobi?</label>
+                      <input
+                        type="text"
+                        value={customerInfo.nairobiArea || ''}
+                        onChange={e => handleInputChange('nairobiArea', e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        placeholder="e.g. Westlands, CBD, Karen, etc."
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div>
