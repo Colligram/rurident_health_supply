@@ -63,11 +63,23 @@
   }
 
   .section-padding {
-    @apply py-16 px-4 sm:px-6 lg:px-8;
+    @apply py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8;
   }
 
   .container-max {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .mobile-friendly {
+    @apply text-sm sm:text-base;
+  }
+
+  .mobile-card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  .mobile-button {
+    @apply py-2 px-4 sm:py-3 sm:px-6 text-sm sm:text-base;
   }
 
   .gradient-bg {

@@ -11,6 +11,7 @@ import { ContactPage } from './pages/ContactPage';
 import { LocationPage } from './pages/LocationPage';
 import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
+import { WishlistPage } from './pages/WishlistPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { ProductsManagementPage } from './pages/admin/ProductsManagementPage';
@@ -247,9 +248,7 @@ function App() {
                       <>
                         <Header />
                         <main className="flex-1">
-                          <div className="min-h-screen flex items-center justify-center">
-                            <p className="text-gray-600">Wishlist Page - Coming Soon</p>
-                          </div>
+                          <WishlistPage />
                         </main>
                         <Footer />
                         <ChatBot />
