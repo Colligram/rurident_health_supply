@@ -5,14 +5,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-    allowedHosts: [
-      '38e88840-04c7-464c-b9c4-b05bb33498de-00-2l7lrhfsfkdql.kirk.replit.dev' // ✅ Add your host here
-    ],
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, ''),
+        changeOrigin: true
       },
     },
   },
