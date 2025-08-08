@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FiShoppingCart, FiHeart, FiEye } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
 import { useCart } from '../../context/CartContext';
@@ -10,10 +10,12 @@ export function FeaturedProducts() {
   const { products } = useProducts();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const navigate = useNavigate();
 
   const handleAddToCart = (product: any) => {
     addToCart(product);
-    alert(`${product.name} added to cart!`);
+    // Navigate to cart page after adding product
+    navigate('/cart');
   };
 
   const handleWishlistToggle = (product: any) => {
