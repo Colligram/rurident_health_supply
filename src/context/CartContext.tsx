@@ -24,7 +24,7 @@ interface CartContextType {
   getTotalPrice: () => number;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function useCart() {
   const context = useContext(CartContext);

@@ -3,7 +3,7 @@ import { HiSearch, HiTruck, HiCheckCircle, HiClock, HiLocationMarker } from 'rea
 
 export function TrackOrderPage() {
   const [orderNumber, setOrderNumber] = useState('');
-  const [trackingResult, setTrackingResult] = useState(null);
+  const [trackingResult, setTrackingResult] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Mock tracking data - in real app, this would come from API
@@ -206,7 +206,7 @@ export function TrackOrderPage() {
                 
                 {/* Timeline Items */}
                 <div className="space-y-8">
-                  {trackingResult.timeline.map((item, index) => {
+                  {trackingResult.timeline.map((item: any, index: number) => {
                     const IconComponent = item.icon;
                     return (
                       <div key={index} className="relative flex items-start space-x-6">

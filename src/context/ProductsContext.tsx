@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { apiService, Product } from '../services/database';
+import { apiService } from '../services/database';
+import { Product } from '../types';
 
 interface ProductsContextType {
   products: Product[];

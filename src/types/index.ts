@@ -3,18 +3,24 @@ export interface Product {
   name: string;
   price: number;
   salePrice?: number;
+  originalPrice?: number;
   description: string;
   image: string;
   images?: string[];
   category: string;
   brand?: string;
+  inStock: boolean;
   stock: number;
   features?: string[];
   specifications?: Record<string, string>;
   rating?: number;
+  reviewCount?: number;
   reviews?: Review[];
   isNew?: boolean;
+  isFeatured?: boolean;
   isBestSeller?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Review {

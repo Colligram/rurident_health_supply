@@ -9,7 +9,7 @@ import { formatPrice } from '../utils';
 export function ProductsPage() {
   const { products, loading, error } = useProducts(); // Assuming these are provided by context
   const { addToCart } = useCart();
-  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { items: wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -36,7 +36,7 @@ export function ProductsPage() {
   // Get unique categories from products
   const categories = useMemo(() => {
     if (!products || !Array.isArray(products)) return ['all'];
-    return ['all', ...new Set(products.map(p => p.category))];
+    return ['all', ...new Set(products.map((p: any) => p.category))];
   }, [products]);
 
 
@@ -143,11 +143,11 @@ export function ProductsPage() {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                 >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category === 'all' ? 'All Categories' : category}
-                    </option>
-                  ))}
+                                  {categories.map((category: string) => (
+                  <option key={category} value={category}>
+                    {category === 'all' ? 'All Categories' : category}
+                  </option>
+                ))}
                 </select>
 
                 {/* Price Range Filter */}
@@ -272,7 +272,7 @@ export function ProductsPage() {
                             <FiStar
                               key={i}
                               className={`w-3 h-3 ${
-                                i < Math.floor(product.rating)
+                                i < Math.floor(product.rating || 0)
                                   ? 'text-yellow-400 fill-current'
                                   : 'text-gray-300'
                               }`}

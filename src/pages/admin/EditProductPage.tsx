@@ -92,7 +92,7 @@ export function EditProductPage() {
   const removeSpecification = (key: string) => {
     setFormData(prev => {
       const newSpecs = { ...prev.specifications };
-      delete newSpecs[key];
+      delete (newSpecs as any)[key];
       return { ...prev, specifications: newSpecs };
     });
   };

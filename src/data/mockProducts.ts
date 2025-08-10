@@ -1,4 +1,4 @@
-import { Product } from '../services/database';
+import { Product } from '../types';
 
 export const mockProducts: Product[] = [
   {
@@ -8,6 +8,7 @@ export const mockProducts: Product[] = [
     price: 12000,
     salePrice: 10500,
     originalPrice: 12000,
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400',
     images: [
       'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400',
       'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400'
@@ -39,6 +40,7 @@ export const mockProducts: Product[] = [
     name: 'High-Speed Handpiece Kit',
     description: 'Professional high-speed dental handpiece with ceramic bearings, fiber optic illumination, and autoclavable design.',
     price: 450,
+    image: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400',
     images: [
       'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400'
     ],
@@ -71,6 +73,7 @@ export const mockProducts: Product[] = [
     price: 850,
     salePrice: 750,
     originalPrice: 850,
+    image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400',
     images: [
       'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400'
     ],
@@ -101,6 +104,7 @@ export const mockProducts: Product[] = [
     name: 'LED Curing Light',
     description: 'Cordless LED curing light with multiple curing modes, high-intensity output, and ergonomic design.',
     price: 320,
+    image: 'https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=400',
     images: [
       'https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=400'
     ],
@@ -131,6 +135,7 @@ export const mockProducts: Product[] = [
     name: 'Dental Autoclave Sterilizer',
     description: 'Class B autoclave sterilizer with advanced vacuum system, digital controls, and comprehensive sterilization cycles.',
     price: 2800,
+    image: 'https://images.unsplash.com/photo-1580281781089-3434eec81a44?w=400',
     images: [
       'https://images.unsplash.com/photo-1580281781089-3434eec81a44?w=400'
     ],
@@ -161,6 +166,7 @@ export const mockProducts: Product[] = [
     name: 'Dental Impression Tray Set',
     description: 'Complete set of dental impression trays in various sizes for upper and lower jaw impressions.',
     price: 45,
+    image: 'https://images.unsplash.com/photo-1609203803012-ef1c563a3999?w=400',
     images: [
       'https://images.unsplash.com/photo-1609203803012-ef1c563a3999?w=400'
     ],
@@ -191,6 +197,7 @@ export const mockProducts: Product[] = [
     name: 'Composite Filling Kit',
     description: 'Professional composite filling instrument kit with multiple sculpting tools and shade guides.',
     price: 180,
+    image: 'https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=400',
     images: [
       'https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=400'
     ],
@@ -223,6 +230,7 @@ export const mockProducts: Product[] = [
     price: 3500,
     salePrice: 3200,
     originalPrice: 3500,
+    image: 'https://images.unsplash.com/photo-1551076805-e1869033e561?w=400',
     images: [
       'https://images.unsplash.com/photo-1551076805-e1869033e561?w=400'
     ],
@@ -253,6 +261,7 @@ export const mockProducts: Product[] = [
     name: 'Periodontal Probe Set',
     description: 'Professional periodontal probing kit with color-coded markings and ergonomic handles.',
     price: 85,
+    image: 'https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=400',
     images: [
       'https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=400'
     ],
@@ -283,6 +292,7 @@ export const mockProducts: Product[] = [
     name: 'Dental Loupes with LED Light',
     description: 'Professional magnification loupes with integrated LED illumination and adjustable declination angle.',
     price: 680,
+    image: 'https://images.unsplash.com/photo-1584467735871-8297a492d8ab?w=400',
     images: [
       'https://images.unsplash.com/photo-1584467735871-8297a492d8ab?w=400'
     ],

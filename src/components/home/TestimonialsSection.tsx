@@ -33,7 +33,7 @@ export function TestimonialsSection() {
   const [replyContent, setReplyContent] = useState({});
 
   // Add new review
-  const handleAddReview = (e) => {
+  const handleAddReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newReview.name || !newReview.content || !newReview.date) return;
     setTestimonials([
@@ -49,19 +49,19 @@ export function TestimonialsSection() {
   };
 
   // Admin: Approve review
-  const handleApprove = (id) => {
+  const handleApprove = (id: number) => {
     setTestimonials(testimonials.map(t => t.id === id ? { ...t, approved: true } : t));
   };
   // Admin: Delete review
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     setTestimonials(testimonials.filter(t => t.id !== id));
   };
   // Admin/anyone: Reply to review
-  const handleReply = (id) => {
-    if (!replyContent[id]) return;
+  const handleReply = (id: number) => {
+    if (!replyContent[id as keyof typeof replyContent]) return;
     setTestimonials(testimonials.map(t =>
       t.id === id
-        ? { ...t, replies: [...t.replies, { id: Date.now(), name: isAdmin ? 'Admin' : 'User', content: replyContent[id], date: new Date().toISOString().slice(0, 10) }] }
+        ? { ...t, replies: [...t.replies, { id: Date.now(), name: isAdmin ? 'Admin' : 'User', content: replyContent[id as keyof typeof replyContent], date: new Date().toISOString().slice(0, 10) }] }
         : t
     ));
     setReplyContent({ ...replyContent, [id]: '' });
@@ -122,7 +122,7 @@ export function TestimonialsSection() {
               {testimonial.replies.length > 0 && (
                 <div className="mt-4 border-t pt-2">
                   <p className="font-semibold text-sm text-primary-600 mb-1">Replies:</p>
-                  {testimonial.replies.map(reply => (
+                  {testimonial.replies.map((reply: any, index: number) => (
                     <div key={reply.id} className="mb-1 text-sm text-gray-700">
                       <span className="font-bold">{reply.name}:</span> {reply.content} <span className="text-xs text-gray-400">({reply.date})</span>
                     </div>
@@ -135,7 +135,7 @@ export function TestimonialsSection() {
                   type="text"
                   className="input-field"
                   placeholder="Reply..."
-                  value={replyContent[testimonial.id] || ''}
+                  value={(replyContent as any)[testimonial.id] || ''}
                   onChange={e => setReplyContent({ ...replyContent, [testimonial.id]: e.target.value })}
                 />
                 <button className="btn-secondary mt-2" onClick={() => handleReply(testimonial.id)}>Reply</button>

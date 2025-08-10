@@ -15,6 +15,7 @@ interface ProductFormData {
   brand: string;
   features: string[];
   specifications: Record<string, string>;
+  image: string;
   images: string[];
 }
 
@@ -31,6 +32,7 @@ export function AddProductPage() {
     brand: '',
     features: [''],
     specifications: {},
+    image: '',
     images: ['']
   });
 
@@ -141,6 +143,7 @@ export function AddProductPage() {
       ...formData,
       features: formData.features.filter(f => f.trim()),
       images: formData.images.filter(img => img.trim()),
+      image: formData.images.filter(img => img.trim())[0] || '',
       inStock: formData.stock > 0,
       rating: 0,
       reviewCount: 0

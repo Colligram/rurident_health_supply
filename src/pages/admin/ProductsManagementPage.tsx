@@ -50,7 +50,7 @@ const mockProducts = [
 ];
 
 export function ProductsManagementPage() {
-  const { products, deleteProduct, toggleProductSelection } = useProducts();
+  const { products, deleteProduct } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -254,7 +254,7 @@ export function ProductsManagementPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center">
                         <img
-                          src={product.images[0] || 'https://via.placeholder.com/48'}
+                          src={product.images?.[0] || product.image || 'https://via.placeholder.com/48'}
                           alt={product.name}
                           className="w-12 h-12 rounded-lg object-cover mr-3"
                         />

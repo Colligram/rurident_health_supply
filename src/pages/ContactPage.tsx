@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HiPhone, HiMail, HiLocationMarker, HiClock, HiChat, HiUser, HiEnvelope, HiDeviceMobile } from 'react-icons/hi';
+import { HiPhone, HiMail, HiLocationMarker, HiClock, HiChat, HiUser, HiDeviceMobile } from 'react-icons/hi';
 
 export function ContactPage() {
   const [formData, setFormData] = useState({
@@ -171,7 +171,7 @@ export function ContactPage() {
                       Email Address *
                     </label>
                     <div className="relative">
-                      <HiEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                                                        <HiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                       <input
                         type="email"
                         id="email"

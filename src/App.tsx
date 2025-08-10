@@ -5,7 +5,7 @@ import { Footer } from './components/layout/Footer';
 import { HomePage } from './pages/HomePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { ProductDetailPage } from './pages/ProductDetailPage';
-import { CheckoutPage } from './pages/CheckoutPage';
+import CheckoutPage from './pages/CheckoutPage';
 import { CartPage } from './pages/CartPage';
 import { ContactPage } from './pages/ContactPage';
 import { AboutUsPage } from './pages/AboutUsPage';

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CartContext } from '../contexts/CartContext';
+import { CartContext } from '../context/CartContext';
 import { orderService } from '../services/orderService';
 import { mpesaService } from '../services/mpesaService';
 
@@ -21,7 +21,11 @@ const getCurrentDate = (): string => {
 };
 
 const CheckoutPage: React.FC = () => {
-  const { cart, clearCart } = useContext(CartContext);
+  const cartContext = useContext(CartContext);
+  if (!cartContext) {
+    throw new Error('CartContext must be used within CartProvider');
+  }
+  const { items: cart, clearCart } = cartContext;
   const navigate = useNavigate();
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
@@ -45,7 +49,7 @@ const CheckoutPage: React.FC = () => {
   const orderDate = getCurrentDate();
 
   // Calculate totals
-  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cart.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
   const shipping = 5.99;
   const tax = subtotal * 0.16; // 16% VAT
   const total = subtotal + shipping + tax;
@@ -75,18 +79,18 @@ const CheckoutPage: React.FC = () => {
       const mpesaResponse = await mpesaService.initiateSTKPush({
         phoneNumber: customerInfo.phone,
         amount: total,
-        orderNumber: orderNumber,
-        callbackUrl: 'https://your-callback-url.com'
+        orderId: orderNumber,
+        description: `Order ${orderNumber}`
       });
 
       if (mpesaResponse.success) {
         // Create order in database
         const orderData = {
-          orderId: mpesaResponse.transactionId,
+          orderId: mpesaResponse.transactionId || orderNumber,
           orderNumber: orderNumber,
           orderDate: orderDate,
           customerInfo,
-          items: cart.map(item => ({
+          items: cart.map((item: any) => ({
             id: item.productId,
             name: item.name,
             price: item.price,
@@ -101,8 +105,8 @@ const CheckoutPage: React.FC = () => {
           paymentMethod,
           paymentStatus: 'pending' as const,
           status: 'pending' as const,
-          mpesaTransactionId: mpesaResponse.transactionId,
-          notes: `M-Pesa Transaction ID: ${mpesaResponse.transactionId}`
+          mpesaTransactionId: mpesaResponse.transactionId || orderNumber,
+          notes: `M-Pesa Transaction ID: ${mpesaResponse.transactionId || orderNumber}`
         };
 
         try {
@@ -353,7 +357,7 @@ const CheckoutPage: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Order Summary</h2>
                 <div className="bg-gray-50 rounded-lg p-4 mb-4">
                   <div className="space-y-2">
-                    {cart.map((item) => (
+                    {cart.map((item: any) => (
                       <div key={item.id} className="flex justify-between items-center">
                         <div className="flex items-center space-x-3">
                           <img

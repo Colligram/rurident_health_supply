@@ -1,24 +1,7 @@
 // Backend API service to communicate with our server
 import { mockProducts } from '../data/mockProducts';
 
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  salePrice?: number;
-  originalPrice?: number;
-  images: string[];
-  category: string;
-  inStock: boolean;
-  stock: number;
-  rating: number;
-  reviewCount: number;
-  specifications?: Record<string, any>;
-  features?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { Product } from '../types';
 
 class APIService {
   private baseURL = '/api';
@@ -56,7 +39,7 @@ class APIService {
       
       this.useMockData = false;
       return { success: true, data };
-    } catch (error) {
+    } catch (error: any) {
       if (error.name === 'TimeoutError') {
         console.warn('Request timeout, using mock data');
       } else if (error.name === 'TypeError') {

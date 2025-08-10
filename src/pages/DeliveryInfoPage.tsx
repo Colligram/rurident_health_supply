@@ -1,5 +1,5 @@
 import React from 'react';
-import { HiTruck, HiClock, HiMapPin, HiShieldCheck } from 'react-icons/hi';
+import { HiTruck, HiClock, HiLocationMarker, HiShieldCheck } from 'react-icons/hi';
 
 export function DeliveryInfoPage() {
   const deliveryZones = [
@@ -22,7 +22,7 @@ export function DeliveryInfoPage() {
       time: '2-3 Business Days',
       description: 'Standard delivery to major cities across Kenya',
       price: 'KSh 1,200',
-      icon: HiMapPin
+      icon: HiLocationMarker
     },
     {
       zone: 'Other Locations',
