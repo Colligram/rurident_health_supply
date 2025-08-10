@@ -1,160 +1,374 @@
-import React from 'react';
-import { HiPhone, HiMail, HiLocationMarker, HiClock, HiChat } from 'react-icons/hi';
+import React, { useState } from 'react';
+import { HiPhone, HiMail, HiLocationMarker, HiClock, HiChat, HiUser, HiEnvelope, HiDeviceMobile } from 'react-icons/hi';
 
 export function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate form submission
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setIsSubmitting(false);
+    setSubmitSuccess(true);
+    
+    // Reset form after success
+    setTimeout(() => {
+      setSubmitSuccess(false);
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        message: ''
+      });
+    }, 5000);
+  };
+
+  const contactMethods = [
+    {
+      icon: HiPhone,
+      title: 'Phone',
+      details: [
+        { label: 'Main Office', value: '0703 416 433' },
+        { label: 'Sales Team', value: '0795 202 687' },
+        { label: 'Support', value: '0746 280 715' }
+      ],
+      action: 'Call Now',
+      actionType: 'phone'
+    },
+    {
+      icon: HiMail,
+      title: 'Email',
+      details: [
+        { label: 'General Inquiries', value: 'info@rurident.co.ke' },
+        { label: 'Sales', value: 'sales@rurident.co.ke' },
+        { label: 'Support', value: 'support@rurident.co.ke' }
+      ],
+      action: 'Send Email',
+      actionType: 'email'
+    },
+    {
+      icon: HiLocationMarker,
+      title: 'Visit Us',
+      details: [
+        { label: 'Address', value: 'Mepalux Plaza Nairobi' },
+        { label: 'Floor', value: '3rd Floor, Suite 304' },
+        { label: 'Location', value: 'River Road, Opp. Bata Mini Price' }
+      ],
+      action: 'Get Directions',
+      actionType: 'location'
+    },
+    {
+      icon: HiClock,
+      title: 'Business Hours',
+      details: [
+        { label: 'Monday - Friday', value: '8:00 AM - 6:00 PM' },
+        { label: 'Saturday', value: '9:00 AM - 4:00 PM' },
+        { label: 'Sunday', value: 'Closed' }
+      ],
+      action: 'Schedule Visit',
+      actionType: 'schedule'
+    }
+  ];
+
+  const departments = [
+    {
+      name: 'Sales Department',
+      description: 'For product inquiries, quotes, and orders',
+      contact: 'sales@rurident.co.ke',
+      phone: '0795 202 687',
+      responseTime: 'Within 2 hours'
+    },
+    {
+      name: 'Technical Support',
+      description: 'For equipment installation, training, and maintenance',
+      contact: 'support@rurident.co.ke',
+      phone: '0746 280 715',
+      responseTime: 'Within 4 hours'
+    },
+    {
+      name: 'Customer Service',
+      description: 'For general inquiries and account management',
+      contact: 'info@rurident.co.ke',
+      phone: '0703 416 433',
+      responseTime: 'Within 24 hours'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Contact Information */}
-      <div className="container-max py-8 md:py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6 lg:gap-8 mb-12 lg:mb-16">
-          {/* Only Email Card, compact */}
-          <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 text-center hover:shadow-xl transition-shadow duration-300 max-w-md mx-auto">
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-2">
-              <HiMail className="h-6 w-6 text-white" />
-            </div>
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">Email Us</h3>
-            <p className="text-gray-600 mb-2 mobile-friendly text-sm">Send us your inquiries</p>
-            <a 
-              href="mailto:info@rurident.co.ke" 
-              className="text-orange-600 hover:text-orange-700 font-medium text-sm"
-            >
-              info@rurident.co.ke
-            </a>
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-primary-600 to-primary-800 text-white">
+        <div className="container-max section-padding">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+            <p className="text-xl text-primary-100 max-w-3xl mx-auto">
+              Get in touch with our team. We're here to help with all your dental equipment 
+              and supply needs. Reach out through any of our contact methods below.
+            </p>
           </div>
         </div>
-        {/* Main Content Grid - remove contact form */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12">
-          {/* Remove Contact Form section entirely */}
-          {/* Additional Information */}
-          <div className="space-y-6 lg:space-y-8">
-            {/* Business Hours */}
-            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-              <div className="flex items-center mb-4">
-                <HiClock className="h-6 w-6 text-orange-600 mr-3" />
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Business Hours</h3>
+      </div>
+
+      <div className="container-max section-padding">
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* Contact Form */}
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+            
+            {submitSuccess ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                <div className="text-green-600 text-6xl mb-4">✓</div>
+                <h3 className="text-xl font-semibold text-green-800 mb-2">Message Sent Successfully!</h3>
+                <p className="text-green-700">
+                  Thank you for contacting us. We'll get back to you within 24 hours.
+                </p>
               </div>
-              <div className="space-y-2 mobile-friendly">
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Monday - Friday</span>
-                  <span className="text-gray-900 font-medium">8:00 AM - 6:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Saturday</span>
-                  <span className="text-gray-900 font-medium">9:00 AM - 4:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-700">Sunday</span>
-                  <span className="text-gray-900 font-medium">Closed</span>
-                </div>
-              </div>
-            </div>
-            {/* Getting Here */}
-            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Getting Here</h3>
-              <div className="space-y-3 text-gray-600">
-                <p><strong>By Matatu:</strong> Take matatus plying the CBD route and alight at the nearest stage to our location.</p>
-                <p><strong>By Car:</strong> We're located opposite Bata Mini Price. Parking is available nearby.</p>
-                <p><strong>Landmarks:</strong> Near Bata Mini Price, Suite 304</p>
-              </div>
-            </div>
-            {/* Quick Support */}
-            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-              <div className="flex items-center mb-4">
-                <HiChat className="h-6 w-6 text-orange-600 mr-3" />
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Quick Support</h3>
-              </div>
-              <p className="text-gray-600 mb-4 mobile-friendly">
-                Need immediate assistance? Our team is ready to help with product recommendations, 
-                orders, and technical support.
-              </p>
-              <div className="space-y-3">
-                <a 
-                  href="tel:0703416433"
-                  className="flex items-center justify-center bg-gradient-to-r from-green-500 to-green-600 text-white mobile-button rounded-lg font-medium hover:from-green-600 hover:to-green-700 transition-all duration-300"
-                >
-                  <HiPhone className="h-4 w-4 mr-2" />
-                  Call Now
-                </a>
-                {/* WhatsApp Button */}
-                <a
-                  href="https://wa.me/254703416433"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center bg-green-500 text-white mobile-button rounded-lg font-medium hover:bg-green-600 transition-all duration-300"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M20.52 3.48A11.93 11.93 0 0012 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.18-1.62A11.94 11.94 0 0012 24c6.63 0 12-5.37 12-12 0-3.19-1.24-6.19-3.48-8.52zM12 22c-1.85 0-3.68-.5-5.26-1.44l-.38-.22-3.67.96.98-3.58-.25-.37A9.94 9.94 0 012 12c0-5.52 4.48-10 10-10s10 4.48 10 10-4.48 10-10 10zm5.47-7.14c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.77-1.67-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.5-.5-.67-.5-.17 0-.37-.02-.57-.02-.2 0-.52.07-.8.37-.27.3-1.05 1.02-1.05 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.36.71.24 1.26.38 1.7.48.71.15 1.36.13 1.87.08.57-.06 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.08-.12-.28-.2-.58-.35z"/></svg>
-                  WhatsApp
-                </a>
-              </div>
-            </div>
-          </div>
-          {/* Google Maps Section and Plan Your Visit */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="h-96 relative">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.819592693573!2d36.82194717475143!3d-1.2864447353544657!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d22c4e4d49%3A0x186a8b2f2b15a5b9!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sus!4v1678901234567!5m2!1sen!2sus"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Rurident Health Supplies Location"
-              ></iframe>
-            </div>
-            <div className="p-4 bg-gray-50">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Click map to open in Google Maps</span>
-                <a
-                  href="https://maps.google.com/?q=Rurident+Health+Supplies+Nairobi+Kenya"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-orange-600 hover:text-orange-800 text-sm font-medium"
-                >
-                  Get Directions →
-                </a>
-              </div>
-            </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Plan Your Visit</h3>
-              <div className="grid grid-cols-1 gap-4 mb-6">
-                <a
-                  href="https://maps.google.com/?q=Rurident+Health+Supplies+Nairobi+Kenya"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary text-center"
-                >
-                  Get Directions
-                </a>
-                {/* Removed CALL US button here */}
-                <a
-                  href="https://maps.google.com/?q=Rurident+Health+Supplies+Nairobi+Kenya&t=k"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary text-center"
-                >
-                  Satellite View
-                </a>
-              </div>
-              {/* Store Information */}
-              <div className="border-t pt-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">Store Information</h4>
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <HiLocationMarker className="text-orange-600 h-5 w-5 flex-shrink-0 mt-1" />
-                    <div>
-                      <p className="font-semibold text-gray-900">Address</p>
-                      <p className="text-gray-600">
-                        Rurident Health Supplies<br />
-                        Mepalux Plaza, River Road<br />
-                        3rd Floor, Suite 304<br />
-                        Nairobi, Kenya
-                      </p>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name *
+                    </label>
+                    <div className="relative">
+                      <HiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address *
+                    </label>
+                    <div className="relative">
+                      <HiEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                        placeholder="Enter your email address"
+                      />
                     </div>
                   </div>
                 </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <div className="relative">
+                      <HiDeviceMobile className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                        placeholder="Enter your phone number"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                      Subject *
+                    </label>
+                    <select
+                      id="subject"
+                      name="subject"
+                      required
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                    >
+                      <option value="">Select a subject</option>
+                      <option value="general">General Inquiry</option>
+                      <option value="sales">Sales & Pricing</option>
+                      <option value="support">Technical Support</option>
+                      <option value="delivery">Delivery & Shipping</option>
+                      <option value="returns">Returns & Warranty</option>
+                      <option value="partnership">Partnership & Wholesale</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                    Message *
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    rows={6}
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none"
+                    placeholder="Tell us how we can help you..."
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <span>Sending Message...</span>
+                    </>
+                  ) : (
+                    <>
+                      <HiChat className="h-5 w-5" />
+                      <span>Send Message</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Contact Information */}
+          <div className="space-y-6">
+            {contactMethods.map((method, index) => {
+              const IconComponent = method.icon;
+              return (
+                <div key={index} className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-primary-100 rounded-full p-3 flex-shrink-0">
+                      <IconComponent className="h-6 w-6 text-primary-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">{method.title}</h3>
+                      <div className="space-y-2 mb-4">
+                        {method.details.map((detail, detailIndex) => (
+                          <div key={detailIndex} className="flex justify-between">
+                            <span className="text-gray-600 text-sm">{detail.label}:</span>
+                            <span className="text-gray-900 font-medium text-sm">{detail.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <button className="text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors">
+                        {method.action}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Department Contacts */}
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Contact Our Departments</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {departments.map((dept, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-lg p-6 text-center">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">{dept.name}</h3>
+                <p className="text-gray-600 mb-4">{dept.description}</p>
+                <div className="space-y-2 mb-6">
+                  <div className="text-sm">
+                    <span className="text-gray-600">Email: </span>
+                    <span className="font-medium text-primary-600">{dept.contact}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-gray-600">Phone: </span>
+                    <span className="font-medium text-gray-900">{dept.phone}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-gray-600">Response Time: </span>
+                    <span className="font-medium text-green-600">{dept.responseTime}</span>
+                  </div>
+                </div>
+                <button className="bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-2 rounded-lg transition-colors">
+                  Contact {dept.name.split(' ')[0]}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="mt-16">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Find Us</h2>
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+              <div className="text-center text-gray-500">
+                <HiLocationMarker className="h-16 w-16 mx-auto mb-4" />
+                <p className="text-lg">Interactive Map Coming Soon</p>
+                <p className="text-sm">We're working on adding an interactive map to help you find us easily.</p>
               </div>
             </div>
+            <div className="mt-6 text-center">
+              <p className="text-gray-600 mb-2">
+                <strong>Address:</strong> Mepalux Plaza Nairobi, 3rd Floor, Suite 304
+              </p>
+              <p className="text-gray-600 mb-2">
+                <strong>Location:</strong> River Road, opposite Bata Mini Price
+              </p>
+              <p className="text-gray-600">
+                <strong>Landmark:</strong> Near River Road Market, accessible via public transport
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Emergency Contact */}
+        <div className="mt-16 bg-gradient-to-r from-red-600 to-red-700 rounded-2xl p-8 text-white text-center">
+          <h2 className="text-2xl font-bold mb-4">Emergency Support</h2>
+          <p className="text-red-100 mb-6 max-w-2xl mx-auto">
+            Need immediate assistance with critical equipment? Our emergency support team is available 
+            24/7 for urgent technical issues that affect patient care.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="tel:0746280715"
+              className="bg-white text-red-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Emergency Hotline: 0746 280 715
+            </a>
+            <button className="border-2 border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white hover:text-red-600 transition-colors">
+              Report Emergency
+            </button>
           </div>
         </div>
       </div>
