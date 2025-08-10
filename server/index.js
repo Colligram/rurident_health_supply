@@ -1,295 +1,328 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import { MongoClient, ServerApiVersion, ObjectId } from "mongodb";
-
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const PDFDocument = require('pdfkit');
 
 const app = express();
-const port = process.env.PORT || 5000;
-let db = null;
+const PORT = process.env.PORT || 5000;
 
-// In-memory store fallback if DB is unavailable
-let inMemoryProducts = [];
-let inMemoryOrders = [];
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/rurident_health_supplies";
-const client = uri
-  ? new MongoClient(uri, {
-      serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-      },
-    })
-  : null;
-
-async function connectToMongo() {
-  if (!client) {
-    console.warn("⚠️  MONGODB_URI not set. Using in-memory product store.");
-    return;
-  }
-  try {
-    await client.connect();
-    db = client.db(); // auto-selects DB from URI
-    console.log("✅ Connected to MongoDB");
-  } catch (err) {
-    console.error("❌ MongoDB connection failed:", err.message);
-    db = null; // fallback to null
-  }
-}
-
-connectToMongo();
-
-// --- Health ---
-app.get("/api/health", (req, res) => {
-  res.json({ ok: true, dbConnected: Boolean(db) });
+// MongoDB connection
+mongoose.connect('mongodb://localhost:27017/rurident', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
-// --- Get Products ---
-app.get("/api/products", async (req, res) => {
-  if (!db) {
-    console.log("⚠️  Database not connected, returning in-memory products");
-    return res.json(inMemoryProducts);
-  }
-
-  try {
-    const products = await db.collection("products").find().toArray();
-    const normalized = products.map(doc => {
-      const id = doc._id?.toString();
-      const { _id, ...rest } = doc;
-      return { id, ...rest };
-    });
-    res.json(normalized);
-  } catch (err) {
-    console.error("❌ Failed to fetch products:", err.message);
-    res.status(500).json({ error: "Database error" });
-  }
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
 });
 
-// --- Add Product ---
-app.post("/api/products", async (req, res) => {
-  const product = {
-    ...req.body,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    rating: req.body.rating || 0,
-    reviewCount: req.body.reviewCount || 0,
-    inStock: req.body.stock > 0
-  };
-
-  if (!db) {
-    const newProduct = { ...product, id: new ObjectId().toString() };
-    inMemoryProducts.push(newProduct);
-    return res.status(201).json({ id: newProduct.id, inMemory: true });
-  }
-
-  try {
-    const result = await db.collection("products").insertOne(product);
-    res.status(201).json({ id: result.insertedId.toString() });
-  } catch (err) {
-    console.error("❌ Failed to add product:", err.message);
-    res.status(500).json({ error: err.message });
-  }
+// Product Schema
+const productSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  price: { type: Number, required: true },
+  image: { type: String, required: true },
+  category: { type: String, required: true },
+  inStock: { type: Boolean, default: true },
+  createdAt: { type: Date, default: Date.now }
 });
 
-// --- Update Product ---
-app.put("/api/products/:id", async (req, res) => {
-  const { id } = req.params;
-  const updates = {
-    ...req.body,
-    updatedAt: new Date(),
-    inStock: req.body.stock > 0
-  };
-  delete updates.id;
+const Product = mongoose.model('Product', productSchema);
 
-  if (!db) {
-    const idx = inMemoryProducts.findIndex(p => p.id === id);
-    if (idx === -1) return res.status(404).json({ error: "Not found" });
-    inMemoryProducts[idx] = { ...inMemoryProducts[idx], ...updates };
-    return res.json({ success: true, inMemory: true });
-  }
-
-  try {
-    const result = await db
-      .collection("products")
-      .updateOne({ _id: new ObjectId(id) }, { $set: updates });
-    if (result.matchedCount === 0) return res.status(404).json({ error: "Not found" });
-    res.json({ success: true });
-  } catch (err) {
-    console.error("❌ Failed to update product:", err.message);
-    res.status(500).json({ error: err.message });
-  }
+// Order Schema - Updated with new fields
+const orderSchema = new mongoose.Schema({
+  orderId: { type: String, required: true, unique: true },
+  orderNumber: { type: String, required: true, unique: true },
+  orderDate: { type: String, required: true },
+  customerInfo: {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    county: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    nairobiArea: { type: String }
+  },
+  items: [{
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+    image: { type: String },
+    totalPrice: { type: Number, required: true }
+  }],
+  subtotal: { type: Number, required: true },
+  shipping: { type: Number, required: true },
+  tax: { type: Number, required: true },
+  total: { type: Number, required: true },
+  paymentMethod: { type: String, enum: ['mpesa', 'card'], required: true },
+  paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
+  mpesaTransactionId: { type: String },
+  notes: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
 
-// --- Delete Product ---
-app.delete("/api/products/:id", async (req, res) => {
-  const { id } = req.params;
+const Order = mongoose.model('Order', orderSchema);
 
-  if (!db) {
-    const before = inMemoryProducts.length;
-    inMemoryProducts = inMemoryProducts.filter(p => p.id !== id);
-    if (inMemoryProducts.length === before) return res.status(404).json({ error: "Not found" });
-    return res.json({ success: true, inMemory: true });
-  }
+// Routes
 
+// Get all products
+app.get('/api/products', async (req, res) => {
   try {
-    const result = await db.collection("products").deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount === 0) return res.status(404).json({ error: "Not found" });
-    res.json({ success: true });
-  } catch (err) {
-    console.error("❌ Failed to delete product:", err.message);
-    res.status(500).json({ error: "Database error" });
-  }
-});
-
-// --- TEMPORARY: Fill sample products ---
-app.post("/api/products/fill", async (req, res) => {
-  const sampleProducts = [
-    {
-      name: "Dental Chair",
-      description: "Fully motorized dental chair",
-      price: 1200,
-      images: [],
-      category: "Dental Equipment",
-      stock: 5,
-      inStock: true,
-      rating: 4.2,
-      reviewCount: 5,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    {
-      name: "Scaler Tip",
-      description: "High quality scaler tip",
-      price: 10,
-      images: [],
-      category: "Instruments",
-      stock: 50,
-      inStock: true,
-      rating: 4.2,
-      reviewCount: 5,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ];
-
-  // Seed the database with sample products
-  try {
-    if (db) {
-      await db.collection("products").insertMany(sampleProducts);
-      res.json({ success: true, message: "Sample products added", count: sampleProducts.length });
-    } else {
-      // Add to in-memory store if DB is not available
-      inMemoryProducts.push(...sampleProducts);
-      res.json({ success: true, message: "Sample products added to memory", count: sampleProducts.length });
-    }
+    const products = await Product.find();
+    res.json(products);
   } catch (error) {
-    console.error("Error adding sample products:", error);
-    res.status(500).json({ error: "Failed to add sample products" });
+    res.status(500).json({ message: 'Error fetching products', error: error.message });
   }
 });
 
-// --- Get Orders (Admin) ---
-app.get("/api/orders", async (req, res) => {
-  if (!db) {
-    console.log("⚠️  Database not connected, returning in-memory orders");
-    return res.json(inMemoryOrders);
-  }
-
+// Get single product
+app.get('/api/products/:id', async (req, res) => {
   try {
-    const orders = await db.collection("orders").find().sort({ createdAt: -1 }).toArray();
-    const normalized = orders.map(doc => {
-      const id = doc._id?.toString();
-      const { _id, ...rest } = doc;
-      return { id, ...rest };
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching product', error: error.message });
+  }
+});
+
+// Create order
+app.post('/api/orders', async (req, res) => {
+  try {
+    const orderData = req.body;
+    
+    // Validate required fields
+    const requiredFields = ['orderId', 'orderNumber', 'orderDate', 'customerInfo', 'items', 'subtotal', 'shipping', 'tax', 'total', 'paymentMethod'];
+    for (const field of requiredFields) {
+      if (!orderData[field]) {
+        return res.status(400).json({ message: `Missing required field: ${field}` });
+      }
+    }
+
+    const order = new Order(orderData);
+    const savedOrder = await order.save();
+    
+    res.status(201).json({ 
+      id: savedOrder._id, 
+      success: true, 
+      message: 'Order created successfully' 
     });
-    res.json(normalized);
-  } catch (err) {
-    console.error("❌ Failed to fetch orders:", err.message);
-    res.status(500).json({ error: "Database error" });
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(500).json({ message: 'Error creating order', error: error.message });
   }
 });
 
-// --- Create Order ---
-app.post("/api/orders", async (req, res) => {
-  const order = {
-    ...req.body,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    status: 'pending', // Default status
-    paymentStatus: req.body.paymentStatus || 'pending'
-  };
-
-  if (!db) {
-    const newOrder = { ...order, id: new ObjectId().toString() };
-    inMemoryOrders.push(newOrder);
-    return res.status(201).json({ id: newOrder.id, inMemory: true });
-  }
-
+// Get all orders
+app.get('/api/orders', async (req, res) => {
   try {
-    const result = await db.collection("orders").insertOne(order);
-    res.status(201).json({ id: result.insertedId.toString() });
-  } catch (err) {
-    console.error("❌ Failed to create order:", err.message);
-    res.status(500).json({ error: err.message });
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching orders', error: error.message });
   }
 });
 
-// --- Update Order Status (Admin) ---
-app.put("/api/orders/:id", async (req, res) => {
-  const { id } = req.params;
-  const updates = {
-    ...req.body,
-    updatedAt: new Date()
-  };
-  delete updates.id;
-
-  if (!db) {
-    const idx = inMemoryOrders.findIndex(o => o.id === id);
-    if (idx === -1) return res.status(404).json({ error: "Not found" });
-    inMemoryOrders[idx] = { ...inMemoryOrders[idx], ...updates };
-    return res.json({ success: true, inMemory: true });
-  }
-
+// Get single order
+app.get('/api/orders/:id', async (req, res) => {
   try {
-    const result = await db
-      .collection("orders")
-      .updateOne({ _id: new ObjectId(id) }, { $set: updates });
-    if (result.matchedCount === 0) return res.status(404).json({ error: "Not found" });
-    res.json({ success: true });
-  } catch (err) {
-    console.error("❌ Failed to update order:", err.message);
-    res.status(500).json({ error: err.message });
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching order', error: error.message });
   }
 });
 
-// --- Delete Order (Admin) ---
-app.delete("/api/orders/:id", async (req, res) => {
-  const { id } = req.params;
-
-  if (!db) {
-    const before = inMemoryOrders.length;
-    inMemoryOrders = inMemoryOrders.filter(o => o.id !== id);
-    if (inMemoryOrders.length === before) return res.status(404).json({ error: "Not found" });
-    return res.json({ success: true, inMemory: true });
-  }
-
+// Update order status
+app.put('/api/orders/:id', async (req, res) => {
   try {
-    const result = await db.collection("orders").deleteOne({ _id: new ObjectId(id) });
-    if (result.deletedCount === 0) return res.status(404).json({ error: "Not found" });
-    res.json({ success: true });
-  } catch (err) {
-    console.error("❌ Failed to delete order:", err.message);
-    res.status(500).json({ error: "Database error" });
+    const { status, paymentStatus } = req.body;
+    const updates = { updatedAt: new Date() };
+    
+    if (status) updates.status = status;
+    if (paymentStatus) updates.paymentStatus = paymentStatus;
+    
+    const order = await Order.findByIdAndUpdate(
+      req.params.id, 
+      updates, 
+      { new: true, runValidators: true }
+    );
+    
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    
+    res.json({ success: true, order });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating order', error: error.message });
   }
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  connectToMongo();
+// Delete order
+app.delete('/api/orders/:id', async (req, res) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.json({ success: true, message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting order', error: error.message });
+  }
+});
+
+// Generate PDF receipt
+app.get('/api/orders/:id/receipt', async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Check if payment is confirmed
+    if (order.paymentStatus !== 'completed') {
+      return res.status(400).json({ message: 'Receipt only available after payment confirmation' });
+    }
+
+    // Create PDF document
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 50
+    });
+
+    // Set response headers for PDF download
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=receipt-${order.orderNumber}.pdf`);
+
+    // Pipe PDF to response
+    doc.pipe(res);
+
+    // Add content to PDF
+    doc
+      .fontSize(24)
+      .text('RURIDENT HEALTH SUPPLIES', { align: 'center' })
+      .moveDown()
+      .fontSize(18)
+      .text('RECEIPT', { align: 'center' })
+      .moveDown(2);
+
+    // Order details
+    doc
+      .fontSize(12)
+      .text(`Order Number: ${order.orderNumber}`)
+      .text(`Date: ${order.orderDate}`)
+      .moveDown();
+
+    // Customer information
+    doc
+      .fontSize(14)
+      .text('CUSTOMER INFORMATION', { underline: true })
+      .moveDown()
+      .fontSize(12)
+      .text(`${order.customerInfo.firstName} ${order.customerInfo.lastName}`)
+      .text(`Email: ${order.customerInfo.email}`)
+      .text(`Phone: ${order.customerInfo.phone}`)
+      .text(`Address: ${order.customerInfo.address}`)
+      .text(`${order.customerInfo.city}, ${order.customerInfo.county}`)
+      .moveDown();
+
+    // Items table
+    doc
+      .fontSize(14)
+      .text('ITEMS', { underline: true })
+      .moveDown();
+
+    // Table headers
+    const tableTop = doc.y;
+    const itemCol = 50;
+    const qtyCol = 200;
+    const priceCol = 300;
+    const totalCol = 400;
+
+    doc
+      .fontSize(10)
+      .text('Item', itemCol, tableTop)
+      .text('Qty', qtyCol, tableTop)
+      .text('Price', priceCol, tableTop)
+      .text('Total', totalCol, tableTop)
+      .moveDown();
+
+    // Table rows
+    let currentY = doc.y;
+    order.items.forEach((item, index) => {
+      if (currentY > 700) { // Check if we need a new page
+        doc.addPage();
+        currentY = 50;
+      }
+
+      doc
+        .fontSize(10)
+        .text(item.name, itemCol, currentY)
+        .text(item.quantity.toString(), qtyCol, currentY)
+        .text(`$${item.price.toFixed(2)}`, priceCol, currentY)
+        .text(`$${item.totalPrice.toFixed(2)}`, totalCol, currentY);
+
+      currentY += 20;
+    });
+
+    doc.moveDown(2);
+
+    // Summary
+    doc
+      .fontSize(14)
+      .text('SUMMARY', { underline: true })
+      .moveDown()
+      .fontSize(12);
+
+    const summaryY = doc.y;
+    doc
+      .text('Subtotal:', 300, summaryY)
+      .text(`$${order.subtotal.toFixed(2)}`, 400, summaryY)
+      .text('Shipping:', 300, summaryY + 20)
+      .text(`$${order.shipping.toFixed(2)}`, 400, summaryY + 20)
+      .text('Tax (16% VAT):', 300, summaryY + 40)
+      .text(`$${order.tax.toFixed(2)}`, 400, summaryY + 40)
+      .moveDown()
+      .fontSize(14)
+      .text('TOTAL:', 300, doc.y)
+      .text(`$${order.total.toFixed(2)}`, 400, doc.y)
+      .moveDown(2);
+
+    // Payment and status info
+    doc
+      .fontSize(10)
+      .text(`Payment Method: ${order.paymentMethod.toUpperCase()}`)
+      .text(`Payment Status: ${order.paymentStatus}`)
+      .text(`Order Status: ${order.status}`)
+      .moveDown()
+      .text('Thank you for your purchase!', { align: 'center' });
+
+    // Finalize PDF
+    doc.end();
+
+  } catch (error) {
+    console.error('Error generating receipt:', error);
+    res.status(500).json({ message: 'Error generating receipt', error: error.message });
+  }
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
