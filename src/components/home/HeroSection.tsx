@@ -17,8 +17,7 @@ export function HeroSection() {
                 <span className="block text-primary-200">Dental Supplier</span>
               </h1>
               <p className="text-xl md:text-2xl text-primary-100 leading-relaxed">
-                Premium dental equipment, chairs, consumables and student kits for 
-                hospitals, clinics and dental professionals nationwide.
+                Premium dental equipment and supplies for dental professionals.
               </p>
             </div>
             

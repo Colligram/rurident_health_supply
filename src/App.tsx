@@ -8,6 +8,13 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CartPage } from './pages/CartPage';
 import { ContactPage } from './pages/ContactPage';
+import { AboutUsPage } from './pages/AboutUsPage';
+import { DeliveryInfoPage } from './pages/DeliveryInfoPage';
+import { ReturnsPage } from './pages/ReturnsPage';
+import { WarrantyPage } from './pages/WarrantyPage';
+import { TrackOrderPage } from './pages/TrackOrderPage';
+import { HelpCenterPage } from './pages/HelpCenterPage';
+import { ReviewsPage } from './pages/ReviewsPage';
 
 import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
@@ -205,6 +212,104 @@ function App() {
                   />
 
                   <Route 
+                    path="/about" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <AboutUsPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/delivery" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <DeliveryInfoPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/returns" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <ReturnsPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/warranty" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <WarrantyPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/track" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <TrackOrderPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/help" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <HelpCenterPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/reviews" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <ReviewsPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
                     path="/blog" 
                     element={
                       <>
@@ -258,21 +363,7 @@ function App() {
                       </>
                     } 
                   />
-                  <Route 
-                    path="/track" 
-                    element={
-                      <>
-                        <Header />
-                        <main className="flex-1">
-                          <div className="min-h-screen flex items-center justify-center">
-                            <p className="text-gray-600">Order Tracking Page - Coming Soon</p>
-                          </div>
-                        </main>
-                        <Footer />
-                        <ChatBot />
-                      </>
-                    } 
-                  />
+
 
                   {/* Fallback route */}
                   <Route 
