@@ -20,7 +20,7 @@ export function ProductsPage() {
   // Show loading state
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 py-8">
+      <main className="min-h-screen bg-gray-50 py-8 pt-32">
         <div className="container-max">
           <div className="flex justify-center items-center h-64">
             <div className="text-center">
@@ -111,29 +111,29 @@ export function ProductsPage() {
   }, [filteredProducts, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-10">
-      <div className="container-max py-8 md:py-10">
+    <div className="min-h-screen bg-gray-50 pt-32">
+      <div className="container-max py-4 md:py-6">
         {/* Page Header */}
-        <div className="text-center mb-4">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Our Products</h1>
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
             Discover our comprehensive range of dental supplies and equipment
           </p>
         </div>
 
           {/* Filters and Search */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
+          <div className="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100 mb-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 {/* Search */}
                 <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <input
                     type="text"
                     placeholder="Search products..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full sm:w-64"
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full sm:w-56 text-sm"
                   />
                 </div>
 
@@ -141,7 +141,7 @@ export function ProductsPage() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                 >
                   {categories.map(category => (
                     <option key={category} value={category}>
@@ -154,9 +154,9 @@ export function ProductsPage() {
                 <select
                   value={priceRange}
                   onChange={(e) => setPriceRange(e.target.value)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
                 >
-                  <option value="all">All Price Ranges</option>
+                  <option value="all">All Prices</option>
                   <option value="under-1000">Under $1000</option>
                   <option value="1000-5000">$1000 - $5000</option>
                   <option value="5000-10000">$5000 - $10000</option>
@@ -165,18 +165,20 @@ export function ProductsPage() {
               </div>
 
               {/* Sort and Stock Filter */}
-              <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-gray-700">Sort by:</label>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                >
-                  <option value="name">Name</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="rating">Rating</option>
-                </select>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+                <div className="flex items-center space-x-2">
+                  <label className="text-sm font-medium text-gray-700">Sort:</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="px-2 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                  >
+                    <option value="name">Name</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Rating</option>
+                  </select>
+                </div>
 
                 {/* In Stock Filter */}
                 <div className="flex items-center space-x-2">
@@ -194,8 +196,8 @@ export function ProductsPage() {
           </div>
 
           {/* Results Count */}
-          <div className="mb-6">
-            <p className="text-gray-600">
+          <div className="mb-4 px-2">
+            <p className="text-gray-600 text-sm">
               Showing {filteredProducts.length} of {products?.length || 0} products
             </p>
           </div>
@@ -213,47 +215,47 @@ export function ProductsPage() {
             </div>
           )}
 
-          {/* Products Grid */}
+          {/* Products Grid - AliExpress Style */}
           {!loading && !error && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
               {sortedProducts.length > 0 ? sortedProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div key={product.id} className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300 hover:scale-105 group">
                   <div className="relative">
                     <img
-                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/300x200?text=No+Image'}
+                      src={product.images && product.images.length > 0 ? product.images[0] : 'https://via.placeholder.com/200x200?text=No+Image'}
                       alt={product.name || 'Product Image'}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-32 md:h-40 object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                     {product.salePrice && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+                      <div className="absolute top-1 left-1 bg-red-500 text-white px-1.5 py-0.5 rounded text-xs font-medium">
                         Sale
                       </div>
                     )}
                     {!product.inStock && (
-                      <div className="absolute top-2 right-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs font-medium">
+                      <div className="absolute top-1 right-1 bg-gray-500 text-white px-1.5 py-0.5 rounded text-xs font-medium">
                         Out of Stock
                       </div>
                     )}
                     <button
                       onClick={() => toggleWishlist(product)}
-                      className={`absolute top-2 right-2 p-2 rounded-full transition-colors ${
+                      className={`absolute top-1 right-1 p-1.5 rounded-full transition-all duration-200 ${
                         isInWishlist(product.id)
-                          ? 'bg-red-500 text-white'
-                          : 'bg-white text-gray-400 hover:text-red-500'
+                          ? 'bg-red-500 text-white shadow-md'
+                          : 'bg-white/80 text-gray-400 hover:text-red-500 hover:bg-white'
                       }`}
                     >
-                      <FiHeart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                      <FiHeart className={`w-3 h-3 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                     </button>
                   </div>
 
-                  <div className="p-4">
-                    <div className="mb-2">
+                  <div className="p-2 md:p-3">
+                    <div className="mb-1">
                       <span className="text-xs text-primary-600 font-medium">
                         {product.category || 'Uncategorized'}
                       </span>
                     </div>
 
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 text-sm leading-tight">
                       <Link
                         to={`/product/${product.id}`}
                         className="hover:text-primary-600 transition-colors"
@@ -262,10 +264,6 @@ export function ProductsPage() {
                       </Link>
                     </h3>
 
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                      {product.description || 'No description available.'}
-                    </p>
-
                     {/* Rating */}
                     {product.rating && product.rating > 0 && (
                       <div className="flex items-center mb-2">
@@ -273,7 +271,7 @@ export function ProductsPage() {
                           {[...Array(5)].map((_, i) => (
                             <FiStar
                               key={i}
-                              className={`w-4 h-4 ${
+                              className={`w-3 h-3 ${
                                 i < Math.floor(product.rating)
                                   ? 'text-yellow-400 fill-current'
                                   : 'text-gray-300'
@@ -281,20 +279,20 @@ export function ProductsPage() {
                             />
                           ))}
                         </div>
-                        <span className="text-sm text-gray-600 ml-1">
+                        <span className="text-xs text-gray-600 ml-1">
                           ({product.reviewCount || 0})
                         </span>
                       </div>
                     )}
 
                     {/* Price */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-gray-900">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-1">
+                        <span className="text-sm md:text-base font-bold text-gray-900">
                           {formatPrice(product.salePrice || product.price)}
                         </span>
                         {product.salePrice && (
-                          <span className="text-sm text-gray-500 line-through">
+                          <span className="text-xs text-gray-500 line-through">
                             {formatPrice(product.originalPrice || product.price)}
                           </span>
                         )}
@@ -302,7 +300,7 @@ export function ProductsPage() {
                     </div>
 
                     {/* Stock Status */}
-                    <div className="mb-3">
+                    <div className="mb-2">
                       {product.stock && product.stock > 0 ? (
                         <span className="text-xs text-green-600 font-medium">
                           {product.stock} in stock
@@ -318,13 +316,13 @@ export function ProductsPage() {
                     <button
                       onClick={() => handleAddToCart(product)}
                       disabled={!product.inStock}
-                      className={`w-full py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
+                      className={`w-full py-1.5 px-2 rounded-md font-medium transition-all duration-200 text-xs flex items-center justify-center space-x-1 ${
                         product.inStock
-                          ? 'bg-primary-600 text-white hover:bg-primary-700'
+                          ? 'bg-primary-600 text-white hover:bg-primary-700 hover:shadow-md'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >
-                      <FiShoppingCart className="w-4 h-4" />
+                      <FiShoppingCart className="w-3 h-3" />
                       <span>{product.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
                     </button>
                   </div>
