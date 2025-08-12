@@ -6,9 +6,7 @@ const footerLinks = {
   company: [
     { name: 'About Us', href: '/about' },
     { name: 'Contact', href: '/contact' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'FAQ', href: '/faq' },
-    { name: 'Reviews', href: '/reviews' },
+    { name: 'Our Products', href: '/products' },
   ],
   support: [
     { name: 'Delivery Info', href: '/delivery' },
@@ -16,6 +14,7 @@ const footerLinks = {
     { name: 'Warranty', href: '/warranty' },
     { name: 'Track Order', href: '/track' },
     { name: 'Help Center', href: '/help' },
+    { name: 'Customer Support', href: '/support' },
   ],
   legal: [
     { name: 'Privacy Policy', href: '/privacy' },

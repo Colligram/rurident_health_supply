@@ -8,6 +8,7 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CartPage } from './pages/CartPage';
 import { ContactPage } from './pages/ContactPage';
+import { AboutPage } from './pages/AboutPage';
 
 import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
@@ -18,6 +19,9 @@ import { WarrantyPage } from './pages/support/WarrantyPage';
 import { TrackOrderPage } from './pages/support/TrackOrderPage';
 import { HelpCenterPage } from './pages/support/HelpCenterPage';
 import { SupportPage } from './pages/support/SupportPage';
+import { TermsOfServicePage } from './pages/legal/TermsOfServicePage';
+import { PrivacyPolicyPage } from './pages/legal/PrivacyPolicyPage';
+import { CookiePolicyPage } from './pages/legal/CookiePolicyPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { ProductsManagementPage } from './pages/admin/ProductsManagementPage';
@@ -32,6 +36,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import { ProductsProvider } from './context/ProductsContext';
+import { AnalyticsProvider } from './context/AnalyticsContext';
 import { ProtectedRoute } from './components/admin/ProtectedRoute';
 import { ChatBot } from './components/chat/ChatBot';
 import { ScrollToTop } from './components/common/ScrollToTop';
@@ -42,6 +47,7 @@ function App() {
       <CartProvider>
         <WishlistProvider>
           <ProductsProvider>
+            <AnalyticsProvider>
             <Router 
               future={{ 
                 v7_startTransition: true,
@@ -218,6 +224,60 @@ function App() {
                       </>
                     } 
                   />
+                  <Route 
+                    path="/about" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <AboutPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  {/* Legal Pages */}
+                  <Route 
+                    path="/terms" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <TermsOfServicePage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+                  <Route 
+                    path="/privacy" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <PrivacyPolicyPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+                  <Route 
+                    path="/cookies" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <CookiePolicyPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
 
                   <Route 
                     path="/blog" 
@@ -372,6 +432,7 @@ function App() {
                 </Routes>
               </div>
             </Router>
+            </AnalyticsProvider>
           </ProductsProvider>
         </WishlistProvider>
       </CartProvider>
