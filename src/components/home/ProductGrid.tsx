@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiHeart, FiEye, FiStar, FiTruck, FiShield, FiFilter, FiGrid, FiList } from 'react-icons/fi';
+import { FiShoppingCart, FiHeart, FiEye, FiStar, FiTruck, FiShield, FiFilter, FiGrid, FiList, FiX } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -17,6 +17,8 @@ export function ProductGrid() {
   const [filterCategory, setFilterCategory] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Get unique categories from products
   const categories = useMemo(() => {
@@ -92,7 +94,13 @@ export function ProductGrid() {
   const handleQuickView = (product: any, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    navigate(`/product/${product.id}`);
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProduct(null);
   };
 
   if (loading) {
@@ -133,11 +141,14 @@ export function ProductGrid() {
       <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-6 mb-8 border border-orange-200">
         <div className="text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Premium Dental Equipment & Supplies
+            Rurident Health Supplies
           </h1>
+          <h2 className="text-xl md:text-2xl font-semibold text-orange-600 mb-3">
+            Your trusted dental partner
+          </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover our extensive collection of professional dental equipment, chairs, consumables, and student kits. 
-            All products are genuine and come with manufacturer warranties.
+            Leading supplier of dental equipment, chairs, consumables and student kits in Kenya. 
+            Serving hospitals, clinics, technicians and dental students nationwide with quality products and reliable service.
           </p>
         </div>
       </div>
@@ -213,115 +224,57 @@ export function ProductGrid() {
         </div>
       </div>
 
-      {/* Products Grid */}
+      {/* Products Grid - Mobile-First Design */}
       <div className={viewMode === 'grid' 
-        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8"
+        ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4"
         : "space-y-6"
       }>
         {filteredAndSortedProducts.map((product) => (
-                      <div 
+          viewMode === 'list' ? (
+            // List View (Detailed)
+            <div 
               key={product.id} 
-              className={`group relative bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-orange-200 transition-all duration-500 ${
-                viewMode === 'list' ? 'flex p-6' : 'hover:-translate-y-2 hover:scale-105'
-              }`}
-            onMouseEnter={() => setHoveredProduct(product.id)}
-            onMouseLeave={() => setHoveredProduct(null)}
-          >
-            {/* Product Badge Container */}
-            <div className="absolute top-2 left-2 z-20 flex flex-col gap-1">
-              {product.isNew && (
-                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                  NEW
-                </span>
-              )}
-              {product.isFeatured && (
-                <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                  FEATURED
-                </span>
-              )}
-              {product.originalPrice && product.price < product.originalPrice && (
-                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                  -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
-                </span>
-              )}
-            </div>
-
-            {/* Wishlist Button */}
-            <button
-              onClick={(e) => handleWishlistToggle(product, e)}
-              className="absolute top-2 right-2 z-20 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:bg-white"
+              className="group relative bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300 flex p-4"
+              onMouseEnter={() => setHoveredProduct(product.id)}
+              onMouseLeave={() => setHoveredProduct(null)}
             >
-              <FiHeart className={`w-4 h-4 transition-colors ${isInWishlist(product.id) ? 'fill-current text-red-500' : 'text-gray-500 hover:text-red-500'}`} />
-            </button>
-
-            {/* Product Image */}
-            <Link to={`/product/${product.id}`} className={`block relative ${viewMode === 'list' ? 'w-32 h-32 flex-shrink-0' : 'w-full'}`}>
-              <div className={`relative overflow-hidden bg-gray-50 flex items-center justify-center ${viewMode === 'list' ? 'h-full rounded-md' : 'aspect-square h-48'}`}>
-                <img
-                  src={product.images?.[0] || 'https://via.placeholder.com/400x400?text=No+Image'}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                
-                {/* Quick Actions - Grid Mode Only */}
-                {viewMode === 'grid' && (
-                  <div className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2 transition-all duration-300 ${hoveredProduct === product.id ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-                    <button
-                      onClick={(e) => handleQuickView(product, e)}
-                      className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all duration-200"
-                    >
-                      <FiEye className="w-4 h-4 text-gray-700" />
-                    </button>
-                    <button
-                      onClick={(e) => handleAddToCart(product, e)}
-                      className="p-2 bg-orange-500 rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:bg-orange-600"
-                    >
-                      <FiShoppingCart className="w-4 h-4 text-white" />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </Link>
-
-            {/* Product Information */}
-            <div className={`${viewMode === 'list' ? 'flex-1 ml-4' : 'p-4'}`}>
-              {/* Category */}
-              <div className="mb-1">
-                <span className="text-xs text-orange-600 font-medium uppercase tracking-wide">
-                  {product.category}
-                </span>
+              {/* Product Image */}
+              <div className="w-24 h-24 flex-shrink-0">
+                <div className="relative overflow-hidden bg-gray-50 rounded-lg h-full flex items-center justify-center">
+                  <img
+                    src={product.images?.[0] || 'https://via.placeholder.com/400x400?text=No+Image'}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
               </div>
 
-              {/* Product Name */}
-              <Link to={`/product/${product.id}`}>
-                <h3 className={`font-semibold text-gray-900 hover:text-orange-600 transition-colors duration-200 line-clamp-2 ${viewMode === 'list' ? 'text-lg mb-2' : 'text-sm mb-2'}`}>
+              {/* Product Information */}
+              <div className="flex-1 ml-4">
+                <h3 className="font-semibold text-gray-900 hover:text-orange-600 transition-colors duration-200 text-sm mb-1">
                   {product.name}
                 </h3>
-              </Link>
-
-              {/* Rating & Reviews */}
-              <div className="flex items-center mb-2">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <FiStar
-                      key={i}
-                      className={`w-3 h-3 ${
-                        i < Math.floor(product.rating || 4.5)
-                          ? 'text-yellow-400 fill-current'
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
+                
+                <div className="flex items-center mb-2">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <FiStar
+                        key={i}
+                        className={`w-3 h-3 ${
+                          i < Math.floor(product.rating || 4.5)
+                            ? 'text-yellow-400 fill-current'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-600 ml-1">
+                    ({product.reviewCount || Math.floor(Math.random() * 100) + 10})
+                  </span>
                 </div>
-                <span className="text-xs text-gray-600 ml-1">
-                  ({product.reviewCount || Math.floor(Math.random() * 100) + 10})
-                </span>
-              </div>
 
-              {/* Price */}
-              <div className="mb-3">
-                <div className="flex items-baseline space-x-1">
-                  <span className={`font-bold text-gray-900 ${viewMode === 'list' ? 'text-xl' : 'text-lg'}`}>
+                <div className="flex items-baseline space-x-1 mb-2">
+                  <span className="font-bold text-gray-900 text-base">
                     {formatPrice(product.salePrice || product.price)}
                   </span>
                   {product.originalPrice && product.originalPrice > (product.salePrice || product.price) && (
@@ -330,55 +283,93 @@ export function ProductGrid() {
                     </span>
                   )}
                 </div>
+
                 {product.originalPrice && product.originalPrice > (product.salePrice || product.price) && (
-                  <div className="text-xs text-green-600 font-medium">
+                  <div className="text-xs text-green-600 font-medium mb-2">
                     Save {formatPrice(product.originalPrice - (product.salePrice || product.price))}
                   </div>
                 )}
-              </div>
 
-              {/* Trust Signals */}
-              <div className="flex items-center justify-between text-xs text-gray-600 mb-3">
-                <div className="flex items-center">
+                <div className="flex items-center text-xs text-gray-600 mb-2">
                   <FiTruck className="w-3 h-3 mr-1" />
-                  <span>Fast Delivery</span>
-                </div>
-                <div className="flex items-center">
+                  <span className="mr-3">Fast Delivery</span>
                   <FiShield className="w-3 h-3 mr-1" />
                   <span>Warranty</span>
                 </div>
-              </div>
 
-              {/* Stock Status & Add to Cart */}
-              <div className="space-y-2">
                 {(product.stock || 10) > 0 ? (
-                  <div className="flex items-center text-xs">
+                  <div className="flex items-center text-xs mb-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                     <span className="text-green-600 font-medium">
                       {(product.stock || 10) > 5 ? 'In Stock' : `Only ${product.stock || Math.floor(Math.random() * 5) + 1} left`}
                     </span>
                   </div>
                 ) : (
-                  <div className="flex items-center text-xs">
+                  <div className="flex items-center text-xs mb-2">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
                     <span className="text-red-600 font-medium">Out of Stock</span>
                   </div>
                 )}
+              </div>
 
+              {/* Action Buttons */}
+              <div className="flex flex-col space-y-2 ml-4">
+                <button
+                  onClick={(e) => handleQuickView(product, e)}
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-medium transition-colors"
+                >
+                  View
+                </button>
                 <button
                   onClick={(e) => handleAddToCart(product, e)}
                   disabled={!(product.stock || 10)}
-                  className={`w-full py-2 px-3 rounded-md font-medium transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
                     (product.stock || 10) > 0
-                      ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-sm hover:shadow-md'
+                      ? 'bg-orange-500 hover:bg-orange-600 text-white'
                       : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  } ${viewMode === 'list' ? 'text-sm' : 'text-xs'}`}
+                  }`}
                 >
                   {(product.stock || 10) > 0 ? 'Add to Cart' : 'Out of Stock'}
                 </button>
               </div>
             </div>
-          </div>
+          ) : (
+            // Grid View (Minimal - Name & Photo Only)
+            <div 
+              key={product.id} 
+              className="group relative bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300"
+              onMouseEnter={() => setHoveredProduct(product.id)}
+              onMouseLeave={() => setHoveredProduct(null)}
+            >
+              {/* Product Image */}
+              <div className="relative overflow-hidden bg-gray-50">
+                <div className="aspect-square flex items-center justify-center">
+                  <img
+                    src={product.images?.[0] || 'https://via.placeholder.com/400x400?text=No+Image'}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                
+                {/* Hover Actions */}
+                <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-all duration-300 ${hoveredProduct === product.id ? 'opacity-100' : 'opacity-0'}`}>
+                  <button
+                    onClick={(e) => handleQuickView(product, e)}
+                    className="bg-white hover:bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs font-medium transition-colors"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+
+              {/* Product Name */}
+              <div className="p-2">
+                <h3 className="font-medium text-gray-900 text-xs leading-tight line-clamp-2 hover:text-orange-600 transition-colors duration-200">
+                  {product.name}
+                </h3>
+              </div>
+            </div>
+          )
         ))}
       </div>
 
@@ -387,6 +378,141 @@ export function ProductGrid() {
         <div className="text-center py-12">
           <div className="text-gray-500 text-lg mb-2">No products found</div>
           <div className="text-gray-400">Try adjusting your filters or search terms</div>
+        </div>
+      )}
+
+      {/* Product Detail Modal */}
+      {isModalOpen && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Product Details</h3>
+              <button
+                onClick={closeModal}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Product Image */}
+                <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden">
+                  <img
+                    src={selectedProduct.images?.[0] || 'https://via.placeholder.com/400x400?text=No+Image'}
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Product Info */}
+                <div className="space-y-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 mb-2">{selectedProduct.name}</h2>
+                    <span className="text-sm text-orange-600 font-medium uppercase tracking-wide">
+                      {selectedProduct.category}
+                    </span>
+                  </div>
+
+                  {/* Rating */}
+                  <div className="flex items-center">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <FiStar
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.floor(selectedProduct.rating || 4.5)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600 ml-2">
+                      ({selectedProduct.reviewCount || Math.floor(Math.random() * 100) + 10}) reviews
+                    </span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="space-y-1">
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-2xl font-bold text-gray-900">
+                        {formatPrice(selectedProduct.salePrice || selectedProduct.price)}
+                      </span>
+                      {selectedProduct.originalPrice && selectedProduct.originalPrice > (selectedProduct.salePrice || selectedProduct.price) && (
+                        <span className="text-lg text-gray-500 line-through">
+                          {formatPrice(selectedProduct.originalPrice)}
+                        </span>
+                      )}
+                    </div>
+                    {selectedProduct.originalPrice && selectedProduct.originalPrice > (selectedProduct.salePrice || selectedProduct.price) && (
+                      <div className="text-sm text-green-600 font-medium">
+                        Save {formatPrice(selectedProduct.originalPrice - (selectedProduct.salePrice || selectedProduct.price))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Trust Signals */}
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <FiTruck className="w-4 h-4 mr-1" />
+                      <span>Fast Delivery</span>
+                    </div>
+                    <div className="flex items-center">
+                      <FiShield className="w-4 h-4 mr-1" />
+                      <span>Warranty</span>
+                    </div>
+                  </div>
+
+                  {/* Stock Status */}
+                  <div className="flex items-center">
+                    {(selectedProduct.stock || 10) > 0 ? (
+                      <>
+                        <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-green-600 font-medium">
+                          {(selectedProduct.stock || 10) > 5 ? 'In Stock' : `Only ${selectedProduct.stock || Math.floor(Math.random() * 5) + 1} left`}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                        <span className="text-red-600 font-medium">Out of Stock</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-3 pt-4">
+                    <button
+                      onClick={(e) => {
+                        handleAddToCart(selectedProduct, e);
+                        closeModal();
+                      }}
+                      disabled={!(selectedProduct.stock || 10)}
+                      className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                        (selectedProduct.stock || 10) > 0
+                          ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md hover:shadow-lg'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      {(selectedProduct.stock || 10) > 0 ? 'Add to Cart' : 'Out of Stock'}
+                    </button>
+                    
+                    <Link
+                      to={`/product/${selectedProduct.id}`}
+                      onClick={closeModal}
+                      className="block w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-center rounded-lg font-medium transition-colors"
+                    >
+                      View Full Details
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
