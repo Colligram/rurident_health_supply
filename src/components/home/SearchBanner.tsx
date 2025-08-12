@@ -43,9 +43,9 @@ export function SearchBanner() {
           <div className="flex items-center justify-between">
             {/* Logo/Brand */}
             <div className="flex items-center space-x-8">
-              <div className="text-2xl font-bold">
-                <span className="text-white">Dental</span>
-                <span className="text-orange-200">Store</span>
+              <div className="text-xl font-bold">
+                <span className="text-white">Rurident</span>
+                <span className="text-orange-200"> Health Supplies</span>
               </div>
               
               {/* Location */}

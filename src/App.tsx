@@ -12,6 +12,12 @@ import { ContactPage } from './pages/ContactPage';
 import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
 import { WishlistPage } from './pages/WishlistPage';
+import { DeliveryPage } from './pages/support/DeliveryPage';
+import { ReturnsPage } from './pages/support/ReturnsPage';
+import { WarrantyPage } from './pages/support/WarrantyPage';
+import { TrackOrderPage } from './pages/support/TrackOrderPage';
+import { HelpCenterPage } from './pages/support/HelpCenterPage';
+import { SupportPage } from './pages/support/SupportPage';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { ProductsManagementPage } from './pages/admin/ProductsManagementPage';
@@ -268,14 +274,77 @@ function App() {
                     } 
                   />
                   <Route 
+                    path="/delivery" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <DeliveryPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+                  <Route 
+                    path="/returns" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <ReturnsPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+                  <Route 
+                    path="/warranty" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <WarrantyPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+                  <Route 
                     path="/track" 
                     element={
                       <>
                         <Header />
                         <main className="flex-1">
-                          <div className="min-h-screen flex items-center justify-center">
-                            <p className="text-gray-600">Order Tracking Page - Coming Soon</p>
-                          </div>
+                          <TrackOrderPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+                  <Route 
+                    path="/help" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <HelpCenterPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+                  <Route 
+                    path="/support" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <SupportPage />
                         </main>
                         <Footer />
                         <ChatBot />
