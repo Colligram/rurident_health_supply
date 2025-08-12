@@ -17,6 +17,7 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { ProductsManagementPage } from './pages/admin/ProductsManagementPage';
 import { AddProductPage } from './pages/admin/AddProductPage';
 import { EditProductPage } from './pages/admin/EditProductPage';
+import { CategoryManagementPage } from './pages/admin/CategoryManagementPage';
 import { OrdersManagementPage } from './pages/admin/OrdersManagementPage';
 import { CustomersManagementPage } from './pages/admin/CustomersManagementPage';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
@@ -51,6 +52,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <AdminDashboardPage />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/admin/categories" 
+                    element={
+                      <ProtectedRoute>
+                        <CategoryManagementPage />
                       </ProtectedRoute>
                     } 
                   />

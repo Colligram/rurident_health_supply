@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
-import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiDownload, FiPackage } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiDownload, FiPackage, FiGrid, FiList } from 'react-icons/fi';
 import { formatPrice } from '../../utils';
 import { useProducts } from '../../context/ProductsContext';
 
@@ -54,6 +54,7 @@ export function ProductsManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const categories = ['all', 'Dental Chairs', 'Equipment', 'Student Kits', 'Materials', 'Consumables'];
 
@@ -203,13 +204,42 @@ export function ProductsManagementPage() {
                 ))}
               </select>
             </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600 hidden sm:inline">View:</span>
+              <div className="flex border border-gray-300 rounded-lg overflow-hidden">
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-2 ${
+                    viewMode === 'table' 
+                      ? 'bg-orange-500 text-white' 
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <FiList className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 ${
+                    viewMode === 'grid' 
+                      ? 'bg-orange-500 text-white' 
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <FiGrid className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Products Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+        {/* Products Display */}
+        {viewMode === 'table' ? (
+          /* Table View */
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left">
@@ -301,25 +331,119 @@ export function ProductsManagementPage() {
             </table>
           </div>
 
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <FiPackage className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-              <p className="text-gray-600 mb-4">
-                {searchTerm || selectedCategory !== 'all' 
-                  ? 'Try adjusting your search or filters' 
-                  : 'Get started by adding your first product'
-                }
-              </p>
-              {!searchTerm && selectedCategory === 'all' && (
-                <Link to="/admin/products/new" className="btn-primary">
-                  <FiPlus className="w-4 h-4 mr-2" />
-                  Add Product
-                </Link>
-              )}
-            </div>
-          )}
-        </div>
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-12">
+                <FiPackage className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                <p className="text-gray-600 mb-4">
+                  {searchTerm || selectedCategory !== 'all' 
+                    ? 'Try adjusting your search or filters' 
+                    : 'Get started by adding your first product'
+                  }
+                </p>
+                {!searchTerm && selectedCategory === 'all' && (
+                  <Link to="/admin/products/new" className="btn-primary">
+                    <FiPlus className="w-4 h-4 mr-2" />
+                    Add Product
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Grid View - 2 columns on mobile, responsive scaling */
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div className="relative">
+                  {/* Product Image */}
+                  <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <FiPackage className="w-8 h-8 md:w-12 md:h-12 text-gray-400" />
+                    )}
+                  </div>
+                  
+                  {/* Selection Checkbox */}
+                  <div className="absolute top-2 left-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(product.id)}
+                      onChange={(e) => handleSelectProduct(product.id, e.target.checked)}
+                      className="rounded border-gray-300 focus:ring-primary-500"
+                    />
+                  </div>
+
+                  {/* Stock Status Badge */}
+                  <div className="absolute top-2 right-2">
+                    {getStockBadge(product.stock)}
+                  </div>
+                </div>
+
+                <div className="p-3 md:p-4">
+                  {/* Product Name */}
+                  <h3 className="font-semibold text-gray-900 text-sm md:text-base mb-1 line-clamp-2">{product.name}</h3>
+                  
+                  {/* Category */}
+                  <p className="text-xs md:text-sm text-gray-600 mb-2">{product.category}</p>
+                  
+                  {/* Price */}
+                  <div className="mb-3">
+                    <span className="font-bold text-gray-900 text-sm md:text-base">
+                      {formatPrice(product.salePrice || product.price)}
+                    </span>
+                    {product.originalPrice && product.originalPrice > (product.salePrice || product.price) && (
+                      <span className="text-xs text-gray-500 line-through ml-1">
+                        {formatPrice(product.originalPrice)}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex space-x-1">
+                    <Link
+                      to={`/admin/products/${product.id}/edit`}
+                      className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg transition-colors flex items-center justify-center"
+                    >
+                      <FiEdit className="w-3 h-3 md:w-4 md:h-4" />
+                    </Link>
+                    <button
+                      onClick={() => handleDeleteProduct(product.id)}
+                      className="flex-1 bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition-colors flex items-center justify-center"
+                    >
+                      <FiTrash2 className="w-3 h-3 md:w-4 md:h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* No Products Message for Grid View */}
+            {filteredProducts.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <FiPackage className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                <p className="text-gray-600 mb-4">
+                  {searchTerm || selectedCategory !== 'all' 
+                    ? 'Try adjusting your search or filters' 
+                    : 'Get started by adding your first product'
+                  }
+                </p>
+                {!searchTerm && selectedCategory === 'all' && (
+                  <Link to="/admin/products/new" className="btn-primary">
+                    <FiPlus className="w-4 h-4 mr-2" />
+                    Add Product
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

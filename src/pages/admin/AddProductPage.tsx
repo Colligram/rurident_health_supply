@@ -37,7 +37,16 @@ export function AddProductPage() {
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
 
-  const categories = [
+  // Dynamic categories - in a real app, this would come from an API or context
+  const [categories, setCategories] = useState([
+    'Dental Chairs',
+    'Equipment', 
+    'Consumables',
+    'Student Kits',
+    'Orthodontics',
+    'Endodontics',
+    'Periodontics',
+    'Radiology',
     'Diagnostic Instruments',
     'Operative / Restorative Instruments', 
     'Endodontic (RCT) Instruments',
