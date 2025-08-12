@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -11,38 +11,11 @@ export function ProductsPage() {
   const { addToCart } = useCart();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState('all'); // Added for price filtering
   const [showInStockOnly, setShowInStockOnly] = useState(false); // Added for stock filtering
-
-  // Handle URL parameters on component mount and when they change
-  useEffect(() => {
-    const category = searchParams.get('category');
-    const search = searchParams.get('search');
-    
-    if (category && category !== 'all') {
-      setSelectedCategory(category);
-    }
-    
-    if (search) {
-      setSearchTerm(search);
-    }
-  }, [searchParams]);
-
-  // Update URL when filters change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (selectedCategory !== 'all') {
-      params.set('category', selectedCategory);
-    }
-    if (searchTerm) {
-      params.set('search', searchTerm);
-    }
-    setSearchParams(params);
-  }, [selectedCategory, searchTerm, setSearchParams]);
 
   // Show loading state
   if (loading) {

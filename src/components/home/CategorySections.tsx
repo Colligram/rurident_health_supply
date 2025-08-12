@@ -11,10 +11,11 @@ export function CategorySections() {
       icon: '🔬',
       bgColor: 'from-blue-500 to-blue-600',
       subsections: [
-        { name: 'Crown and Bridge', path: '/products?category=crown-and-bridge', icon: '👑' },
-        { name: 'Orthodontics', path: '/products?category=orthodontics', icon: '🦷' },
-        { name: 'Complete Dentures', path: '/products?category=complete-dentures', icon: '😁' },
-        { name: 'Partial Dentures (Cobalt Chrome)', path: '/products?category=partial-dentures-cobalt-chrome', icon: '🦿' }
+        { name: 'Casting Machines', path: '/products?category=casting-machines', icon: '⚡' },
+        { name: 'Wax Knives', path: '/products?category=wax-knives', icon: '🔪' },
+        { name: 'Prosthodontic Instruments', path: '/products?category=prosthodontic-instruments', icon: '🦷' },
+        { name: 'Pindex Machines', path: '/products?category=pindex-machines', icon: '📍' },
+        { name: 'Handpiece Motors', path: '/products?category=handpiece-motors', icon: '⚙️' }
       ]
     },
     {

@@ -63,7 +63,7 @@ export function AddProductPage() {
     'Sterilization Equipment',
     'Sterilization Consumables',
     'Complete Student Kits'
-  ]);
+  ];
 
   const handleInputChange = (field: keyof ProductFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
