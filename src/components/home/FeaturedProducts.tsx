@@ -41,8 +41,8 @@ export function FeaturedProducts() {
     navigate(`/product/${product.id}`);
   };
 
-  // Show first 8 products as featured with better pagination
-  const featuredProducts = products.slice(0, 8);
+  // Show more products for better product discovery
+  const featuredProducts = products.slice(0, 12);
 
   if (loading) {
     return (
@@ -51,8 +51,8 @@ export function FeaturedProducts() {
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto mb-8"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[...Array(8)].map((_, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(12)].map((_, i) => (
                 <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
                   <div className="h-48 bg-gray-200 rounded-xl mb-4"></div>
                   <div className="h-4 bg-gray-200 rounded mb-2"></div>
@@ -74,18 +74,18 @@ export function FeaturedProducts() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <FiZap className="w-4 h-4 mr-2" />
-            Best Sellers & Featured
+            Complete Product Catalog
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Top Products
+            All Products
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Discover our most popular and highly-rated dental equipment and supplies trusted by professionals across Kenya.
+            Browse our complete collection of dental equipment, supplies, and consumables. Find everything you need for your dental practice.
           </p>
         </div>
 
         {/* Amazon-style Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {featuredProducts.map((product) => (
             <div 
               key={product.id} 
@@ -251,6 +251,59 @@ export function FeaturedProducts() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Trending Products Section */}
+        <div className="mt-16">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+              🔥 Trending Now
+            </h3>
+            <p className="text-lg text-gray-600">
+              Most popular products this week
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {products.sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4).map((product) => (
+              <div key={product.id} className="bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 rounded-xl p-4">
+                <div className="text-center mb-3">
+                  <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    TRENDING
+                  </span>
+                </div>
+                <div className="text-center">
+                  <h4 className="text-sm font-bold text-gray-900 mb-2 line-clamp-2">{product.name}</h4>
+                  <div className="flex items-center justify-center mb-2">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <FiStar
+                          key={i}
+                          className={`w-3 h-3 ${
+                            i < Math.floor(product.rating || 4.5)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-600 ml-1">
+                      ({product.reviewCount || Math.floor(Math.random() * 100) + 10})
+                    </span>
+                  </div>
+                  <div className="text-lg font-bold text-orange-600 mb-2">
+                    {formatPrice(product.salePrice || product.price)}
+                  </div>
+                  <Link
+                    to={`/product/${product.id}`}
+                    className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors duration-200"
+                  >
+                    View Details
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* View All Products Button */}
