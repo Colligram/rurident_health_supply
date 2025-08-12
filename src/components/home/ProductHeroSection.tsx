@@ -534,52 +534,6 @@ export function ProductHeroSection() {
           </div>
         </div>
 
-        {/* Why Choose Us Section */}
-        <div className="mb-12">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              🏆 Why Choose Us
-            </h2>
-            <p className="text-lg text-gray-600">
-              We're committed to providing the best dental equipment and service in Kenya
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiTruck className="w-10 h-10 text-orange-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Fast Delivery</h3>
-              <p className="text-gray-600">24-hour delivery across Nairobi, nationwide shipping available</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiShield className="w-10 h-10 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Quality Guarantee</h3>
-              <p className="text-gray-600">All products come with manufacturer warranty and our guarantee</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiZap className="w-10 h-10 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Expert Support</h3>
-              <p className="text-gray-600">Technical support and installation assistance available</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiStar className="w-10 h-10 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Best Prices</h3>
-              <p className="text-gray-600">Competitive pricing with bulk discounts for clinics</p>
-            </div>
-          </div>
-        </div>
-
         {/* Featured Brands Section */}
         <div className="mb-12">
           <div className="text-center mb-8">
