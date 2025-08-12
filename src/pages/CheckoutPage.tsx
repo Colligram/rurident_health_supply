@@ -23,6 +23,13 @@ const getCurrentDate = (): string => {
   });
 };
 
+// Utility: Format countdown timer
+const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
 // Anti-fraud measures
 const detectFraudRisk = (customerInfo: any, cart: any[]): { risk: 'low' | 'medium' | 'high', reasons: string[] } => {
   const reasons: string[] = [];
@@ -83,6 +90,8 @@ export const CheckoutPage: React.FC = () => {
   const [error, setError] = useState("");
   const [mpesaPromptSent, setMpesaPromptSent] = useState(false);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [paymentRevoked, setPaymentRevoked] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(0);
   const [fraudCheck, setFraudCheck] = useState<{ risk: 'low' | 'medium' | 'high', reasons: string[] } | null>(null);
 
   // Order details
@@ -124,15 +133,66 @@ export const CheckoutPage: React.FC = () => {
   };
 
   const simulateMpesaPrompt = () => {
+    if (!isValidPhone(customerInfo.phone)) {
+      setError('Please enter a valid Kenyan phone number (e.g., 0712345678 or +254712345678)');
+      return;
+    }
+
     setMpesaPromptSent(true);
-    // Simulate M-Pesa prompt on phone
-    setTimeout(() => {
-      setPaymentConfirmed(true);
-      handlePayment();
-    }, 8000); // Simulate 8 seconds for user to enter PIN
+    setPaymentRevoked(false);
+    setTimeRemaining(180); // 3 minutes in seconds
+    setError('');
+
+    // Start countdown timer
+    const countdownInterval = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          setPaymentRevoked(true);
+          setMpesaPromptSent(false);
+          setError('Payment timeout. Please try again.');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // Simulate M-Pesa payment confirmation (user has 3 minutes)
+    const paymentTimeout = setTimeout(() => {
+      if (!paymentConfirmed && !paymentRevoked) {
+        clearInterval(countdownInterval);
+        setPaymentRevoked(true);
+        setMpesaPromptSent(false);
+        setError('Payment timed out. Please initiate payment again.');
+      }
+    }, 180000); // 3 minutes
+
+    // Simulate successful payment after random time (30 seconds to 2.5 minutes for demo)
+    const paymentDelay = Math.random() * 120000 + 30000; // 30s to 2.5 minutes
+    const paymentSimulation = setTimeout(() => {
+      if (!paymentRevoked && mpesaPromptSent) {
+        clearInterval(countdownInterval);
+        clearTimeout(paymentTimeout);
+        setPaymentConfirmed(true);
+        handlePayment();
+      }
+    }, paymentDelay);
+
+    // Store timeout references for cleanup
+    return () => {
+      clearInterval(countdownInterval);
+      clearTimeout(paymentTimeout);
+      clearTimeout(paymentSimulation);
+    };
   };
 
   const handlePayment = async () => {
+    // Only proceed if payment is confirmed and not revoked
+    if (!paymentConfirmed || paymentRevoked) {
+      setError('Payment not confirmed. Please complete the M-Pesa payment.');
+      return;
+    }
+
     if (fraudCheck?.risk === 'high') {
       setError('Order requires manual verification. Please contact customer service.');
       return;
@@ -513,16 +573,48 @@ export const CheckoutPage: React.FC = () => {
                             {fraudCheck?.risk === 'high' ? 'Payment Blocked - Contact Support' : 'Send M-Pesa Prompt'}
                           </button>
                         </div>
-                      ) : !paymentConfirmed ? (
-                        <div className="text-center">
-                          <div className="animate-spin w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full mx-auto mb-4"></div>
-                          <p className="text-green-700 font-medium mb-2">M-Pesa prompt sent to your phone</p>
-                          <p className="text-sm text-green-600">Please check your phone and enter your M-Pesa PIN</p>
-                          <div className="flex items-center justify-center mt-4">
-                            <FiClock className="w-4 h-4 mr-2" />
-                            <span className="text-sm">Waiting for payment confirmation...</span>
-                          </div>
-                        </div>
+                                             ) : !paymentConfirmed && !paymentRevoked ? (
+                         <div className="text-center">
+                           <div className="animate-spin w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full mx-auto mb-4"></div>
+                           <p className="text-green-700 font-medium mb-2">M-Pesa prompt sent to your phone</p>
+                           <p className="text-sm text-green-600 mb-4">Please check your phone and enter your M-Pesa PIN</p>
+                           
+                           {/* Countdown Timer */}
+                           <div className="bg-green-100 border border-green-300 rounded-lg p-4 mb-4">
+                             <div className="flex items-center justify-center mb-2">
+                               <FiClock className="w-5 h-5 mr-2 text-green-600" />
+                               <span className="text-lg font-bold text-green-800">
+                                 Time Remaining: {formatTime(timeRemaining)}
+                               </span>
+                             </div>
+                             <div className="w-full bg-green-200 rounded-full h-2">
+                               <div 
+                                 className="bg-green-600 h-2 rounded-full transition-all duration-1000"
+                                 style={{ width: `${(timeRemaining / 180) * 100}%` }}
+                               ></div>
+                             </div>
+                           </div>
+                           
+                           <p className="text-sm text-green-600">Waiting for payment confirmation...</p>
+                         </div>
+                       ) : paymentRevoked ? (
+                         <div className="text-center">
+                           <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                             <FiX className="w-6 h-6 text-red-600" />
+                           </div>
+                           <p className="text-red-700 font-medium mb-2">Payment Timed Out</p>
+                           <p className="text-sm text-red-600 mb-4">Please initiate payment again</p>
+                           <button
+                             onClick={() => {
+                               setPaymentRevoked(false);
+                               setMpesaPromptSent(false);
+                               setError('');
+                             }}
+                             className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                           >
+                             Try Again
+                           </button>
+                         </div>
                       ) : (
                         <div className="text-center">
                           <FiCheck className="w-12 h-12 text-green-600 mx-auto mb-4" />
