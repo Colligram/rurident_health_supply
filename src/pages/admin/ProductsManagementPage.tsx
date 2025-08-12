@@ -50,7 +50,7 @@ const mockProducts = [
 ];
 
 export function ProductsManagementPage() {
-  const { products, deleteProduct, toggleProductSelection } = useProducts();
+  const { products, deleteProduct } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);

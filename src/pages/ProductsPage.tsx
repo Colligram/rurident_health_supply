@@ -9,7 +9,7 @@ import { formatPrice } from '../utils';
 export function ProductsPage() {
   const { products, loading, error } = useProducts(); // Assuming these are provided by context
   const { addToCart } = useCart();
-  const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
+  const { items: wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');

@@ -1,11 +1,30 @@
 import React, { useState } from 'react';
 
+// Type definitions
+interface Reply {
+  id: number;
+  name: string;
+  content: string;
+  date: string;
+}
+
+interface Testimonial {
+  id: number;
+  name: string;
+  role: string;
+  content: string;
+  rating: number;
+  date: string;
+  approved: boolean;
+  replies: Reply[];
+}
+
 // Mock admin check (replace with real auth in production)
 const isAdmin = true; // Set to false to test as normal user
 
 export function TestimonialsSection() {
   // Mock testimonials state (replace with API/database in production)
-  const [testimonials, setTestimonials] = useState([
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([
     {
       id: 1,
       name: "Dr. Sarah Johnson",
@@ -30,10 +49,10 @@ export function TestimonialsSection() {
     }
   ]);
   const [newReview, setNewReview] = useState({ name: '', role: '', content: '', rating: 5, date: '', });
-  const [replyContent, setReplyContent] = useState({});
+  const [replyContent, setReplyContent] = useState<Record<number, string>>({});
 
   // Add new review
-  const handleAddReview = (e) => {
+  const handleAddReview = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newReview.name || !newReview.content || !newReview.date) return;
     setTestimonials([
@@ -49,15 +68,15 @@ export function TestimonialsSection() {
   };
 
   // Admin: Approve review
-  const handleApprove = (id) => {
+  const handleApprove = (id: number) => {
     setTestimonials(testimonials.map(t => t.id === id ? { ...t, approved: true } : t));
   };
   // Admin: Delete review
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     setTestimonials(testimonials.filter(t => t.id !== id));
   };
   // Admin/anyone: Reply to review
-  const handleReply = (id) => {
+  const handleReply = (id: number) => {
     if (!replyContent[id]) return;
     setTestimonials(testimonials.map(t =>
       t.id === id

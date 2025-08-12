@@ -74,7 +74,7 @@ export function WishlistPage() {
               {/* Product Image */}
               <div className="relative h-48 bg-gray-100">
                 <img
-                  src={product.image}
+                  src={product.images[0] || 'https://via.placeholder.com/300'}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />

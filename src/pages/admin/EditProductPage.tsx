@@ -35,7 +35,10 @@ const mockProduct = {
 export function EditProductPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [formData, setFormData] = useState(mockProduct);
+  const [formData, setFormData] = useState({
+    ...mockProduct,
+    specifications: mockProduct.specifications as Record<string, any>
+  });
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
 
@@ -91,8 +94,7 @@ export function EditProductPage() {
 
   const removeSpecification = (key: string) => {
     setFormData(prev => {
-      const newSpecs = { ...prev.specifications };
-      delete newSpecs[key];
+      const { [key]: removed, ...newSpecs } = prev.specifications;
       return { ...prev, specifications: newSpecs };
     });
   };

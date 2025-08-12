@@ -1,21 +1,5 @@
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  salePrice?: number;
-  description: string;
-  image: string;
-  images?: string[];
-  category: string;
-  brand?: string;
-  stock: number;
-  features?: string[];
-  specifications?: Record<string, string>;
-  rating?: number;
-  reviews?: Review[];
-  isNew?: boolean;
-  isBestSeller?: boolean;
-}
+// Product interface moved to services/database.ts to avoid conflicts
+// Import from '../services/database' when needed
 
 export interface Review {
   id: string;
@@ -51,25 +35,8 @@ export interface Address {
   country: string;
 }
 
-export interface Order {
-  id: string;
-  userId: string;
-  items: OrderItem[];
-  total: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  shippingAddress: Address;
-  billingAddress?: Address;
-  paymentMethod: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface OrderItem {
-  productId: string;
-  productName: string;
-  price: number;
-  quantity: number;
-}
+// Order and OrderItem interfaces moved to services/orderService.ts to avoid conflicts
+// Import from '../services/orderService' when needed
 
 export interface BlogPost {
   id: string;

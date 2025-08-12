@@ -16,6 +16,8 @@ export interface Product {
   reviewCount: number;
   specifications?: Record<string, any>;
   features?: string[];
+  isNew?: boolean;
+  isFeatured?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -57,9 +59,9 @@ class APIService {
       this.useMockData = false;
       return { success: true, data };
     } catch (error) {
-      if (error.name === 'TimeoutError') {
+      if (error instanceof Error && error.name === 'TimeoutError') {
         console.warn('Request timeout, using mock data');
-      } else if (error.name === 'TypeError') {
+      } else if (error instanceof Error && error.name === 'TypeError') {
         console.warn('Network error (server may be down), using mock data');
       } else {
         console.error('Error fetching products:', error);

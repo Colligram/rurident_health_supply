@@ -20,7 +20,7 @@ const getCurrentDate = (): string => {
   });
 };
 
-const CheckoutPage: React.FC = () => {
+export function CheckoutPage() {
   const { items: cart, clearCart } = useCart();
   const navigate = useNavigate();
   const [customerInfo, setCustomerInfo] = useState({
@@ -75,14 +75,14 @@ const CheckoutPage: React.FC = () => {
       const mpesaResponse = await mpesaService.initiateSTKPush({
         phoneNumber: customerInfo.phone,
         amount: total,
-        orderNumber: orderNumber,
-        callbackUrl: 'https://your-callback-url.com'
+        orderId: orderNumber,
+        description: `Order payment for ${orderNumber}`
       });
 
       if (mpesaResponse.success) {
         // Create order in database
         const orderData = {
-          orderId: mpesaResponse.transactionId,
+          orderId: mpesaResponse.transactionId || orderNumber,
           orderNumber: orderNumber,
           orderDate: orderDate,
           customerInfo,
@@ -446,4 +446,4 @@ const CheckoutPage: React.FC = () => {
   );
 };
 
-export default CheckoutPage;
+// Named export used above for consistency
