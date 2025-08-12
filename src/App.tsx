@@ -8,6 +8,10 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CartPage } from './pages/CartPage';
 import { ContactPage } from './pages/ContactPage';
+import { SupportPage } from './pages/SupportPage';
+import { DeliveryPage } from './pages/DeliveryPage';
+import { ReturnsPage } from './pages/ReturnsPage';
+import { WarrantyPage } from './pages/WarrantyPage';
 
 import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
@@ -17,7 +21,7 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { ProductsManagementPage } from './pages/admin/ProductsManagementPage';
 import { AddProductPage } from './pages/admin/AddProductPage';
 import { EditProductPage } from './pages/admin/EditProductPage';
-import { CategoryManagementPage } from './pages/admin/CategoryManagementPage';
+import { CategoriesManagementPage } from './pages/admin/CategoriesManagementPage';
 import { OrdersManagementPage } from './pages/admin/OrdersManagementPage';
 import { CustomersManagementPage } from './pages/admin/CustomersManagementPage';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
@@ -26,6 +30,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import { ProductsProvider } from './context/ProductsContext';
+import { CategoriesProvider } from './context/CategoriesContext';
 import { ProtectedRoute } from './components/admin/ProtectedRoute';
 import { ChatBot } from './components/chat/ChatBot';
 import { ScrollToTop } from './components/common/ScrollToTop';
@@ -36,6 +41,7 @@ function App() {
       <CartProvider>
         <WishlistProvider>
           <ProductsProvider>
+            <CategoriesProvider>
             <Router 
               future={{ 
                 v7_startTransition: true,
@@ -59,7 +65,7 @@ function App() {
                     path="/admin/categories" 
                     element={
                       <ProtectedRoute>
-                        <CategoryManagementPage />
+                        <CategoriesManagementPage />
                       </ProtectedRoute>
                     } 
                   />
@@ -214,6 +220,62 @@ function App() {
                   />
 
                   <Route 
+                    path="/support" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <SupportPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/delivery" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <DeliveryPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/returns" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <ReturnsPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
+                    path="/warranty" 
+                    element={
+                      <>
+                        <Header />
+                        <main className="flex-1">
+                          <WarrantyPage />
+                        </main>
+                        <Footer />
+                        <ChatBot />
+                      </>
+                    } 
+                  />
+
+                  <Route 
                     path="/blog" 
                     element={
                       <>
@@ -303,6 +365,7 @@ function App() {
                 </Routes>
               </div>
             </Router>
+            </CategoriesProvider>
           </ProductsProvider>
         </WishlistProvider>
       </CartProvider>
