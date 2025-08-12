@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CartContext } from '../contexts/CartContext';
+import { CartContext } from '../context/CartContext';
 import { orderService } from '../services/orderService';
 import { mpesaService } from '../services/mpesaService';
 
