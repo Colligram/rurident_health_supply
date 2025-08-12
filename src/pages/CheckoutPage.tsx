@@ -21,7 +21,7 @@ const getCurrentDate = (): string => {
   });
 };
 
-const CheckoutPage: React.FC = () => {
+export const CheckoutPage: React.FC = () => {
   const { items: cart, clearCart } = useCart();
   const navigate = useNavigate();
 
@@ -295,5 +295,3 @@ const CheckoutPage: React.FC = () => {
     </div>
   );
 };
-
-export default CheckoutPage;
