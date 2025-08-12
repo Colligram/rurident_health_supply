@@ -128,9 +128,22 @@ export function ProductGrid() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Welcome Banner */}
+      <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-6 mb-8 border border-orange-200">
+        <div className="text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            Premium Dental Equipment & Supplies
+          </h1>
+          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+            Discover our extensive collection of professional dental equipment, chairs, consumables, and student kits. 
+            All products are genuine and come with manufacturer warranties.
+          </p>
+        </div>
+      </div>
+
       {/* Filters and Sorting Bar */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
           <div className="flex flex-wrap items-center space-x-4">
             {/* Category Filter */}
@@ -202,15 +215,15 @@ export function ProductGrid() {
 
       {/* Products Grid */}
       <div className={viewMode === 'grid' 
-        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
-        : "space-y-4"
+        ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8"
+        : "space-y-6"
       }>
         {filteredAndSortedProducts.map((product) => (
-          <div 
-            key={product.id} 
-            className={`group relative bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-orange-200 transition-all duration-300 ${
-              viewMode === 'list' ? 'flex p-4' : 'hover:-translate-y-1'
-            }`}
+                      <div 
+              key={product.id} 
+              className={`group relative bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-orange-200 transition-all duration-500 ${
+                viewMode === 'list' ? 'flex p-6' : 'hover:-translate-y-2 hover:scale-105'
+              }`}
             onMouseEnter={() => setHoveredProduct(product.id)}
             onMouseLeave={() => setHoveredProduct(null)}
           >
