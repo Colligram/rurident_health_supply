@@ -227,40 +227,7 @@ export function CategorySidebar() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="px-6 py-4 bg-gradient-to-r from-primary-50 to-blue-50 border-b border-primary-100">
-          <h3 className="text-sm font-semibold text-primary-800 mb-3">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <Link
-              to="/products?category=new-arrivals"
-              className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-            >
-              <span className="text-lg">🆕</span>
-              <span className="text-primary-700 font-medium">New Arrivals</span>
-            </Link>
-            <Link
-              to="/products?category=best-sellers"
-              className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-            >
-              <span className="text-lg">⭐</span>
-              <span className="text-primary-700 font-medium">Best Sellers</span>
-            </Link>
-            <Link
-              to="/products?category=on-sale"
-              className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-            >
-              <span className="text-lg">🏷️</span>
-              <span className="text-primary-700 font-medium">On Sale</span>
-            </Link>
-            <Link
-              to="/products?category=clearance"
-              className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-            >
-              <span className="text-lg">🔥</span>
-              <span className="text-primary-700 font-medium">Clearance</span>
-            </Link>
-          </div>
-        </div>
+
 
         {/* Categories List */}
       <div className="max-h-96 overflow-y-auto">
@@ -365,44 +332,7 @@ export function CategorySidebar() {
             </div>
           </div>
 
-          {/* Mobile Quick Actions */}
-          <div className="px-6 py-4 bg-gradient-to-r from-primary-50 to-blue-50 border-b border-primary-100">
-            <h3 className="text-sm font-semibold text-primary-800 mb-3">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <Link
-                to="/products?category=new-arrivals"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-              >
-                <span className="text-lg">🆕</span>
-                <span className="text-primary-700 font-medium">New Arrivals</span>
-              </Link>
-              <Link
-                to="/products?category=best-sellers"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-              >
-                <span className="text-lg">⭐</span>
-                <span className="text-primary-700 font-medium">Best Sellers</span>
-              </Link>
-              <Link
-                to="/products?category=on-sale"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-              >
-                <span className="text-lg">🏷️</span>
-                <span className="text-primary-700 font-medium">On Sale</span>
-              </Link>
-              <Link
-                to="/products?category=clearance"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 bg-white rounded-lg hover:bg-primary-50 transition-colors text-sm"
-              >
-                <span className="text-lg">🔥</span>
-                <span className="text-primary-700 font-medium">Clearance</span>
-              </Link>
-            </div>
-          </div>
+
 
           {/* Mobile Categories List */}
           <div className="max-h-96 overflow-y-auto">
