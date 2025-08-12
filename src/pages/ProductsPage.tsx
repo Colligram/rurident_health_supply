@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -11,11 +11,29 @@ export function ProductsPage() {
   const { addToCart } = useCart();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState('all'); // Added for price filtering
   const [showInStockOnly, setShowInStockOnly] = useState(false); // Added for stock filtering
+
+  // Initialize category from URL parameters
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [searchParams]);
+
+  // Update URL when category changes
+  useEffect(() => {
+    if (selectedCategory !== 'all') {
+      setSearchParams({ category: selectedCategory });
+    } else {
+      setSearchParams({});
+    }
+  }, [selectedCategory, setSearchParams]);
 
   // Show loading state
   if (loading) {

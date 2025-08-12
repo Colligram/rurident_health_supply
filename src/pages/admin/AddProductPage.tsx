@@ -62,8 +62,12 @@ export function AddProductPage() {
     'Clinical Machines & Equipment',
     'Sterilization Equipment',
     'Sterilization Consumables',
-    'Complete Student Kits'
-  ];
+    'Complete Student Kits',
+    'Crown and Bridge',
+    'Orthodontics',
+    'Complete Dentures',
+    'Partial Dentures (Cobalt Chrome)'
+  ]);
 
   const handleInputChange = (field: keyof ProductFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));

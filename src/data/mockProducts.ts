@@ -128,155 +128,152 @@ export const mockProducts: Product[] = [
   },
   {
     id: '5',
-    name: 'Dental Autoclave Sterilizer',
-    description: 'Class B autoclave sterilizer with advanced vacuum system, digital controls, and comprehensive sterilization cycles.',
-    price: 2800,
+    name: 'Crown and Bridge Kit',
+    description: 'Complete kit for crown and bridge work including burs, diamonds, and finishing tools.',
+    price: 1200,
+    salePrice: 1080,
+    originalPrice: 1200,
     images: [
-      'https://images.unsplash.com/photo-1580281781089-3434eec81a44?w=400'
+      'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400'
     ],
-    category: 'Sterilization Equipment',
+    category: 'crown-bridge',
     inStock: true,
     stock: 8,
     rating: 4.9,
-    reviewCount: 12,
+    reviewCount: 24,
     specifications: {
-      'Capacity': '18 Liters',
-      'Temperature Range': '121-134°C',
-      'Cycle Time': '15-45 minutes',
-      'Chamber': 'Stainless Steel',
-      'Safety Features': 'Multiple Safety Interlocks'
+      'Kit Contents': 'Burs, Diamonds, Finishing Tools',
+      'Material': 'High-Quality Steel & Diamond',
+      'Sterilization': 'Autoclavable',
+      'Warranty': '1 Year'
     },
     features: [
-      'Class B sterilization standard',
-      'Advanced vacuum system',
-      'Digital control panel',
-      'Multiple cycle options',
-      'Safety interlock system'
+      'Complete crown preparation tools',
+      'Bridge construction instruments',
+      'High-quality diamond burs',
+      'Finishing and polishing tools',
+      'Professional-grade materials'
+    ],
+    createdAt: new Date('2024-01-05'),
+    updatedAt: new Date('2024-01-05')
+  },
+  {
+    id: '6',
+    name: 'Orthodontic Bracket System',
+    description: 'Complete orthodontic bracket system with self-ligating brackets and archwires.',
+    price: 850,
+    images: [
+      'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400'
+    ],
+    category: 'orthodontics',
+    inStock: true,
+    stock: 15,
+    rating: 4.7,
+    reviewCount: 31,
+    specifications: {
+      'Bracket Type': 'Self-Ligating',
+      'Material': 'Stainless Steel',
+      'Archwire Compatibility': '0.018" & 0.022"',
+      'Bracket Size': 'Standard'
+    },
+    features: [
+      'Self-ligating bracket design',
+      'Stainless steel construction',
+      'Compatible with standard archwires',
+      'Easy bracket placement',
+      'Reduced treatment time'
+    ],
+    createdAt: new Date('2024-01-03'),
+    updatedAt: new Date('2024-01-03')
+  },
+  {
+    id: '7',
+    name: 'Complete Denture Set',
+    description: 'Professional complete denture set with acrylic teeth and base materials.',
+    price: 650,
+    salePrice: 585,
+    originalPrice: 650,
+    images: [
+      'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400'
+    ],
+    category: 'complete-dentures',
+    inStock: true,
+    stock: 20,
+    rating: 4.6,
+    reviewCount: 18,
+    specifications: {
+      'Teeth Material': 'Acrylic',
+      'Base Material': 'Heat-Cured Acrylic',
+      'Shade Selection': 'Multiple Shades Available',
+      'Size': 'Standard Sizes'
+    },
+    features: [
+      'High-quality acrylic teeth',
+      'Heat-cured base material',
+      'Multiple shade options',
+      'Natural appearance',
+      'Durable construction'
+    ],
+    createdAt: new Date('2024-01-02'),
+    updatedAt: new Date('2024-01-02')
+  },
+  {
+    id: '8',
+    name: 'Partial Denture Framework (Cobalt Chrome)',
+    description: 'Cobalt chrome partial denture framework with precision fit and durability.',
+    price: 1800,
+    images: [
+      'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400'
+    ],
+    category: 'partial-dentures',
+    inStock: true,
+    stock: 6,
+    rating: 4.8,
+    reviewCount: 12,
+    specifications: {
+      'Material': 'Cobalt Chrome Alloy',
+      'Framework Type': 'Cast Metal',
+      'Fit': 'Precision Fit',
+      'Durability': 'High Strength'
+    },
+    features: [
+      'Cobalt chrome alloy construction',
+      'Precision cast framework',
+      'High strength and durability',
+      'Excellent fit and retention',
+      'Long-lasting performance'
     ],
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01')
   },
   {
-    id: '6',
-    name: 'Dental Impression Tray Set',
-    description: 'Complete set of dental impression trays in various sizes for upper and lower jaw impressions.',
-    price: 45,
+    id: '9',
+    name: 'Lab Consumables Kit',
+    description: 'Essential laboratory consumables including wax, plaster, and finishing materials.',
+    price: 320,
     images: [
-      'https://images.unsplash.com/photo-1609203803012-ef1c563a3999?w=400'
+      'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400'
     ],
-    category: 'Prosthodontic Instruments',
+    category: 'lab-consumables',
     inStock: true,
-    stock: 50,
-    rating: 4.3,
-    reviewCount: 28,
+    stock: 30,
+    rating: 4.5,
+    reviewCount: 45,
     specifications: {
-      'Material': 'Medical Grade Plastic',
-      'Sizes': '6 Different Sizes',
-      'Type': 'Perforated Design',
-      'Sterilization': 'Autoclavable',
-      'Color': 'Assorted Colors'
+      'Contents': 'Wax, Plaster, Finishing Materials',
+      'Quantity': 'Bulk Pack',
+      'Quality': 'Professional Grade',
+      'Shelf Life': '2 Years'
     },
     features: [
-      'Multiple sizes available',
-      'Perforated design for better retention',
-      'Autoclavable material',
-      'Ergonomic handle design',
-      'Color-coded for easy identification'
+      'High-quality modeling wax',
+      'Dental plaster and stone',
+      'Finishing and polishing materials',
+      'Bulk packaging for cost savings',
+      'Professional-grade quality'
     ],
     createdAt: new Date('2023-12-28'),
     updatedAt: new Date('2023-12-28')
-  },
-  {
-    id: '7',
-    name: 'Composite Filling Kit',
-    description: 'Professional composite filling instrument kit with multiple sculpting tools and shade guides.',
-    price: 180,
-    images: [
-      'https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=400'
-    ],
-    category: 'Operative / Restorative Instruments',
-    inStock: true,
-    stock: 20,
-    rating: 4.4,
-    reviewCount: 16,
-    specifications: {
-      'Tools Included': '12 Different Instruments',
-      'Material': 'Stainless Steel',
-      'Handle': 'Ergonomic Grip',
-      'Case': 'Sterilization Tray Included',
-      'Coating': 'Non-slip Surface'
-    },
-    features: [
-      '12 specialized sculpting tools',
-      'Stainless steel construction',
-      'Ergonomic handle design',
-      'Sterilization tray included',
-      'Non-slip grip surface'
-    ],
-    createdAt: new Date('2023-12-25'),
-    updatedAt: new Date('2023-12-25')
-  },
-  {
-    id: '8',
-    name: 'Digital Dental X-Ray Sensor',
-    description: 'High-resolution digital X-ray sensor with instant image capture and superior image quality.',
-    price: 3500,
-    salePrice: 3200,
-    originalPrice: 3500,
-    images: [
-      'https://images.unsplash.com/photo-1551076805-e1869033e561?w=400'
-    ],
-    category: 'Clinical Machines & Equipment',
-    inStock: true,
-    stock: 5,
-    rating: 4.8,
-    reviewCount: 9,
-    specifications: {
-      'Resolution': '20 LP/mm',
-      'Sensor Size': 'Size 2 (31 x 41 mm)',
-      'Connection': 'USB 2.0',
-      'Software': 'Imaging Software Included',
-      'Radiation Reduction': 'Up to 80% Less'
-    },
-    features: [
-      'High-resolution imaging',
-      'Instant image capture',
-      'Significant radiation reduction',
-      'Easy USB connection',
-      'Professional imaging software'
-    ],
-    createdAt: new Date('2023-12-20'),
-    updatedAt: new Date('2023-12-20')
-  },
-  {
-    id: '9',
-    name: 'Periodontal Probe Set',
-    description: 'Professional periodontal probing kit with color-coded markings and ergonomic handles.',
-    price: 85,
-    images: [
-      'https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=400'
-    ],
-    category: 'Diagnostic Instruments',
-    inStock: true,
-    stock: 35,
-    rating: 4.2,
-    reviewCount: 22,
-    specifications: {
-      'Probes Included': '6 Different Types',
-      'Material': 'Stainless Steel',
-      'Markings': 'Color-coded Graduations',
-      'Handle': 'Lightweight Aluminum',
-      'Precision': '±0.5mm Accuracy'
-    },
-    features: [
-      '6 different probe types',
-      'Color-coded markings',
-      'Lightweight aluminum handles',
-      'High precision measurements',
-      'Autoclavable construction'
-    ],
-    createdAt: new Date('2023-12-15'),
-    updatedAt: new Date('2023-12-15')
   },
   {
     id: '10',
