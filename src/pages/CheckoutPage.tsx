@@ -1,6 +1,6 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CartContext } from '../context/CartContext';
+import { useCart } from '../context/CartContext';
 import { orderService } from '../services/orderService';
 import { mpesaService } from '../services/mpesaService';
 
@@ -21,7 +21,7 @@ const getCurrentDate = (): string => {
 };
 
 const CheckoutPage: React.FC = () => {
-  const { cart, clearCart } = useContext(CartContext);
+  const { items: cart, clearCart } = useCart();
   const navigate = useNavigate();
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
