@@ -90,7 +90,7 @@ export function DeliveryPage() {
                   <h3 className="font-semibold text-gray-900 mb-3">Standard Delivery</h3>
                   <ul className="space-y-2 text-sm text-gray-600">
                     <li>• Nairobi CBD: <span className="font-medium text-green-600">Free for orders ≥ KSH 5,000</span></li>
-                    <li>• Nairobi CBD: <span className="font-medium">KSH 300 for orders < KSH 5,000</span></li>
+                    <li>• Nairobi CBD: <span className="font-medium">KSH 300 for orders &lt; KSH 5,000</span></li>
                     <li>• Greater Nairobi: <span className="font-medium">KSH 500 - KSH 800</span></li>
                     <li>• Major Towns: <span className="font-medium">KSH 800 - KSH 1,500</span></li>
                     <li>• Remote Areas: <span className="font-medium">KSH 1,500 - KSH 3,000</span></li>
