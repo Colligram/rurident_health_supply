@@ -21,9 +21,9 @@ export function HorizontalCategoryNav() {
   const currentCategory = searchParams.get('category');
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-16 z-40">
+    <div className="bg-white border-b border-gray-200 sticky top-14 md:top-16 z-40">
       <div className="container-max">
-        <div className="flex items-center space-x-8 overflow-x-auto scrollbar-hide py-4">
+        <div className="flex items-center overflow-x-auto scrollbar-hide py-3 gap-2 md:gap-4">
           {categories.map((category) => {
             const isActive = category.isDefault 
               ? !currentCategory 
@@ -33,14 +33,14 @@ export function HorizontalCategoryNav() {
               <Link
                 key={category.name}
                 to={category.href}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap ${
+                className={`flex items-center space-x-1 md:space-x-2 px-3 md:px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap flex-shrink-0 text-sm ${
                   isActive
-                    ? 'text-orange-600 bg-orange-50 border-b-2 border-orange-600'
-                    : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50'
+                    ? 'text-white bg-gradient-to-r from-orange-500 to-orange-600 shadow-md'
+                    : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50 border border-gray-200 hover:border-orange-200'
                 }`}
               >
-                <category.icon className="w-4 h-4" />
-                <span className="font-medium">{category.name}</span>
+                <category.icon className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
+                <span className="font-medium text-xs md:text-sm">{category.name}</span>
               </Link>
             );
           })}

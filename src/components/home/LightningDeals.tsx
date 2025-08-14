@@ -67,24 +67,26 @@ const lightningDeals = [
 
 export function LightningDeals() {
   return (
-    <div className="bg-white border-b border-gray-100 py-6">
+    <div className="bg-white border-b border-gray-100 py-4 md:py-6">
       <div className="container-max">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Lightning deals</h2>
-          <Link to="/products" className="text-orange-600 hover:text-orange-700 font-medium flex items-center space-x-1">
+          <h2 className="text-lg md:text-xl font-bold text-gray-900">Lightning deals</h2>
+          <Link to="/products" className="text-orange-600 hover:text-orange-700 font-medium flex items-center space-x-1 text-sm">
             <span>View all</span>
-            <FiTruck className="w-4 h-4" />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </Link>
         </div>
         
-        <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-4">
+        <div className="flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide pb-4">
           {lightningDeals.map((deal) => (
-            <div key={deal.id} className="flex-shrink-0 w-64 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div key={deal.id} className="flex-shrink-0 w-44 md:w-56 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <div className="relative">
                 <img 
                   src={deal.image} 
                   alt={deal.name}
-                  className="w-full h-48 object-cover rounded-t-lg"
+                  className="w-full h-32 md:h-40 object-cover rounded-t-lg"
                   onError={(e) => {
                     e.currentTarget.src = 'https://via.placeholder.com/400x400?text=Dental+Product';
                   }}
@@ -99,13 +101,13 @@ export function LightningDeals() {
                     NEW
                   </div>
                 )}
-                <button className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors duration-200">
-                  <FiHeart className="w-4 h-4 text-gray-600" />
+                <button className="absolute bottom-2 right-2 w-7 h-7 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors duration-200">
+                  <FiHeart className="w-3 h-3 text-gray-600" />
                 </button>
               </div>
               
-              <div className="p-4">
-                <h3 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
+              <div className="p-3">
+                <h3 className="font-medium text-gray-900 text-xs md:text-sm mb-2 line-clamp-2">
                   {deal.name}
                 </h3>
                 
@@ -117,17 +119,17 @@ export function LightningDeals() {
                   <span className="text-xs text-gray-400">({deal.reviews})</span>
                 </div>
                 
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-bold text-orange-600">{deal.price}</span>
-                    <span className="text-sm text-gray-400 line-through">{deal.originalPrice}</span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-sm md:text-base font-bold text-orange-600">{deal.price}</span>
+                    <span className="text-xs text-gray-400 line-through">{deal.originalPrice}</span>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">{deal.sold}</span>
-                  <button className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors duration-200">
-                    <FiShoppingCart className="w-4 h-4 text-white" />
+                  <button className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors duration-200">
+                    <FiShoppingCart className="w-3 h-3 text-white" />
                   </button>
                 </div>
               </div>

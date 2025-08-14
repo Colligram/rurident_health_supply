@@ -122,18 +122,14 @@ export function ProductGrid() {
 
   return (
     <div className="space-y-6">
-      {/* Filters and Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-xl">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <FiFilter className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Filters:</span>
-          </div>
-          
+      {/* Filters and Controls - Mobile Optimized */}
+      <div className="mb-4">
+        {/* Mobile Filters - Horizontal Scroll */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 mb-3">
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent whitespace-nowrap flex-shrink-0"
           >
             <option value="all">All Categories</option>
             {categories.map((cat) => (
@@ -144,32 +140,30 @@ export function ProductGrid() {
           <select
             value={priceRange}
             onChange={(e) => setPriceRange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent whitespace-nowrap flex-shrink-0"
           >
             <option value="all">All Prices</option>
-            <option value="10000">Under KES 10,000</option>
-            <option value="50000">KES 10,000 - 50,000</option>
-            <option value="100000">KES 50,000 - 100,000</option>
-            <option value="999999">Over KES 100,000</option>
+            <option value="10000">Under 10K</option>
+            <option value="50000">10K - 50K</option>
+            <option value="100000">50K - 100K</option>
+            <option value="999999">Over 100K</option>
+          </select>
+          
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent whitespace-nowrap flex-shrink-0"
+          >
+            <option value="featured">Featured</option>
+            <option value="price-low">Price ↑</option>
+            <option value="price-high">Price ↓</option>
+            <option value="name">Name A-Z</option>
+            <option value="rating">Top Rated</option>
           </select>
         </div>
-        
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            >
-              <option value="featured">Featured</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="name">Name A-Z</option>
-              <option value="rating">Highest Rated</option>
-            </select>
-          </div>
-          
+
+        {/* View Mode Toggle - Hidden on mobile, shown on larger screens */}
+        <div className="hidden md:flex justify-end">
           <div className="flex items-center space-x-1 bg-white border border-gray-300 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
@@ -195,10 +189,10 @@ export function ProductGrid() {
         </div>
       </div>
 
-      {/* Products Grid */}
-      <div className={`grid gap-6 ${
+      {/* Products Grid - Mobile Optimized 2-column layout */}
+      <div className={`grid gap-3 md:gap-6 ${
         viewMode === 'grid' 
-          ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+          ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4' 
           : 'grid-cols-1'
       }`}>
         {filteredAndSortedProducts.map((product) => (
@@ -212,16 +206,16 @@ export function ProductGrid() {
           >
             {/* Product Image */}
             <div className={`relative ${viewMode === 'list' ? 'w-48 flex-shrink-0' : ''}`}>
-                              <img
-                  src={product.images?.[0] || 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop&crop=center'}
-                  alt={product.name}
-                  className={`w-full object-cover transition-transform duration-300 ${
-                    hoveredProduct === product.id ? 'scale-105' : 'scale-100'
-                  } ${viewMode === 'list' ? 'h-48' : 'h-48'}`}
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://via.placeholder.com/400x400?text=Dental+Product';
-                  }}
-                />
+              <img
+                src={product.images?.[0] || 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop&crop=center'}
+                alt={product.name}
+                className={`w-full object-cover transition-transform duration-300 ${
+                  hoveredProduct === product.id ? 'scale-105' : 'scale-100'
+                } ${viewMode === 'list' ? 'h-48' : 'h-32 md:h-48'}`}
+                onError={(e) => {
+                  e.currentTarget.src = 'https://via.placeholder.com/400x400?text=Dental+Product';
+                }}
+              />
               
               {/* Badges */}
               {product.isNew && (
@@ -260,20 +254,20 @@ export function ProductGrid() {
               </div>
             </div>
             
-            {/* Product Info */}
-            <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-              <div className="mb-3">
-                <h3 className="font-medium text-gray-900 text-sm mb-2 line-clamp-2">
+            {/* Product Info - Mobile Optimized */}
+            <div className={`p-2 md:p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
+              <div className="mb-2 md:mb-3">
+                <h3 className="font-medium text-gray-900 text-xs md:text-sm mb-1 md:mb-2 line-clamp-2">
                   {product.name}
                 </h3>
                 
-                {/* Rating */}
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="flex items-center space-x-1">
+                {/* Rating - Simplified for mobile */}
+                <div className="flex items-center space-x-1 mb-1 md:mb-2">
+                  <div className="flex items-center space-x-0.5">
                     {[...Array(5)].map((_, i) => (
                       <FiStar
                         key={i}
-                        className={`w-3 h-3 ${
+                        className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
                           i < (product.rating || 0)
                             ? 'text-yellow-400 fill-current'
                             : 'text-gray-300'
@@ -284,9 +278,9 @@ export function ProductGrid() {
                   <span className="text-xs text-gray-400">({product.reviewCount || 0})</span>
                 </div>
                 
-                {/* Seller Info */}
+                {/* Seller Info - Hidden on small screens */}
                 {product.seller && (
-                  <div className="flex items-center space-x-2 mb-2">
+                  <div className="hidden md:flex items-center space-x-2 mb-2">
                     <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                       Star seller
                     </span>
@@ -295,14 +289,14 @@ export function ProductGrid() {
                 )}
               </div>
               
-              {/* Price */}
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-bold text-orange-600">
+              {/* Price - Mobile Optimized */}
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2 md:mb-3">
+                <div className="flex items-center space-x-1 md:space-x-2">
+                  <span className="text-sm md:text-lg font-bold text-orange-600">
                     {formatPrice(product.salePrice || product.price)}
                   </span>
                   {product.salePrice && (
-                    <span className="text-sm text-gray-400 line-through">
+                    <span className="text-xs md:text-sm text-gray-400 line-through">
                       {formatPrice(product.price)}
                     </span>
                   )}
@@ -312,13 +306,14 @@ export function ProductGrid() {
                 )}
               </div>
               
-              {/* Action Button */}
+              {/* Action Button - Mobile Optimized */}
               <button
                 onClick={(e) => handleAddToCart(product, e)}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white py-1.5 md:py-2 px-2 md:px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-1 md:space-x-2 text-xs md:text-sm"
               >
-                <FiShoppingCart className="w-4 h-4" />
-                <span>Add to Cart</span>
+                <FiShoppingCart className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Add to Cart</span>
+                <span className="sm:hidden">Add</span>
               </button>
             </div>
           </div>
