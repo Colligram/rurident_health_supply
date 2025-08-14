@@ -1,248 +1,172 @@
-# Rurident Health Supplies E-Commerce System
+# Rurident Health Supplies - E-commerce Platform
 
-A modern e-commerce platform for health supplies with M-Pesa integration, built with React, Node.js, and MongoDB.
+A modern, responsive e-commerce platform for dental and medical supplies, inspired by the Temu website design.
 
-## Features
+## 🎨 New Design Features
 
-### 🛒 **Order Management**
-- Auto-generated order numbers and dates
-- Automatic calculation of totals (subtotal, shipping, tax)
-- Complete order details stored in database
-- PDF receipt generation after payment confirmation
+### Temu-Inspired Layout
+- **Prominent Search Bar**: Centered, large search bar with category dropdown
+- **Horizontal Category Navigation**: Easy-to-use horizontal scrolling category menu
+- **Promotional Banners**: Free shipping, safety features, and trust signals
+- **Lightning Deals Section**: Featured products in horizontal scrollable cards
+- **Partnership Banner**: Collaboration with Kenya Medical Supplies Authority
+- **Secondary Filters**: 5-star rated, best-selling, new items, and more
+- **Modern Product Grid**: Clean, card-based product layout with hover effects
 
-### 🎨 **AliExpress-Style Design**
-- Compact product grid layout
-- 2-column mobile view for optimal phone experience
-- Responsive design for all screen sizes
-- Modern, clean UI with hover effects
+### Preserved Features
+- **Left Sidebar Categories**: Detailed category navigation maintained as requested
+- **Responsive Design**: Mobile-first approach with desktop optimization
+- **Product Management**: Full CRUD operations for products and categories
+- **Shopping Cart**: Persistent cart with local storage
+- **Wishlist**: Save products for later
+- **Admin Panel**: Complete backend management system
 
-### 🧭 **Fixed Navigation Header**
-- Sticky header that remains visible when scrolling
-- Smooth rounded corners with visible borders
-- Glowing effects and smooth transitions
-- Professional appearance with backdrop blur
+## 🚀 Getting Started
 
-### 💳 **Payment Integration**
-- M-Pesa mobile money integration
-- Secure payment processing
-- Real-time payment status updates
-- Order confirmation and receipt generation
+### Prerequisites
+- Node.js 16+ 
+- npm or yarn
 
-## Tech Stack
+### Installation
+```bash
+# Clone the repository
+git clone <repository-url>
+cd rurident-ecommerce
 
-### Frontend
-- **React 18** with TypeScript
-- **Tailwind CSS** for styling
-- **React Router DOM** for navigation
-- **Context API** for state management
+# Install dependencies
+npm install
 
-### Backend
-- **Node.js** with Express
-- **MongoDB** with Mongoose
-- **PDFKit** for receipt generation
-- **CORS** enabled for cross-origin requests
+# Start development server
+npm run dev
 
-## Prerequisites
+# Start backend server (in another terminal)
+npm run server
 
-- Node.js (v16 or higher)
-- MongoDB (running locally or cloud instance)
-- npm or yarn package manager
+# Or run both simultaneously
+npm run dev:full
+```
 
-## Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd rurident-ecommerce
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up MongoDB**
-   - Ensure MongoDB is running on `mongodb://localhost:27017`
-   - The system will automatically create a `rurident` database
-
-4. **Start the development servers**
-   ```bash
-   # Start both frontend and backend
-   npm run dev:full
-   
-   # Or start them separately:
-   npm run dev          # Frontend (Vite)
-   npm run server       # Backend (Express)
-   ```
-
-## Available Scripts
-
+### Available Scripts
 - `npm run dev` - Start frontend development server
 - `npm run server` - Start backend server
-- `npm run dev:full` - Start both frontend and backend concurrently
-- `npm run build` - Build frontend for production
+- `npm run dev:full` - Run both frontend and backend
+- `npm run build` - Build for production
 - `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-## API Endpoints
+## 🏗️ Architecture
 
-### Products
-- `GET /api/products` - Get all products
-- `GET /api/products/:id` - Get single product
+### Frontend (React + TypeScript + Vite)
+- **Components**: Modular, reusable UI components
+- **Context**: Global state management for cart, wishlist, and products
+- **Routing**: React Router for navigation
+- **Styling**: Tailwind CSS with custom utilities
 
-### Orders
-- `POST /api/orders` - Create new order
-- `GET /api/orders` - Get all orders
-- `GET /api/orders/:id` - Get single order
-- `PUT /api/orders/:id` - Update order status
-- `DELETE /api/orders/:id` - Delete order
-- `GET /api/orders/:id/receipt` - Generate PDF receipt
+### Backend (Node.js + Express)
+- **REST API**: RESTful endpoints for products, categories, orders
+- **File Upload**: Image handling for products
+- **Authentication**: JWT-based admin authentication
+- **Database**: JSON-based data storage (easily replaceable with SQL/NoSQL)
 
-## Database Schema
+## 📱 Components Structure
 
-### Product
-```typescript
-{
-  name: string,
-  description: string,
-  price: number,
-  image: string,
-  category: string,
-  inStock: boolean,
-  createdAt: Date
-}
-```
-
-### Order
-```typescript
-{
-  orderId: string,
-  orderNumber: string,
-  orderDate: string,
-  customerInfo: {
-    firstName: string,
-    lastName: string,
-    email: string,
-    phone: string,
-    address: string,
-    city: string,
-    county: string,
-    postalCode: string,
-    nairobiArea?: string
-  },
-  items: Array<{
-    id: string,
-    name: string,
-    price: number,
-    quantity: number,
-    image?: string,
-    totalPrice: number
-  }>,
-  subtotal: number,
-  shipping: number,
-  tax: number,
-  total: number,
-  paymentMethod: 'mpesa' | 'card',
-  paymentStatus: 'pending' | 'completed' | 'failed',
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled',
-  mpesaTransactionId?: string,
-  notes?: string,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-
-## Configuration
-
-### Frontend Configuration
-- API base URL: `http://localhost:5000/api`
-- Vite dev server: `http://localhost:5173`
-
-### Backend Configuration
-- Server port: `5000`
-- MongoDB URI: `mongodb://localhost:27017/rurident`
-
-## Features in Detail
-
-### 1. Order Management
-The system automatically generates:
-- **Order Number**: Format `RUR-{timestamp}-{random}`
-- **Order Date**: Current date in readable format
-- **Total Amount**: Calculated from subtotal + shipping + tax (16% VAT)
-
-### 2. Product Display
-- **Grid Layout**: Responsive grid with 2 columns on mobile, 3-5 on larger screens
-- **Compact Cards**: Products take minimal screen space
-- **Hover Effects**: Smooth animations and scaling on interaction
-
-### 3. Navigation Header
-- **Fixed Position**: Stays visible when scrolling
-- **Smooth Transitions**: Animated background and shadow changes
-- **Glowing Effects**: Subtle shadows and border highlights
-- **Rounded Design**: Modern, smooth corners throughout
-
-### 4. Receipt Generation
-- **PDF Format**: Professional receipts generated on the backend
-- **Payment Confirmation**: Only available after successful payment
-- **Complete Details**: Includes all order information and customer details
-
-## Development
-
-### Project Structure
 ```
 src/
-├── components/          # Reusable UI components
-│   ├── layout/         # Layout components (Header, Footer)
-│   └── ui/            # UI components (buttons, forms, etc.)
-├── contexts/           # React Context providers
-├── pages/              # Page components
-├── services/           # API service functions
-└── types/              # TypeScript type definitions
-
-server/
-├── index.js            # Express server entry point
-└── models/             # Database models (if separated)
+├── components/
+│   ├── home/
+│   │   ├── HomeLayout.tsx          # Main home page layout
+│   │   ├── SearchBanner.tsx        # Prominent search section
+│   │   ├── HorizontalCategoryNav.tsx # Horizontal category navigation
+│   │   ├── PromotionalBanners.tsx  # Trust signals and offers
+│   │   ├── LightningDeals.tsx      # Featured products section
+│   │   ├── PartnershipBanner.tsx   # Partnership information
+│   │   ├── SecondaryFilters.tsx    # Additional filtering options
+│   │   ├── CategorySidebar.tsx     # Left sidebar categories
+│   │   └── ProductGrid.tsx         # Main product display
+│   ├── layout/
+│   │   ├── Header.tsx              # Navigation header
+│   │   ├── Footer.tsx              # Site footer
+│   │   └── MobileMenu.tsx          # Mobile navigation
+│   └── common/                     # Reusable components
+├── pages/                          # Page components
+├── context/                        # React Context providers
+├── services/                       # API service functions
+└── utils/                          # Utility functions
 ```
 
-### Adding New Features
-1. Create components in `src/components/`
-2. Add pages in `src/pages/`
-3. Create services in `src/services/`
-4. Update backend API in `server/index.js`
-5. Add types in `src/types/`
+## 🎯 Key Features
 
-## Troubleshooting
+### User Experience
+- **Fast Navigation**: Horizontal category browsing
+- **Visual Hierarchy**: Clear product information and pricing
+- **Trust Signals**: Free shipping, safety badges, ratings
+- **Responsive Design**: Works on all device sizes
 
-### Common Issues
+### Product Management
+- **Category Organization**: Hierarchical category structure
+- **Product Search**: Full-text search with filters
+- **Image Management**: Multiple product images
+- **Inventory Tracking**: Stock management
 
-1. **MongoDB Connection Error**
-   - Ensure MongoDB is running
-   - Check connection string in `server/index.js`
+### Shopping Features
+- **Shopping Cart**: Add/remove items, quantity management
+- **Wishlist**: Save products for later
+- **Order Management**: Complete order workflow
+- **Payment Integration**: M-Pesa and card payment support
 
-2. **Port Already in Use**
-   - Change port in `server/index.js` or kill existing process
-   - Use `lsof -i :5000` to find process using port 5000
+## 🔧 Customization
 
-3. **Frontend Build Errors**
-   - Clear `node_modules` and reinstall
-   - Check TypeScript configuration
+### Styling
+- **Tailwind CSS**: Utility-first CSS framework
+- **Custom Colors**: Orange-based brand color scheme
+- **Responsive Breakpoints**: Mobile-first responsive design
+- **Custom Utilities**: Additional CSS utilities for components
 
-4. **PDF Generation Fails**
-   - Ensure backend is running
-   - Check order ID exists in database
-   - Verify payment status is 'completed'
+### Configuration
+- **Environment Variables**: Configurable API endpoints
+- **Theme Customization**: Easy color and style modifications
+- **Component Props**: Flexible component configuration
 
-## Contributing
+## 📊 Performance
+
+- **Lazy Loading**: Images and components loaded on demand
+- **Optimized Images**: Responsive image handling
+- **Code Splitting**: Route-based code splitting
+- **Caching**: Local storage for cart and user preferences
+
+## 🚀 Deployment
+
+### Frontend
+```bash
+npm run build
+# Deploy dist/ folder to your hosting service
+```
+
+### Backend
+```bash
+npm run build
+# Deploy to Node.js hosting (Heroku, Vercel, etc.)
+```
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Add tests if applicable
 5. Submit a pull request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License.
 
-## Support
+## 🆘 Support
 
-For support or questions, please contact the development team or create an issue in the repository.
+For support and questions:
+- Email: support@rurident.com
+- Phone: +254 700 000 000
+- Address: Mepalux Plaza, River Road, 3rd Floor, Suite 304
+
+---
+
+**Rurident Health Supplies** - Your trusted partner in dental healthcare delivery across Kenya.
