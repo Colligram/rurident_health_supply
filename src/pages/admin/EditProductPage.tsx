@@ -29,7 +29,13 @@ const mockProduct = {
   images: [
     'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
     'https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400'
-  ]
+  ],
+  isFeatured: true,
+  isNew: false,
+  isBestSeller: true,
+  rating: 4.8,
+  reviewCount: 45,
+  soldCount: 23
 };
 
 export function EditProductPage() {
@@ -216,6 +222,95 @@ export function EditProductPage() {
                       value={formData.brand}
                       onChange={(e) => handleInputChange('brand', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  {/* Product Status & Metrics */}
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Product Status & Metrics
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="isFeatured"
+                          checked={formData.isFeatured || false}
+                          onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
+                          className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                        />
+                        <label htmlFor="isFeatured" className="text-sm text-gray-700">
+                          Featured Product
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="isNew"
+                          checked={formData.isNew || false}
+                          onChange={(e) => handleInputChange('isNew', e.target.checked)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor="isNew" className="text-sm text-gray-700">
+                          New Product
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="isBestSeller"
+                          checked={formData.isBestSeller || false}
+                          onChange={(e) => handleInputChange('isBestSeller', e.target.checked)}
+                          className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                        />
+                        <label htmlFor="isBestSeller" className="text-sm text-gray-700">
+                          Best Seller
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Rating (1-5)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="5"
+                      step="0.1"
+                      value={formData.rating || 4.5}
+                      onChange={(e) => handleInputChange('rating', parseFloat(e.target.value) || 4.5)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="4.5"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Review Count
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.reviewCount || 0}
+                      onChange={(e) => handleInputChange('reviewCount', parseInt(e.target.value) || 0)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sold Count
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.soldCount || 0}
+                      onChange={(e) => handleInputChange('soldCount', parseInt(e.target.value) || 0)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="0"
                     />
                   </div>
 

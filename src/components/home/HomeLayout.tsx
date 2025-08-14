@@ -5,7 +5,7 @@ import { ProductGrid } from './ProductGrid';
 import { PromotionalBanners } from './PromotionalBanners';
 import { HorizontalCategoryNav } from './HorizontalCategoryNav';
 import { LightningDeals } from './LightningDeals';
-import { PartnershipBanner } from './PartnershipBanner';
+import { FeaturedCategories } from './FeaturedCategories';
 import { SecondaryFilters } from './SecondaryFilters';
 
 export function HomeLayout() {
@@ -22,8 +22,8 @@ export function HomeLayout() {
       {/* Lightning Deals Section */}
       <LightningDeals />
       
-      {/* Partnership Banner */}
-      <PartnershipBanner />
+      {/* Featured Categories Section */}
+      <FeaturedCategories />
       
       {/* Secondary Filters */}
       <SecondaryFilters />

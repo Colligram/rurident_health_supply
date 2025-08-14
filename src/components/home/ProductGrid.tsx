@@ -4,12 +4,14 @@ import { FiShoppingCart, FiHeart, FiEye, FiStar, FiTruck, FiShield, FiFilter, Fi
 import { useProducts } from '../../context/ProductsContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../context/ToastContext';
 import { formatPrice } from '../../utils';
 
 export function ProductGrid() {
   const { products, loading } = useProducts();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
@@ -79,6 +81,11 @@ export function ProductGrid() {
     event.preventDefault();
     event.stopPropagation();
     addToCart(product);
+    showToast({
+      type: 'success',
+      title: 'Added to Cart!',
+      message: `${product.name} has been added to your cart.`
+    });
   };
 
   const handleWishlistToggle = (product: any, event: React.MouseEvent) => {
@@ -86,8 +93,18 @@ export function ProductGrid() {
     event.stopPropagation();
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
+      showToast({
+        type: 'info',
+        title: 'Removed from Wishlist',
+        message: `${product.name} has been removed from your wishlist.`
+      });
     } else {
       addToWishlist(product);
+      showToast({
+        type: 'success',
+        title: 'Added to Wishlist!',
+        message: `${product.name} has been added to your wishlist.`
+      });
     }
   };
 
