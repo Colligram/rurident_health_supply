@@ -13,8 +13,12 @@ export interface Product {
   specifications?: Record<string, string>;
   rating?: number;
   reviews?: Review[];
+  reviewCount?: number;
   isNew?: boolean;
   isBestSeller?: boolean;
+  isFeatured?: boolean;
+  seller?: string;
+  soldCount?: number;
 }
 
 export interface Review {

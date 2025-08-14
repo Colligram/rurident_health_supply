@@ -2,11 +2,31 @@ import React from 'react';
 import { CategorySidebar } from './CategorySidebar';
 import { SearchBanner } from './SearchBanner';
 import { ProductGrid } from './ProductGrid';
+import { PromotionalBanners } from './PromotionalBanners';
+import { HorizontalCategoryNav } from './HorizontalCategoryNav';
+import { LightningDeals } from './LightningDeals';
+import { PartnershipBanner } from './PartnershipBanner';
+import { SecondaryFilters } from './SecondaryFilters';
 
 export function HomeLayout() {
   return (
     <div className="min-h-screen bg-gray-50">
       <SearchBanner />
+      
+      {/* Horizontal Category Navigation */}
+      <HorizontalCategoryNav />
+      
+      {/* Promotional Banners */}
+      <PromotionalBanners />
+      
+      {/* Lightning Deals Section */}
+      <LightningDeals />
+      
+      {/* Partnership Banner */}
+      <PartnershipBanner />
+      
+      {/* Secondary Filters */}
+      <SecondaryFilters />
       
       {/* Main Content with Sidebar */}
       <div className="container-max py-8">

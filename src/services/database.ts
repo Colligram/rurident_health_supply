@@ -16,6 +16,12 @@ export interface Product {
   reviewCount: number;
   specifications?: Record<string, any>;
   features?: string[];
+  brand?: string;
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  isFeatured?: boolean;
+  seller?: string;
+  soldCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
