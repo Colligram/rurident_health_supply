@@ -106,7 +106,7 @@ class MpesaService {
         // Simulate phone prompt
         setTimeout(() => {
           alert(`M-Pesa Payment Prompt\n\nAmount: KES ${request.amount.toLocaleString()}\nPhone: ${formattedPhone}\n\nPlease enter your M-Pesa PIN to complete the payment.`);
-        }, 1000);
+        }, 500);
 
         return mockResponse;
       }
