@@ -103,7 +103,7 @@ class MpesaService {
           checkoutRequestId: 'ws_CO_' + Date.now()
         };
 
-        // Simulate phone prompt
+        // Simulate phone prompt - optimized for faster response
         setTimeout(() => {
           alert(`M-Pesa Payment Prompt\n\nAmount: KES ${request.amount.toLocaleString()}\nPhone: ${formattedPhone}\n\nPlease enter your M-Pesa PIN to complete the payment.`);
         }, 500);
