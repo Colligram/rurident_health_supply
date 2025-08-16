@@ -1,7 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import { apiService } from '../../services/database';
 import { 
   FiHome, 
   FiPackage, 
@@ -12,7 +13,9 @@ import {
   FiMenu, 
   FiX,
   FiTrendingUp,
-  FiTag
+  FiTag,
+  FiWifi,
+  FiWifiOff
 } from 'react-icons/fi';
 
 interface AdminLayoutProps {
@@ -21,9 +24,30 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [serverStatus, setServerStatus] = useState<{ available: boolean; usingMockData: boolean }>({ available: true, usingMockData: false });
   const { user, logout } = useAdminAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Check server status periodically
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const status = await apiService.checkServerStatus();
+        setServerStatus(status);
+      } catch (error) {
+        console.error('Error checking server status:', error);
+        setServerStatus({ available: false, usingMockData: true });
+      }
+    };
+
+    // Check immediately
+    checkStatus();
+
+    // Check every 30 seconds
+    const interval = setInterval(checkStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -51,7 +75,15 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <div className="fixed inset-0 bg-black bg-opacity-40" onClick={() => setSidebarOpen(false)} />
         <div className="fixed inset-y-0 left-0 flex w-64 flex-col backdrop-blur-lg bg-white/70 border-r border-white/40 shadow-2xl">
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Rurident Admin</h2>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-lg font-semibold text-gray-900">Rurident Admin</h2>
+              {serverStatus.usingMockData && (
+                <div className="flex items-center space-x-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                  <FiWifiOff className="w-3 h-3" />
+                  <span>Offline</span>
+                </div>
+              )}
+            </div>
             <button
               onClick={() => setSidebarOpen(false)}
               className="rounded-md p-2 text-gray-400 hover:text-gray-500"
@@ -85,8 +117,22 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow backdrop-blur-lg bg-white/70 border-r border-white/40 shadow-2xl">
-          <div className="flex items-center px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">Rurident Admin</h2>
+            <div className="flex items-center space-x-2">
+              {serverStatus.usingMockData && (
+                <div className="flex items-center space-x-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                  <FiWifiOff className="w-3 h-3" />
+                  <span>Offline Mode</span>
+                </div>
+              )}
+              {!serverStatus.usingMockData && serverStatus.available && (
+                <div className="flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                  <FiWifi className="w-3 h-3" />
+                  <span>Online</span>
+                </div>
+              )}
+            </div>
           </div>
           <nav className="flex-1 space-y-1 p-4">
             {navigation.map((item) => {
@@ -128,6 +174,37 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* Server status indicator */}
+              {serverStatus.usingMockData && (
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-1 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                    <FiWifiOff className="w-3 h-3" />
+                    <span>Offline Mode</span>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const available = await apiService.refreshServerStatus();
+                        if (available) {
+                          setServerStatus({ available: true, usingMockData: false });
+                        }
+                      } catch (error) {
+                        console.error('Error refreshing server status:', error);
+                      }
+                    }}
+                    className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
+              {!serverStatus.usingMockData && serverStatus.available && (
+                <div className="flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                  <FiWifi className="w-3 h-3" />
+                  <span>Online</span>
+                </div>
+              )}
+              
               <div className="flex items-center text-sm text-gray-600">
                 <span className="font-medium">{user?.name}</span>
                 <span className="ml-2 px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs font-medium">

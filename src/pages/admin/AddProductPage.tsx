@@ -165,7 +165,14 @@ export function AddProductPage() {
       navigate('/admin/products');
     } catch (error) {
       console.error('Error adding product:', error);
-      alert('Failed to add product. Please try again.');
+      // Provide more specific error messages
+      if (error.message?.includes('timeout')) {
+        alert('Request timed out. The server may be slow or unavailable. Please try again.');
+      } else if (error.message?.includes('Network error')) {
+        alert('Network error. Please check your connection and try again.');
+      } else {
+        alert('Failed to add product. Please try again.');
+      }
     }
   };
 

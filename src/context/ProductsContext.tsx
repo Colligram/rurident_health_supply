@@ -44,7 +44,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       if (result.success) {
         await refreshProducts();
       } else {
-        throw new Error('Failed to add product');
+        throw new Error(result.error || 'Failed to add product');
       }
     } catch (err) {
       console.error('Error adding product:', err);
