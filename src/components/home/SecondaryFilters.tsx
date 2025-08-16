@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FiStar, FiTrendingUp, FiClock, FiAward } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 
 const filters = [
   { id: 'all', name: 'All', icon: FiAward, isDefault: true },
@@ -12,11 +13,38 @@ const filters = [
 
 export function SecondaryFilters() {
   const [activeFilter, setActiveFilter] = useState('all');
+  const navigate = useNavigate();
 
   const handleFilterClick = (filterId: string) => {
     setActiveFilter(filterId);
-    // TODO: Implement filter functionality
-    console.log('Filter applied:', filterId);
+    
+    // Navigate to products page with appropriate filter
+    const filterParams = new URLSearchParams();
+    
+    switch (filterId) {
+      case '5star':
+        filterParams.set('minRating', '5');
+        break;
+      case 'bestselling':
+        filterParams.set('sortBy', 'bestselling');
+        break;
+      case 'new':
+        filterParams.set('sortBy', 'newest');
+        break;
+      case 'premium':
+        filterParams.set('quality', 'premium');
+        break;
+      case 'local':
+        filterParams.set('stock', 'local');
+        break;
+      case 'all':
+      default:
+        // No specific filters for 'all'
+        break;
+    }
+    
+    const queryString = filterParams.toString();
+    navigate(`/products${queryString ? `?${queryString}` : ''}`);
   };
 
   return (

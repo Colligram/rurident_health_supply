@@ -14,8 +14,6 @@ import {
   FiSearch,
   FiFilter,
   FiDownload,
-  FiMessageSquare,
-  FiSend,
   FiX
 } from 'react-icons/fi';
 
@@ -26,9 +24,6 @@ export function CustomersManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [showMassMessage, setShowMassMessage] = useState(false);
-  const [massMessage, setMassMessage] = useState('');
-  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
   // Load customers on component mount
   useEffect(() => {
@@ -78,53 +73,6 @@ export function CustomersManagementPage() {
     // In a real app, this would generate and download a CSV/Excel file
     console.log('Exporting customers:', filteredCustomers);
     alert('Customer data exported successfully!');
-  };
-
-  const handleSelectAll = () => {
-    if (selectedCustomers.length === filteredCustomers.length) {
-      setSelectedCustomers([]);
-    } else {
-      setSelectedCustomers(filteredCustomers.map(c => c.id));
-    }
-  };
-
-  const handleCustomerSelect = (customerId: string) => {
-    setSelectedCustomers(prev => 
-      prev.includes(customerId) 
-        ? prev.filter(id => id !== customerId)
-        : [...prev, customerId]
-    );
-  };
-
-  const sendMassMessage = () => {
-    if (massMessage.trim() && selectedCustomers.length > 0) {
-      // In a real app, this would send messages via email/SMS
-      console.log('Sending mass message to:', selectedCustomers);
-      console.log('Message:', massMessage);
-      alert(`Message sent to ${selectedCustomers.length} customers successfully!`);
-      setShowMassMessage(false);
-      setMassMessage('');
-      setSelectedCustomers([]);
-    }
-  };
-
-  const sendChristmasMessage = () => {
-    const christmasMessage = `🎄 Merry Christmas from Rurident Health Supplies! 🎄
-
-Thank you for your loyalty and trust in our products throughout the year. 
-
-As we celebrate this festive season, we want to express our gratitude for choosing us as your dental healthcare partner.
-
-Wishing you and your family a wonderful Christmas filled with joy, health, and happiness!
-
-Best regards,
-The Rurident Team
-
-P.S. Don't miss our special holiday offers - visit our website for exclusive discounts!`;
-
-    setMassMessage(christmasMessage);
-    setSelectedCustomers(filteredCustomers.map(c => c.id));
-    setShowMassMessage(true);
   };
 
   if (loading) {
@@ -294,20 +242,6 @@ P.S. Don't miss our special holiday offers - visit our website for exclusive dis
           </div>
           <div className="flex space-x-3">
             <button
-              onClick={sendChristmasMessage}
-              className="btn-secondary bg-green-600 hover:bg-green-700 text-white"
-            >
-              <FiMessageSquare className="w-4 h-4 mr-2" />
-              Christmas Message
-            </button>
-            <button
-              onClick={() => setShowMassMessage(true)}
-              className="btn-secondary"
-            >
-              <FiMessageSquare className="w-4 h-4 mr-2" />
-              Mass Message
-            </button>
-            <button
               onClick={exportCustomers}
               className="btn-secondary"
             >
@@ -397,83 +331,6 @@ P.S. Don't miss our special holiday offers - visit our website for exclusive dis
             </div>
           </div>
         </div>
-
-        {/* Mass Message Modal */}
-        {showMassMessage && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Send Mass Message</h2>
-                  <button
-                    onClick={() => setShowMassMessage(false)}
-                    className="text-gray-400 hover:text-gray-600"
-                  >
-                    <FiX className="w-6 h-6" />
-                  </button>
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Customers ({selectedCustomers.length} selected)
-                  </label>
-                  <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
-                    <label className="flex items-center space-x-2 mb-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedCustomers.length === filteredCustomers.length}
-                        onChange={handleSelectAll}
-                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                      />
-                      <span className="font-medium">Select All ({filteredCustomers.length})</span>
-                    </label>
-                    {filteredCustomers.map(customer => (
-                      <label key={customer.id} className="flex items-center space-x-2 py-1">
-                        <input
-                          type="checkbox"
-                          checked={selectedCustomers.includes(customer.id)}
-                          onChange={() => handleCustomerSelect(customer.id)}
-                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                        />
-                        <span className="text-sm">{customer.name} ({customer.email})</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    value={massMessage}
-                    onChange={(e) => setMassMessage(e.target.value)}
-                    rows={8}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    placeholder="Enter your message here..."
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-3">
-                  <button
-                    onClick={() => setShowMassMessage(false)}
-                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={sendMassMessage}
-                    disabled={!massMessage.trim() || selectedCustomers.length === 0}
-                    className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
-                  >
-                    <FiSend className="w-4 h-4" />
-                    <span>Send Message</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Customers Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

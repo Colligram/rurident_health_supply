@@ -160,35 +160,53 @@ export function CartPage() {
               </div>
 
               {/* Checkout Button */}
-              <Link 
-                to="/checkout" 
-                className="btn-primary w-full text-center text-lg py-4 mb-4 font-semibold"
-              >
-                Proceed to Checkout
-              </Link>
+              <div className="space-y-4 mb-6">
+                <Link 
+                  to="/checkout" 
+                  className="block w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-center text-lg py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  Proceed to Checkout
+                </Link>
 
-              {/* Security Badge */}
-              <div className="text-center mb-4">
-                <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                  </svg>
-                  <span>Secure checkout</span>
+                {/* Security Badge */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 bg-gray-50 py-3 px-4 rounded-lg">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-medium">Secure Checkout Guaranteed</span>
+                  </div>
                 </div>
               </div>
 
               {/* Payment Methods */}
               <div className="pt-4 border-t border-gray-200">
-                <p className="text-sm font-medium text-gray-900 mb-3">We accept:</p>
-                <div className="flex items-center space-x-3">
-                  <div className="bg-green-600 text-white px-3 py-1 rounded text-xs font-bold">
-                    M-PESA
+                <p className="text-sm font-medium text-gray-900 mb-4">We accept:</p>
+                <div className="space-y-3">
+                  {/* M-PESA - Styled with authentic green */}
+                  <div className="flex items-center justify-between bg-green-600 text-white px-4 py-3 rounded-lg shadow-sm">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <span className="text-green-600 font-bold text-sm">M</span>
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm">M-PESA</div>
+                        <div className="text-xs text-green-100">Pay with your phone</div>
+                      </div>
+                    </div>
+                    <div className="text-xs bg-green-500 px-2 py-1 rounded">Preferred</div>
                   </div>
-                  <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-xs">
-                    Card
-                  </div>
-                  <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-xs">
-                    Bank
+                  
+                  {/* Other payment methods */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-gray-100 text-gray-600 px-3 py-3 rounded-lg text-center">
+                      <div className="text-sm font-medium">Card</div>
+                      <div className="text-xs text-gray-500">Visa, Mastercard</div>
+                    </div>
+                    <div className="bg-gray-100 text-gray-600 px-3 py-3 rounded-lg text-center">
+                      <div className="text-sm font-medium">Bank</div>
+                      <div className="text-xs text-gray-500">Transfer</div>
+                    </div>
                   </div>
                 </div>
               </div>

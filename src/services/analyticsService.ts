@@ -43,7 +43,7 @@ export interface AnalyticsData {
 
 class AnalyticsService {
   private baseURL = '/api';
-  private useMockData = true; // Default to mock data for now
+  private useMockData = false; // Try real API first, fallback to mock data if needed
 
   async getAnalytics(): Promise<{ success: boolean; data?: AnalyticsData; error?: string }> {
     try {
