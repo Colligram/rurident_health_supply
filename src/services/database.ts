@@ -29,8 +29,29 @@ export interface Product {
 class APIService {
   private baseURL = '/api';
   private useMockData = false;
+  private activeRequests = new Map<string, Promise<any>>();
 
   async getProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
+    // Prevent duplicate concurrent requests
+    const cacheKey = 'getProducts';
+    if (this.activeRequests.has(cacheKey)) {
+      return this.activeRequests.get(cacheKey);
+    }
+
+    const request = this.fetchProducts();
+    this.activeRequests.set(cacheKey, request);
+    
+    try {
+      const result = await request;
+      this.activeRequests.delete(cacheKey);
+      return result;
+    } catch (error) {
+      this.activeRequests.delete(cacheKey);
+      throw error;
+    }
+  }
+
+  private async fetchProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
     try {
       const response = await fetch(`${this.baseURL}/products`, {
         method: 'GET',

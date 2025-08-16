@@ -58,7 +58,7 @@ class AnalyticsService {
         headers: {
           'Content-Type': 'application/json',
         },
-        signal: AbortSignal.timeout(10000)
+        signal: AbortSignal.timeout(30000)
       });
 
       if (!response.ok) {

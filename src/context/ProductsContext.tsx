@@ -29,10 +29,15 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
         setProducts([]);
         setError(result.error || 'Failed to fetch products');
       }
-    } catch (err) {
-      console.error('Error refreshing products:', err);
-      setProducts([]);
-      setError('Failed to refresh products');
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.warn('Products request was aborted');
+        // Don't update state on abort - keep existing data
+      } else {
+        console.error('Error refreshing products:', err);
+        setProducts([]);
+        setError('Failed to refresh products');
+      }
     } finally {
       setLoading(false);
     }
