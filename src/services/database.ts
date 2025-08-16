@@ -32,14 +32,19 @@ class APIService {
 
   async getProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
     try {
+      // Create a more compatible timeout approach
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const response = await fetch(`${this.baseURL}/products`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        // Add timeout to prevent hanging requests
-        signal: AbortSignal.timeout(10000)
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         // If server is not available, return mock data
@@ -63,7 +68,9 @@ class APIService {
       this.useMockData = false;
       return { success: true, data };
     } catch (error) {
-      if (error.name === 'TimeoutError') {
+      if (error.name === 'AbortError') {
+        console.warn('Request aborted (timeout), using mock data');
+      } else if (error.name === 'TimeoutError') {
         console.warn('Request timeout, using mock data');
       } else if (error.name === 'TypeError') {
         console.warn('Network error (server may be down), using mock data');
