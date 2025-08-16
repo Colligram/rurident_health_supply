@@ -64,7 +64,6 @@ export function AddProductPage() {
     'Sterilization Consumables',
     'Complete Student Kits',
     'Crown and Bridge',
-    'Orthodontics',
     'Complete Dentures',
     'Partial Dentures (Cobalt Chrome)'
   ]);
