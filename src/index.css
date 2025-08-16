@@ -289,3 +289,19 @@
 .animate-slideInRight {
   animation: slideInRight 0.8s ease-out forwards;
 }
+
+/* Fade in up animation for trust badges and KPIs */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
