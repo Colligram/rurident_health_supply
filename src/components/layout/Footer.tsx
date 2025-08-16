@@ -8,14 +8,6 @@ const footerLinks = {
     { name: 'Contact', href: '/contact' },
     { name: 'Our Products', href: '/products' },
   ],
-  support: [
-    { name: 'Delivery Info', href: '/delivery' },
-    { name: 'Returns', href: '/returns' },
-    { name: 'Warranty', href: '/warranty' },
-    { name: 'Track Order', href: '/track' },
-    { name: 'Help Center', href: '/help' },
-    { name: 'Customer Support', href: '/support' },
-  ],
   legal: [
     { name: 'Privacy Policy', href: '/privacy' },
     { name: 'Terms of Service', href: '/terms' },
@@ -27,9 +19,9 @@ export function Footer() {
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-primary-900 text-white">
       <div className="container-max py-6 px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Company Info */}
-          <div className="lg:col-span-1">
+          <div className="md:col-span-1">
             <div className="flex items-center space-x-2 mb-2">
               <div className="w-6 h-6 bg-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">R</span>
@@ -85,23 +77,6 @@ export function Footer() {
             <h3 className="text-sm font-semibold mb-2">Company</h3>
             <ul className="space-y-1">
               {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-gray-300 hover:text-white transition-colors text-xs"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h3 className="text-sm font-semibold mb-2">Support</h3>
-            <ul className="space-y-1">
-              {footerLinks.support.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
