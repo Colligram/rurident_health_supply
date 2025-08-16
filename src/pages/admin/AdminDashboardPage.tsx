@@ -6,15 +6,14 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { FiPackage, FiUsers, FiShoppingCart, FiTrendingUp, FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
 import { orderService, Order } from '../../services/orderService';
+import { customerService, Customer } from '../../services/customerService';
 import { formatPrice } from '../../utils';
-// For customers, use mock data for now
-import { mockCustomers } from './CustomersManagementPage';
 
 export function AdminDashboardPage() {
   const { user } = useAdminAuth();
   const { products } = useProducts();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [customers, setCustomers] = useState(mockCustomers);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [lastOrderCount, setLastOrderCount] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -38,6 +37,22 @@ export function AdminDashboardPage() {
     const interval = setInterval(fetchOrders, 10000);
     return () => clearInterval(interval);
   }, [lastOrderCount]);
+
+  // Fetch customers
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const result = await customerService.getCustomers();
+        if (result.success && result.data) {
+          setCustomers(result.data);
+        }
+      } catch (err) {
+        // handle error
+        console.error('Failed to fetch customers:', err);
+      }
+    };
+    fetchCustomers();
+  }, []);
 
   // Compute stats
   const today = new Date();
