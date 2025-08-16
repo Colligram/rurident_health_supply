@@ -24,7 +24,7 @@ export function HorizontalCategoryNav() {
     <div className="bg-white border-b border-gray-200 sticky top-14 md:top-16 z-40">
       <div className="container-max">
         <div className="flex items-center overflow-x-auto scrollbar-hide py-3 gap-2 md:gap-4">
-          {categories.map((category) => {
+          {categories.map((category, index) => {
             const isActive = category.isDefault 
               ? !currentCategory 
               : currentCategory === category.href.split('=')[1];
@@ -33,11 +33,15 @@ export function HorizontalCategoryNav() {
               <Link
                 key={category.name}
                 to={category.href}
-                className={`flex items-center space-x-1 md:space-x-2 px-3 md:px-4 py-2 rounded-lg transition-all duration-200 whitespace-nowrap flex-shrink-0 text-sm ${
+                className={`flex items-center space-x-1 md:space-x-2 px-3 md:px-4 py-2 rounded-lg transition-all duration-500 ease-out whitespace-nowrap flex-shrink-0 text-sm animate-slideInRight ${
                   isActive
                     ? 'text-white bg-gradient-to-r from-orange-500 to-orange-600 shadow-md'
                     : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50 border border-gray-200 hover:border-orange-200'
                 }`}
+                style={{
+                  animationDelay: `${index * 100}ms`,
+                  animationFillMode: 'both'
+                }}
               >
                 <category.icon className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
                 <span className="font-medium text-xs md:text-sm">{category.name}</span>

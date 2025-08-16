@@ -273,3 +273,51 @@
 .shadow-custom-hover:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
+
+/* Force desktop layout on mobile devices */
+@media (max-width: 1200px) {
+  body {
+    min-width: 1200px;
+    overflow-x: auto;
+  }
+  
+  #root {
+    min-width: 1200px;
+  }
+  
+  .container-max {
+    min-width: 1200px;
+  }
+}
+
+/* Slide in animation for category buttons */
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.8s ease-out forwards;
+}
+
+/* Fade in up animation for trust badges and KPIs */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out forwards;
+}

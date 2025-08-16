@@ -5,7 +5,7 @@ export function ContactPage() {
   const [activeTab, setActiveTab] = useState('location');
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
         <div className="container-max py-12 md:py-16">

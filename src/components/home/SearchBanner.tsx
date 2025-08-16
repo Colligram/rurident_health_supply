@@ -7,10 +7,8 @@ export function SearchBanner() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Perform search functionality here instead of redirecting
-      console.log('Searching for:', searchQuery.trim());
-      // TODO: Implement search functionality
-      // This could trigger a search modal, filter products, etc.
+      // Navigate to products page with search query
+      window.location.href = `/products?search=${encodeURIComponent(searchQuery.trim())}`;
     }
   };
 
@@ -77,8 +75,7 @@ export function SearchBanner() {
           <div className="flex items-center justify-center md:justify-between text-xs space-x-4 md:space-x-6">
             <div className="flex items-center space-x-1">
               <FiTruck className="w-3 h-3" />
-              <span className="hidden sm:inline">Free delivery over KSH 50,000</span>
-              <span className="sm:hidden">Free delivery</span>
+              <span>Free delivery</span>
             </div>
             <div className="hidden md:flex items-center space-x-1">
               <FiShield className="w-3 h-3" />
