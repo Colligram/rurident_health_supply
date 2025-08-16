@@ -141,7 +141,7 @@ export const CheckoutPage: React.FC = () => {
 
     setMpesaPromptSent(true);
     setPaymentRevoked(false);
-    setTimeRemaining(180); // 3 minutes in seconds
+    setTimeRemaining(60); // 1 minute in seconds
     setError('');
 
     // Start countdown timer
@@ -158,7 +158,7 @@ export const CheckoutPage: React.FC = () => {
       });
     }, 1000);
 
-    // Simulate M-Pesa payment confirmation (user has 3 minutes)
+    // Simulate M-Pesa payment confirmation (user has 1 minute)
     const paymentTimeout = setTimeout(() => {
       if (!paymentConfirmed && !paymentRevoked) {
         clearInterval(countdownInterval);
@@ -166,10 +166,10 @@ export const CheckoutPage: React.FC = () => {
         setMpesaPromptSent(false);
         setError('Payment timed out. Please initiate payment again.');
       }
-    }, 180000); // 3 minutes
+    }, 60000); // 1 minute
 
-    // Simulate successful payment after random time (30 seconds to 2.5 minutes for demo)
-    const paymentDelay = Math.random() * 120000 + 30000; // 30s to 2.5 minutes
+    // Simulate successful payment after random time (15 seconds to 50 seconds for demo)
+    const paymentDelay = Math.random() * 35000 + 15000; // 15s to 50s
     const paymentSimulation = setTimeout(() => {
       if (!paymentRevoked && mpesaPromptSent) {
         clearInterval(countdownInterval);
@@ -607,7 +607,7 @@ export const CheckoutPage: React.FC = () => {
                              <div className="w-full bg-green-200 rounded-full h-2">
                                <div 
                                  className="bg-green-600 h-2 rounded-full transition-all duration-1000"
-                                 style={{ width: `${(timeRemaining / 180) * 100}%` }}
+                                 style={{ width: `${(timeRemaining / 60) * 100}%` }}
                                ></div>
                              </div>
                            </div>
