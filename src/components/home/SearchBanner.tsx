@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiMapPin, FiShield, FiTruck, FiHeadphones } from 'react-icons/fi';
 
 export function SearchBanner() {
   const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      // Perform search functionality here instead of redirecting
+      console.log('Searching for:', searchQuery.trim());
+      // TODO: Implement search functionality
+      // This could trigger a search modal, filter products, etc.
     }
   };
 
@@ -29,10 +30,10 @@ export function SearchBanner() {
             </div>
             
             {/* Enhanced Search Bar - Mobile Optimized */}
-            <div className="w-full">
-              <form onSubmit={handleSearch} className="relative">
-                <div className="flex rounded-xl overflow-hidden shadow-lg">
-                  <select className="bg-gray-100 text-gray-900 px-3 py-3 border-r border-gray-300 text-sm focus:outline-none hover:bg-gray-50 transition-colors min-w-0 hidden sm:block">
+            <div className="w-full max-w-full overflow-hidden">
+              <form onSubmit={handleSearch} className="relative w-full">
+                <div className="flex rounded-xl overflow-hidden shadow-lg w-full">
+                  <select className="bg-gray-100 text-gray-900 px-3 py-3 border-r border-gray-300 text-sm focus:outline-none hover:bg-gray-50 transition-colors min-w-0 hidden sm:block flex-shrink-0">
                     <option>All Categories</option>
                     <option>Dental Chairs</option>
                     <option>Equipment</option>
@@ -46,7 +47,7 @@ export function SearchBanner() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search for dental equipment, chairs, consumables..."
-                    className="flex-1 px-4 py-3 text-gray-900 focus:outline-none placeholder-gray-500 text-sm md:text-base min-w-0"
+                    className="flex-1 px-4 py-3 text-gray-900 focus:outline-none placeholder-gray-500 text-sm md:text-base min-w-0 w-full"
                   />
                   <button
                     type="submit"
@@ -63,7 +64,7 @@ export function SearchBanner() {
               <FiMapPin className="w-4 h-4 mr-2 flex-shrink-0" />
               <div className="text-center md:text-left">
                 <div className="text-xs text-orange-200">Deliver to</div>
-                <div className="font-medium text-sm">Kenya - All Counties</div>
+                <div className="font-medium text-sm">Countrywide</div>
               </div>
             </div>
           </div>

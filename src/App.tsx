@@ -14,11 +14,8 @@ import { BlogPage } from './pages/BlogPage';
 import { FAQPage } from './pages/FAQPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { DeliveryPage } from './pages/support/DeliveryPage';
-import { ReturnsPage } from './pages/support/ReturnsPage';
-import { WarrantyPage } from './pages/support/WarrantyPage';
 import { TrackOrderPage } from './pages/support/TrackOrderPage';
 import { HelpCenterPage } from './pages/support/HelpCenterPage';
-import { SupportPage } from './pages/support/SupportPage';
 import { TermsOfServicePage } from './pages/legal/TermsOfServicePage';
 import { PrivacyPolicyPage } from './pages/legal/PrivacyPolicyPage';
 import { CookiePolicyPage } from './pages/legal/CookiePolicyPage';
@@ -347,32 +344,6 @@ function App() {
                     } 
                   />
                   <Route 
-                    path="/returns" 
-                    element={
-                      <>
-                        <Header />
-                        <main className="flex-1">
-                          <ReturnsPage />
-                        </main>
-                        <Footer />
-                        <ChatBot />
-                      </>
-                    } 
-                  />
-                  <Route 
-                    path="/warranty" 
-                    element={
-                      <>
-                        <Header />
-                        <main className="flex-1">
-                          <WarrantyPage />
-                        </main>
-                        <Footer />
-                        <ChatBot />
-                      </>
-                    } 
-                  />
-                  <Route 
                     path="/track" 
                     element={
                       <>
@@ -392,19 +363,6 @@ function App() {
                         <Header />
                         <main className="flex-1">
                           <HelpCenterPage />
-                        </main>
-                        <Footer />
-                        <ChatBot />
-                      </>
-                    } 
-                  />
-                  <Route 
-                    path="/support" 
-                    element={
-                      <>
-                        <Header />
-                        <main className="flex-1">
-                          <SupportPage />
                         </main>
                         <Footer />
                         <ChatBot />

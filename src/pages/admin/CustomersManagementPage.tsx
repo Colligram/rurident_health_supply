@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { formatDate } from '../../utils';
+import { customerService, Customer } from '../../services/customerService';
 import { 
   FiArrowLeft,
   FiUsers, 
@@ -12,93 +13,43 @@ import {
   FiEye,
   FiSearch,
   FiFilter,
-  FiDownload
+  FiDownload,
+  FiMessageSquare,
+  FiSend,
+  FiX
 } from 'react-icons/fi';
 
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  totalOrders: number;
-  totalSpent: number;
-  lastOrderDate: string;
-  status: 'active' | 'inactive';
-  joinDate: string;
-}
-
-// Mock customers data
-const mockCustomers: Customer[] = [
-  {
-    id: 'CUST-001',
-    name: 'Dr. Sarah Johnson',
-    email: 'sarah@dentalclinic.com',
-    phone: '+254712345678',
-    address: 'Westlands, Nairobi',
-    totalOrders: 15,
-    totalSpent: 2450000,
-    lastOrderDate: '2024-01-15T10:00:00Z',
-    status: 'active',
-    joinDate: '2023-06-12T08:00:00Z'
-  },
-  {
-    id: 'CUST-002',
-    name: 'Dr. Michael Ochieng',
-    email: 'michael@smilecenter.com',
-    phone: '+254723456789',
-    address: 'Kilifi, Mombasa',
-    totalOrders: 8,
-    totalSpent: 890000,
-    lastOrderDate: '2024-01-10T14:30:00Z',
-    status: 'active',
-    joinDate: '2023-09-20T10:15:00Z'
-  },
-  {
-    id: 'CUST-003',
-    name: 'Jane Wambui',
-    email: 'jane.student@uon.ac.ke',
-    phone: '+254734567890',
-    address: 'Karen, Nairobi',
-    totalOrders: 3,
-    totalSpent: 75000,
-    lastOrderDate: '2023-12-20T09:45:00Z',
-    status: 'active',
-    joinDate: '2023-11-05T14:22:00Z'
-  },
-  {
-    id: 'CUST-004',
-    name: 'Dr. Peter Mwangi',
-    email: 'peter@healthcenter.co.ke',
-    phone: '+254745678901',
-    address: 'Thika, Kiambu',
-    totalOrders: 22,
-    totalSpent: 3200000,
-    lastOrderDate: '2024-01-12T16:20:00Z',
-    status: 'active',
-    joinDate: '2023-03-15T11:30:00Z'
-  },
-  {
-    id: 'CUST-005',
-    name: 'Dr. Grace Kiprotich',
-    email: 'grace@ruraldental.org',
-    phone: '+254756789012',
-    address: 'Eldoret, Uasin Gishu',
-    totalOrders: 1,
-    totalSpent: 45000,
-    lastOrderDate: '2023-11-30T13:15:00Z',
-    status: 'inactive',
-    joinDate: '2023-11-25T09:00:00Z'
-  }
-];
-
-export { mockCustomers };
 export function CustomersManagementPage() {
   const navigate = useNavigate();
-  const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [showMassMessage, setShowMassMessage] = useState(false);
+  const [massMessage, setMassMessage] = useState('');
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+
+  // Load customers on component mount
+  useEffect(() => {
+    loadCustomers();
+  }, []);
+
+  const loadCustomers = async () => {
+    setLoading(true);
+    try {
+      const result = await customerService.getCustomers();
+      if (result.success && result.data) {
+        setCustomers(result.data);
+      } else {
+        console.error('Failed to load customers:', result.error);
+      }
+    } catch (error) {
+      console.error('Error loading customers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCustomers = customers.filter(customer => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -128,6 +79,66 @@ export function CustomersManagementPage() {
     console.log('Exporting customers:', filteredCustomers);
     alert('Customer data exported successfully!');
   };
+
+  const handleSelectAll = () => {
+    if (selectedCustomers.length === filteredCustomers.length) {
+      setSelectedCustomers([]);
+    } else {
+      setSelectedCustomers(filteredCustomers.map(c => c.id));
+    }
+  };
+
+  const handleCustomerSelect = (customerId: string) => {
+    setSelectedCustomers(prev => 
+      prev.includes(customerId) 
+        ? prev.filter(id => id !== customerId)
+        : [...prev, customerId]
+    );
+  };
+
+  const sendMassMessage = () => {
+    if (massMessage.trim() && selectedCustomers.length > 0) {
+      // In a real app, this would send messages via email/SMS
+      console.log('Sending mass message to:', selectedCustomers);
+      console.log('Message:', massMessage);
+      alert(`Message sent to ${selectedCustomers.length} customers successfully!`);
+      setShowMassMessage(false);
+      setMassMessage('');
+      setSelectedCustomers([]);
+    }
+  };
+
+  const sendChristmasMessage = () => {
+    const christmasMessage = `🎄 Merry Christmas from Rurident Health Supplies! 🎄
+
+Thank you for your loyalty and trust in our products throughout the year. 
+
+As we celebrate this festive season, we want to express our gratitude for choosing us as your dental healthcare partner.
+
+Wishing you and your family a wonderful Christmas filled with joy, health, and happiness!
+
+Best regards,
+The Rurident Team
+
+P.S. Don't miss our special holiday offers - visit our website for exclusive discounts!`;
+
+    setMassMessage(christmasMessage);
+    setSelectedCustomers(filteredCustomers.map(c => c.id));
+    setShowMassMessage(true);
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading customers...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   if (selectedCustomer) {
     return (
@@ -281,13 +292,29 @@ export function CustomersManagementPage() {
             <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
             <p className="text-gray-600">Manage your customer relationships</p>
           </div>
-          <button
-            onClick={exportCustomers}
-            className="btn-secondary"
-          >
-            <FiDownload className="w-4 h-4 mr-2" />
-            Export
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={sendChristmasMessage}
+              className="btn-secondary bg-green-600 hover:bg-green-700 text-white"
+            >
+              <FiMessageSquare className="w-4 h-4 mr-2" />
+              Christmas Message
+            </button>
+            <button
+              onClick={() => setShowMassMessage(true)}
+              className="btn-secondary"
+            >
+              <FiMessageSquare className="w-4 h-4 mr-2" />
+              Mass Message
+            </button>
+            <button
+              onClick={exportCustomers}
+              className="btn-secondary"
+            >
+              <FiDownload className="w-4 h-4 mr-2" />
+              Export
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -370,6 +397,83 @@ export function CustomersManagementPage() {
             </div>
           </div>
         </div>
+
+        {/* Mass Message Modal */}
+        {showMassMessage && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Send Mass Message</h2>
+                  <button
+                    onClick={() => setShowMassMessage(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <FiX className="w-6 h-6" />
+                  </button>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Select Customers ({selectedCustomers.length} selected)
+                  </label>
+                  <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                    <label className="flex items-center space-x-2 mb-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedCustomers.length === filteredCustomers.length}
+                        onChange={handleSelectAll}
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      />
+                      <span className="font-medium">Select All ({filteredCustomers.length})</span>
+                    </label>
+                    {filteredCustomers.map(customer => (
+                      <label key={customer.id} className="flex items-center space-x-2 py-1">
+                        <input
+                          type="checkbox"
+                          checked={selectedCustomers.includes(customer.id)}
+                          onChange={() => handleCustomerSelect(customer.id)}
+                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                        />
+                        <span className="text-sm">{customer.name} ({customer.email})</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    value={massMessage}
+                    onChange={(e) => setMassMessage(e.target.value)}
+                    rows={8}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    placeholder="Enter your message here..."
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowMassMessage(false)}
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={sendMassMessage}
+                    disabled={!massMessage.trim() || selectedCustomers.length === 0}
+                    className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+                  >
+                    <FiSend className="w-4 h-4" />
+                    <span>Send Message</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Customers Table */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

@@ -54,7 +54,7 @@ export function Header() {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${
+    <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-in-out ${
       isScrolled 
         ? 'bg-white/95 backdrop-blur-md shadow-lg' 
         : 'bg-white'

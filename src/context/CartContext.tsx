@@ -76,6 +76,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         quantity 
       }];
     });
+    
+    // Show success notification instead of redirecting
+    // You can implement a toast notification here
+    console.log(`Added ${quantity} ${product.name} to cart`);
   };
 
   const removeFromCart = (productId: string) => {
