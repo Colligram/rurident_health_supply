@@ -140,7 +140,7 @@ export const CheckoutPage: React.FC = () => {
 
     setMpesaPromptSent(true);
     setPaymentRevoked(false);
-    setTimeRemaining(180); // 3 minutes in seconds
+    setTimeRemaining(60); // 1 minute in seconds (reduced from 3 minutes)
     setError('');
 
     // Start countdown timer
@@ -157,7 +157,7 @@ export const CheckoutPage: React.FC = () => {
       });
     }, 1000);
 
-    // Simulate M-Pesa payment confirmation (user has 3 minutes)
+    // Simulate M-Pesa payment confirmation (user has 1 minute)
     const paymentTimeout = setTimeout(() => {
       if (!paymentConfirmed && !paymentRevoked) {
         clearInterval(countdownInterval);
@@ -165,7 +165,7 @@ export const CheckoutPage: React.FC = () => {
         setMpesaPromptSent(false);
         setError('Payment timed out. Please initiate payment again.');
       }
-    }, 180000); // 3 minutes
+    }, 60000); // 1 minute (reduced from 3 minutes)
 
     // Simulate successful payment after random time (30 seconds to 2.5 minutes for demo)
     const paymentDelay = Math.random() * 120000 + 30000; // 30s to 2.5 minutes
