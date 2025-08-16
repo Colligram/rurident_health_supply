@@ -224,14 +224,18 @@ export function ProductHeroSection() {
         </div>
 
         {/* Featured Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {featuredProducts.map((product) => (
-            <div 
-              key={product.id} 
-              className="group relative bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2"
-              onMouseEnter={() => setHoveredProduct(product.id)}
-              onMouseLeave={() => setHoveredProduct(null)}
-            >
+        <div className="relative">
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 rounded-3xl animate-gradient-shift bg-gradient-to-br from-purple-500 via-pink-500 via-black to-blue-600 opacity-20 -z-10"></div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 relative z-10 p-8 rounded-3xl">
+            {featuredProducts.map((product) => (
+              <div 
+                key={product.id} 
+                className="group relative bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl hover:border-orange-200 transition-all duration-300 transform hover:-translate-y-2"
+                onMouseEnter={() => setHoveredProduct(product.id)}
+                onMouseLeave={() => setHoveredProduct(null)}
+              >
               {/* Product Badges */}
               <div className="absolute top-3 left-3 z-20 flex flex-col gap-1">
                 {product.isNew && (

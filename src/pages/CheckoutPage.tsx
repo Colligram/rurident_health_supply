@@ -5,6 +5,7 @@ import { orderService } from '../services/orderService';
 import { mpesaService } from '../services/mpesaService';
 import { formatPrice, isValidEmail, isValidPhone } from '../utils';
 import { FiShield, FiCreditCard, FiSmartphone, FiTruck, FiCheck, FiX, FiAlertTriangle, FiClock, FiLock } from 'react-icons/fi';
+import { FaUniversity } from 'react-icons/fa';
 
 // Utility: Generate order number
 const generateOrderNumber = (): string => {
@@ -531,18 +532,34 @@ export const CheckoutPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Card Option - Coming Soon */}
-                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-50">
+                    {/* Card Option - Disabled */}
+                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <FiCreditCard className="w-6 h-6 text-gray-400 mr-3" />
+                          <FiCreditCard className="w-6 h-6 text-gray-300 mr-3" />
                           <div>
-                            <h3 className="font-bold text-gray-900">Credit/Debit Card</h3>
-                            <p className="text-sm text-gray-600">Coming Soon - Visa, Mastercard</p>
+                            <h3 className="font-bold text-gray-400">Credit/Debit Card</h3>
+                            <p className="text-sm text-gray-400">Not supported - Visa, Mastercard</p>
                           </div>
                         </div>
-                        <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
-                          Coming Soon
+                        <span className="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-sm font-medium">
+                          Disabled
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bank Transfer Option - Disabled */}
+                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <FaUniversity className="w-6 h-6 text-gray-300 mr-3" />
+                          <div>
+                            <h3 className="font-bold text-gray-400">Bank Transfer</h3>
+                            <p className="text-sm text-gray-400">Not supported - Direct bank transfer</p>
+                          </div>
+                        </div>
+                        <span className="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-sm font-medium">
+                          Disabled
                         </span>
                       </div>
                     </div>
