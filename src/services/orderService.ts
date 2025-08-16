@@ -39,7 +39,7 @@ export interface Order {
   updatedAt?: Date;
 }
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 class OrderService {
   async createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ id: string; success: boolean }> {
@@ -66,7 +66,9 @@ class OrderService {
 
   async getOrders(): Promise<Order[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/orders`);
+      const response = await fetch(`${API_BASE_URL}/orders`, {
+        signal: AbortSignal.timeout(30000)
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
@@ -74,9 +76,14 @@ class OrderService {
 
       const orders = await response.json();
       return orders;
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      throw error;
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.warn('Orders request was aborted');
+      } else {
+        console.error('Error fetching orders:', error);
+      }
+      // Return empty array instead of throwing to prevent UI errors
+      return [];
     }
   }
 

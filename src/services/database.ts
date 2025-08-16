@@ -37,8 +37,8 @@ class APIService {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Add timeout to prevent hanging requests
-        signal: AbortSignal.timeout(10000)
+        // Increased timeout and better error handling
+        signal: AbortSignal.timeout(30000)
       });
 
       if (!response.ok) {
@@ -62,8 +62,10 @@ class APIService {
       
       this.useMockData = false;
       return { success: true, data };
-    } catch (error) {
-      if (error.name === 'TimeoutError') {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.warn('Request was aborted, using mock data');
+      } else if (error.name === 'TimeoutError') {
         console.warn('Request timeout, using mock data');
       } else if (error.name === 'TypeError') {
         console.warn('Network error (server may be down), using mock data');

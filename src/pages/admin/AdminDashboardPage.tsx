@@ -34,7 +34,7 @@ export function AdminDashboardPage() {
       }
     };
     fetchOrders();
-    const interval = setInterval(fetchOrders, 10000);
+    const interval = setInterval(fetchOrders, 30000); // Reduced frequency from 10s to 30s
     return () => clearInterval(interval);
   }, [lastOrderCount]);
 
