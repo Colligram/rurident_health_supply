@@ -7,6 +7,7 @@ import { HorizontalCategoryNav } from './HorizontalCategoryNav';
 import { LightningDeals } from './LightningDeals';
 import { PartnershipBanner } from './PartnershipBanner';
 import { SecondaryFilters } from './SecondaryFilters';
+import { SwipingFeatures } from './SwipingFeatures';
 
 export function HomeLayout() {
   return (
@@ -48,6 +49,9 @@ export function HomeLayout() {
           </div>
         </div>
       </div>
+
+      {/* Swiping Features Section */}
+      <SwipingFeatures />
     </div>
   );
 }
