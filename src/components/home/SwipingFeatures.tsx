@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FiChevronLeft, FiChevronRight, FiStar, FiTruck, FiShield, FiAward, FiHeart, FiZap } from 'react-icons/fi';
 
 const features = [
@@ -48,7 +48,48 @@ const features = [
 
 export function SwipingFeatures() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-scroll functionality for mobile
+  useEffect(() => {
+    if (isMobile) {
+      const startAutoScroll = () => {
+        autoScrollRef.current = setInterval(() => {
+          setCurrentIndex(prev => {
+            const nextIndex = (prev + 1) % features.length;
+            if (scrollContainerRef.current) {
+              scrollContainerRef.current.scrollTo({
+                left: nextIndex * 320, // 300px card width + 20px gap
+                behavior: 'smooth'
+              });
+            }
+            return nextIndex;
+          });
+        }, 2000); // 2 seconds interval
+      };
+
+      startAutoScroll();
+
+      return () => {
+        if (autoScrollRef.current) {
+          clearInterval(autoScrollRef.current);
+        }
+      };
+    }
+  }, [isMobile]);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -64,6 +105,16 @@ export function SwipingFeatures() {
     setCurrentIndex(prev => Math.min(features.length - 1, prev + 1));
   };
 
+  const handleDotClick = (index: number) => {
+    setCurrentIndex(index);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        left: index * 320,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <div className="bg-gradient-to-r from-purple-900 via-pink-900 to-black py-16 relative overflow-hidden">
       {/* Background Pattern */}
@@ -73,78 +124,99 @@ export function SwipingFeatures() {
 
       <div className="container-max relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             Why Choose <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Rurident</span>
           </h2>
-          <p className="text-xl text-purple-200 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-purple-200 max-w-3xl mx-auto">
             Experience excellence in dental healthcare with our premium products and exceptional service
           </p>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center mb-8">
-          <button
-            onClick={scrollLeft}
-            disabled={currentIndex === 0}
-            className={`p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${
-              currentIndex === 0
-                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
-            }`}
-          >
-            <FiChevronLeft className="w-6 h-6" />
-          </button>
+        {/* Navigation Buttons - Hidden on Mobile */}
+        {!isMobile && (
+          <div className="flex justify-between items-center mb-8">
+            <button
+              onClick={scrollLeft}
+              disabled={currentIndex === 0}
+              className={`p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                currentIndex === 0
+                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+              }`}
+            >
+              <FiChevronLeft className="w-6 h-6" />
+            </button>
 
-          <div className="flex space-x-2">
+            <div className="flex space-x-2">
+              {features.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleDotClick(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? 'bg-white scale-125'
+                      : 'bg-white/30 hover:bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={scrollRight}
+              disabled={currentIndex === features.length - 1}
+              className={`p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${
+                currentIndex === features.length - 1
+                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+              }`}
+            >
+              <FiChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+        )}
+
+        {/* Mobile Dots Indicator - Smaller and Better Positioned */}
+        {isMobile && (
+          <div className="flex justify-center space-x-2 mb-8">
             {features.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                onClick={() => handleDotClick(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? 'bg-white scale-125'
-                    : 'bg-white/30 hover:bg-white/50'
+                    ? 'bg-white scale-150'
+                    : 'bg-white/40'
                 }`}
               />
             ))}
           </div>
-
-          <button
-            onClick={scrollRight}
-            disabled={currentIndex === features.length - 1}
-            className={`p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${
-              currentIndex === features.length - 1
-                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
-            }`}
-          >
-            <FiChevronRight className="w-6 h-6" />
-          </button>
-        </div>
+        )}
 
         {/* Features Container */}
         <div 
           ref={scrollContainerRef}
-          className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
-          style={{ scrollSnapType: 'x mandatory' }}
+          className={`flex gap-6 overflow-x-auto scrollbar-hide pb-4 ${
+            isMobile ? 'snap-x snap-mandatory' : ''
+          }`}
+          style={{ scrollSnapType: isMobile ? 'x mandatory' : 'none' }}
         >
           {features.map((feature, index) => (
             <div
               key={feature.id}
-              className={`flex-shrink-0 w-80 bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 transition-all duration-500 transform hover:scale-105 hover:bg-white/20 ${
+              className={`flex-shrink-0 w-80 md:w-80 bg-white/10 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/20 transition-all duration-500 transform hover:scale-105 hover:bg-white/20 ${
                 index === currentIndex ? 'scale-105 bg-white/20' : ''
-              }`}
-              style={{ scrollSnapAlign: 'start' }}
+              } ${isMobile ? 'snap-start' : ''}`}
+              style={{ scrollSnapAlign: isMobile ? 'start' : 'none' }}
             >
               <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 mx-auto transform transition-transform duration-300 hover:rotate-12`}>
                 <feature.icon className="w-8 h-8 text-white" />
               </div>
               
-              <h3 className="text-2xl font-bold text-white text-center mb-4">
+              <h3 className="text-xl md:text-2xl font-bold text-white text-center mb-4">
                 {feature.title}
               </h3>
               
-              <p className="text-purple-200 text-center leading-relaxed">
+              <p className="text-purple-200 text-center leading-relaxed text-sm md:text-base">
                 {feature.description}
               </p>
 
@@ -156,7 +228,7 @@ export function SwipingFeatures() {
 
         {/* Call to Action */}
         <div className="text-center mt-12">
-          <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-purple-500/25">
+          <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-purple-500/25">
             Explore Our Products
           </button>
         </div>

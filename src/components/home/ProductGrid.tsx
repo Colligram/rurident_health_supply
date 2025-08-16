@@ -229,14 +229,15 @@ export function ProductGrid() {
                 </div>
               )}
               
-              {/* Quick Actions */}
-              <div className={`absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 ${
-                hoveredProduct === product.id ? 'opacity-100' : ''
+              {/* Quick Actions - Always visible on mobile, hover on desktop */}
+              <div className={`absolute inset-0 bg-black/20 transition-opacity duration-300 ${
+                hoveredProduct === product.id ? 'opacity-100' : 'md:opacity-0 opacity-100'
               }`}>
                 <div className="absolute bottom-2 right-2 flex space-x-2">
                   <button
                     onClick={(e) => handleQuickView(product, e)}
                     className="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors duration-200"
+                    title="Quick View"
                   >
                     <FiEye className="w-4 h-4 text-gray-600" />
                   </button>
@@ -247,6 +248,7 @@ export function ProductGrid() {
                         ? 'bg-red-500 text-white hover:bg-red-600'
                         : 'bg-white text-gray-600 hover:bg-gray-50'
                     }`}
+                    title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                   >
                     <FiHeart className="w-4 h-4" />
                   </button>
@@ -338,6 +340,154 @@ export function ProductGrid() {
           >
             Clear Filters
           </button>
+        </div>
+      )}
+
+      {/* Product Detail Popup Modal */}
+      {isModalOpen && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="relative">
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors z-10"
+              >
+                <FiX className="w-5 h-5 text-gray-600" />
+              </button>
+              
+              <div className="flex flex-col md:flex-row">
+                {/* Product Image */}
+                <div className="md:w-1/2">
+                  <img 
+                    src={selectedProduct.images?.[0] || 'https://via.placeholder.com/400x400?text=Dental+Product'} 
+                    alt={selectedProduct.name}
+                    className="w-full h-64 md:h-96 object-cover rounded-t-xl md:rounded-l-xl md:rounded-t-none"
+                  />
+                </div>
+                
+                {/* Product Details */}
+                <div className="md:w-1/2 p-6">
+                  <div className="mb-4">
+                    <span className="text-xs text-orange-600 font-bold uppercase tracking-wide bg-orange-50 px-2 py-1 rounded">
+                      {selectedProduct.category}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{selectedProduct.name}</h3>
+                  
+                  <div className="flex items-center space-x-2 mb-4">
+                    <div className="flex items-center space-x-1">
+                      {[...Array(5)].map((_, i) => (
+                        <FiStar 
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < Math.floor(selectedProduct.rating || 4.5)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      ({selectedProduct.reviewCount || Math.floor(Math.random() * 100) + 10} reviews)
+                    </span>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <div className="flex items-baseline space-x-2">
+                      <span className="text-3xl font-bold text-gray-900">
+                        {formatPrice(selectedProduct.salePrice || selectedProduct.price)}
+                      </span>
+                      {selectedProduct.originalPrice && selectedProduct.originalPrice > (selectedProduct.salePrice || selectedProduct.price) && (
+                        <span className="text-lg text-gray-500 line-through">
+                          {formatPrice(selectedProduct.originalPrice)}
+                        </span>
+                      )}
+                    </div>
+                    {selectedProduct.originalPrice && selectedProduct.originalPrice > (selectedProduct.salePrice || selectedProduct.price) && (
+                      <div className="text-sm text-green-600 font-medium">
+                        You save {formatPrice(selectedProduct.originalPrice - (selectedProduct.salePrice || selectedProduct.price))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <p className="text-gray-600 mb-6 leading-relaxed">
+                    {selectedProduct.description || `High-quality dental equipment from ${selectedProduct.brand || 'Rurident'}. This product meets international standards and comes with manufacturer warranty. Perfect for professional dental practices and students.`}
+                  </p>
+                  
+                  {/* Trust Signals */}
+                  <div className="flex items-center justify-between text-sm text-gray-600 mb-6 border-t border-b border-gray-100 py-4">
+                    <div className="flex items-center">
+                      <FiTruck className="w-4 h-4 mr-2" />
+                      <span>Fast Delivery</span>
+                    </div>
+                    <div className="flex items-center">
+                      <FiShield className="w-4 h-4 mr-2" />
+                      <span>Warranty Included</span>
+                    </div>
+                    <div className="flex items-center">
+                      <FiStar className="w-4 h-4 mr-2" />
+                      <span>Top Quality</span>
+                    </div>
+                  </div>
+                  
+                  {/* Stock Status */}
+                  <div className="mb-6">
+                    {(selectedProduct.stock || 10) > 0 ? (
+                      <div className="flex items-center text-sm">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-green-600 font-medium">
+                          {(selectedProduct.stock || 10) > 5 ? 'In Stock' : `Only ${selectedProduct.stock || Math.floor(Math.random() * 5) + 1} left`}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center text-sm">
+                        <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                        <span className="text-red-600 font-medium">Out of Stock</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3">
+                    <button 
+                      onClick={(e) => handleAddToCart(selectedProduct, e)}
+                      disabled={!(selectedProduct.stock || 10)}
+                      className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
+                        (selectedProduct.stock || 10) > 0
+                          ? 'bg-orange-500 text-white hover:bg-orange-600'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      <FiShoppingCart className="w-4 h-4" />
+                      <span>{(selectedProduct.stock || 10) > 0 ? 'Add to Cart' : 'Out of Stock'}</span>
+                    </button>
+                    <button 
+                      onClick={(e) => handleWishlistToggle(selectedProduct, e)}
+                      className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center ${
+                        isInWishlist(selectedProduct.id)
+                          ? 'bg-red-500 text-white hover:bg-red-600'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <FiHeart className={`w-4 h-4 ${isInWishlist(selectedProduct.id) ? 'fill-current' : ''}`} />
+                    </button>
+                  </div>
+                  
+                  {/* View Full Details Link */}
+                  <div className="mt-4 text-center">
+                    <Link
+                      to={`/product/${selectedProduct.id}`}
+                      className="text-orange-600 hover:text-orange-700 font-medium text-sm"
+                      onClick={closeModal}
+                    >
+                      View Full Product Details →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
