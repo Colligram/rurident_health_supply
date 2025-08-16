@@ -167,8 +167,8 @@ export const CheckoutPage: React.FC = () => {
       }
     }, 60000); // 1 minute (reduced from 3 minutes)
 
-    // Simulate successful payment after random time (30 seconds to 2.5 minutes for demo)
-    const paymentDelay = Math.random() * 120000 + 30000; // 30s to 2.5 minutes
+    // Simulate successful payment after random time (15 seconds to 45 seconds for demo)
+    const paymentDelay = Math.random() * 30000 + 15000; // 15s to 45s (fits within 1-minute timeout)
     const paymentSimulation = setTimeout(() => {
       if (!paymentRevoked && mpesaPromptSent) {
         clearInterval(countdownInterval);
