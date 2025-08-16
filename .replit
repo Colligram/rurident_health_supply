@@ -1,12 +1,12 @@
 modules = ["nodejs-20", "web"]
-run = "npm run dev"
+run = "npm run dev:full"
 
 [nix]
 channel = "stable-25_05"
 packages = ["run"]
 
 [deployment]
-run = ["sh", "-c", "npm run dev"]
+run = ["sh", "-c", "cd server && npm install && npm start & npm run dev"]
 
 [web]
   port = 3000
@@ -95,7 +95,7 @@ args = "npm install && npm run dev"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run server"
+args = "cd server && npm install && npm start"
 
 [[workflows.workflow]]
 name = "Production Build & Run"
@@ -108,4 +108,4 @@ args = "npm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run server"
+args = "cd server && npm install && npm start"
