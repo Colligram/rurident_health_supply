@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { HiLocationMarker, HiPhone, HiSearch, HiHeart, HiShoppingCart, HiMenu, HiChevronDown } from 'react-icons/hi';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { HiLocationMarker, HiPhone, HiSearch, HiHeart, HiShoppingCart, HiMenu, HiChevronDown, HiArrowLeft } from 'react-icons/hi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { SearchBar } from '../common/SearchBar';
@@ -29,11 +29,24 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { items } = useCart();
   const { items: wishlistItems } = useWishlist();
 
   const cartItemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Handle scroll effect
   useEffect(() => {
@@ -52,6 +65,17 @@ export function Header() {
   const handleMouseLeave = () => {
     setActiveDropdown(null);
   };
+
+  const handleBackButton = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
+
+  // Determine if back button should be shown
+  const showBackButton = isMobile && location.pathname !== '/' && !location.pathname.startsWith('/auth');
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ease-in-out ${
@@ -83,8 +107,20 @@ export function Header() {
       {/* Main header - Mobile Optimized */}
       <div className="container-max">
         <div className="flex items-center justify-between h-14 md:h-16">
-          {/* Logo - More compact for mobile */}
-          <div className="flex items-center">
+          {/* Left side with back button and logo */}
+          <div className="flex items-center space-x-2">
+            {/* Back Button - Mobile Only */}
+            {showBackButton && (
+              <button
+                onClick={handleBackButton}
+                className="p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out hover:bg-orange-50 rounded-lg"
+                title="Go Back"
+              >
+                <HiArrowLeft className="mobile-icon-md" />
+              </button>
+            )}
+
+            {/* Logo - More compact for mobile */}
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 group-hover:scale-105">
                 <span className="text-white font-bold text-lg md:text-xl">R</span>
@@ -150,7 +186,7 @@ export function Header() {
               onClick={() => setSearchOpen(true)}
               className="p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out hover:bg-orange-50 rounded-lg"
             >
-              <HiSearch className="h-5 w-5" />
+              <HiSearch className="mobile-icon-md" />
             </button>
 
             {/* Wishlist */}
@@ -158,7 +194,7 @@ export function Header() {
               to="/wishlist"
               className="p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out relative hover:bg-orange-50 rounded-lg"
             >
-              <HiHeart className="h-5 w-5" />
+              <HiHeart className="mobile-icon-md" />
               {wishlistItems.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {wishlistItems.length}
@@ -171,7 +207,7 @@ export function Header() {
               to="/cart"
               className="p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out relative hover:bg-orange-50 rounded-lg"
             >
-              <HiShoppingCart className="h-5 w-5" />
+              <HiShoppingCart className="mobile-icon-md" />
               {cartItemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {cartItemCount}
@@ -179,14 +215,12 @@ export function Header() {
               )}
             </Link>
 
-
-
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
               className="lg:hidden p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out hover:bg-orange-50 rounded-lg"
             >
-              <HiMenu className="h-5 w-5" />
+              <HiMenu className="mobile-icon-md" />
             </button>
           </div>
         </div>

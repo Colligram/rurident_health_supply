@@ -187,22 +187,38 @@ export function CategorySidebar() {
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Button - Enhanced with animations */}
       <div className="lg:hidden mb-4">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="w-full bg-white rounded-xl shadow-lg border border-gray-100 px-6 py-4 flex items-center justify-between hover:shadow-xl transition-shadow"
+          className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl shadow-lg border border-orange-200 px-6 py-4 flex items-center justify-between hover:shadow-xl transition-all duration-300 transform hover:scale-105 animate-pulse hover:animate-none group"
         >
           <div className="flex items-center space-x-3">
-            <FiGrid className="w-6 h-6 text-primary-600" />
-            <span className="font-semibold text-gray-900">Browse Categories</span>
+            <div className="relative">
+              <FiGrid className="w-7 h-7 text-white transform group-hover:rotate-180 transition-transform duration-500" />
+              <div className="absolute -inset-1 bg-white/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-ping"></div>
+            </div>
+            <span className="font-bold text-white text-lg group-hover:text-orange-100 transition-colors duration-300">Browse Categories</span>
+            <div className="hidden sm:flex items-center space-x-1 bg-white/20 rounded-full px-2 py-1">
+              <span className="text-xs text-white font-medium animate-bounce">New!</span>
+            </div>
           </div>
-          {isMobileMenuOpen ? (
-            <FiChevronDown className="w-5 h-5 text-gray-400" />
-          ) : (
-            <FiChevronRight className="w-5 h-5 text-gray-400" />
-          )}
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-white/70 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+            <div className="w-2 h-2 bg-white/40 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+            {isMobileMenuOpen ? (
+              <FiChevronDown className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform duration-300" />
+            ) : (
+              <FiChevronRight className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform duration-300" />
+            )}
+          </div>
         </button>
+        
+        {/* Floating action hint */}
+        <div className="text-center mt-2">
+          <span className="text-xs text-gray-500 animate-bounce">👆 Tap to explore all categories</span>
+        </div>
       </div>
 
       {/* Desktop Sidebar */}

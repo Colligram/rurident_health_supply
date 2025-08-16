@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiStar, FiShoppingCart, FiHeart, FiTruck, FiEye, FiX } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
@@ -77,6 +77,83 @@ export function LightningDeals() {
   const { addToWishlist, removeFromWishlist, items: wishlistItems } = useWishlist();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showPopup, setShowPopup] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-scroll functionality for mobile
+  useEffect(() => {
+    if (isMobile && scrollContainerRef.current) {
+      const startAutoScroll = () => {
+        autoScrollRef.current = setInterval(() => {
+          setCurrentIndex(prev => {
+            const nextIndex = (prev + 1) % lightningDeals.length;
+            if (scrollContainerRef.current) {
+              const cardWidth = 180; // Approximate card width on mobile
+              const gap = 12; // Gap between cards
+              const scrollPosition = nextIndex * (cardWidth + gap);
+              
+              scrollContainerRef.current.scrollTo({
+                left: scrollPosition,
+                behavior: 'smooth'
+              });
+            }
+            return nextIndex;
+          });
+        }, 3000); // 3 seconds interval
+      };
+
+      // Start auto-scroll after a short delay
+      const timer = setTimeout(startAutoScroll, 1000);
+
+      return () => {
+        clearTimeout(timer);
+        if (autoScrollRef.current) {
+          clearInterval(autoScrollRef.current);
+        }
+      };
+    }
+  }, [isMobile]);
+
+  // Pause auto-scroll on user interaction
+  const handleUserInteraction = () => {
+    if (autoScrollRef.current) {
+      clearInterval(autoScrollRef.current);
+      // Restart after 5 seconds of no interaction
+      setTimeout(() => {
+        if (isMobile && scrollContainerRef.current) {
+          autoScrollRef.current = setInterval(() => {
+            setCurrentIndex(prev => {
+              const nextIndex = (prev + 1) % lightningDeals.length;
+              if (scrollContainerRef.current) {
+                const cardWidth = 180;
+                const gap = 12;
+                const scrollPosition = nextIndex * (cardWidth + gap);
+                
+                scrollContainerRef.current.scrollTo({
+                  left: scrollPosition,
+                  behavior: 'smooth'
+                });
+              }
+              return nextIndex;
+            });
+          }, 3000);
+        }
+      }, 5000);
+    }
+  };
 
   const handleAddToCart = (deal: any) => {
     // Convert deal to Product format
@@ -133,13 +210,22 @@ export function LightningDeals() {
             </Link>
           </div>
           
-          <div className="flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide pb-4">
-            {lightningDeals.map((deal) => {
+          <div 
+            ref={scrollContainerRef}
+            className={`flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide pb-4 ${
+              isMobile ? 'scroll-smooth' : ''
+            }`}
+            onTouchStart={handleUserInteraction}
+            onMouseDown={handleUserInteraction}
+          >
+            {lightningDeals.map((deal, index) => {
               const isInWishlist = wishlistItems.some(item => item.id === deal.id.toString());
               return (
                 <div 
                   key={deal.id} 
-                  className="flex-shrink-0 w-44 md:w-56 bg-white rounded-lg border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105"
+                  className={`flex-shrink-0 w-44 md:w-56 bg-white rounded-lg border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 ${
+                    isMobile && index === currentIndex ? 'ring-2 ring-orange-300 shadow-orange-200' : ''
+                  }`}
                 >
                   <div className="relative">
                     <img 
@@ -151,12 +237,16 @@ export function LightningDeals() {
                       }}
                     />
                     {deal.badge && (
-                      <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium animate-pulse">
+                      <div className={`absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium ${
+                        isMobile ? 'animate-pulse' : ''
+                      }`}>
                         {deal.badge}
                       </div>
                     )}
                     {deal.isNew && (
-                      <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium animate-bounce">
+                      <div className={`absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium ${
+                        isMobile ? 'animate-bounce' : ''
+                      }`}>
                         NEW
                       </div>
                     )}
@@ -217,6 +307,20 @@ export function LightningDeals() {
               );
             })}
           </div>
+
+          {/* Mobile scroll indicator */}
+          {isMobile && (
+            <div className="flex justify-center space-x-1 mt-2">
+              {lightningDeals.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    index === currentIndex ? 'bg-orange-500' : 'bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
