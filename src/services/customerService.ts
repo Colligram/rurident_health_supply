@@ -18,7 +18,7 @@ export interface Customer {
 
 class CustomerService {
   private baseURL = '/api';
-  private useMockData = true; // Default to mock data for now
+  private useMockData = false; // Try real API first, fallback to mock data if needed
 
   // Mock customers data for development
   private mockCustomers: Customer[] = [

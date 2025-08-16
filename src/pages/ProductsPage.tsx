@@ -17,23 +17,62 @@ export function ProductsPage() {
   const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState('all'); // Added for price filtering
   const [showInStockOnly, setShowInStockOnly] = useState(false); // Added for stock filtering
+  const [minRating, setMinRating] = useState(0);
+  const [qualityFilter, setQualityFilter] = useState('all');
+  const [stockFilter, setStockFilter] = useState('all');
 
   // Initialize category from URL parameters
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
+    const searchFromUrl = searchParams.get('search');
+    const sortFromUrl = searchParams.get('sortBy');
+    const ratingFromUrl = searchParams.get('minRating');
+    const qualityFromUrl = searchParams.get('quality');
+    const stockFromUrl = searchParams.get('stock');
+    
     if (categoryFromUrl) {
       setSelectedCategory(categoryFromUrl);
+    }
+    if (searchFromUrl) {
+      setSearchTerm(searchFromUrl);
+    }
+    if (sortFromUrl) {
+      setSortBy(sortFromUrl);
+    }
+    if (ratingFromUrl) {
+      setMinRating(Number(ratingFromUrl));
+    }
+    if (qualityFromUrl) {
+      setQualityFilter(qualityFromUrl);
+    }
+    if (stockFromUrl) {
+      setStockFilter(stockFromUrl);
     }
   }, [searchParams]);
 
   // Update URL when category changes
   useEffect(() => {
+    const params = new URLSearchParams();
     if (selectedCategory !== 'all') {
-      setSearchParams({ category: selectedCategory });
-    } else {
-      setSearchParams({});
+      params.set('category', selectedCategory);
     }
-  }, [selectedCategory, setSearchParams]);
+    if (searchTerm.trim()) {
+      params.set('search', searchTerm.trim());
+    }
+    if (sortBy !== 'name') {
+      params.set('sortBy', sortBy);
+    }
+    if (minRating > 0) {
+      params.set('minRating', minRating.toString());
+    }
+    if (qualityFilter !== 'all') {
+      params.set('quality', qualityFilter);
+    }
+    if (stockFilter !== 'all') {
+      params.set('stock', stockFilter);
+    }
+    setSearchParams(params);
+  }, [selectedCategory, searchTerm, sortBy, minRating, qualityFilter, stockFilter, setSearchParams]);
 
   // Show loading state
   if (loading) {
@@ -65,7 +104,7 @@ export function ProductsPage() {
   const filteredProducts = useMemo(() => {
     if (!products || !Array.isArray(products)) return [];
 
-    return products.filter(product => {
+    let filtered = products.filter(product => {
       const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            product.description?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
@@ -84,10 +123,45 @@ export function ProductsPage() {
 
       // Stock filtering
       const matchesStock = showInStockOnly ? (product.stock || 0) > 0 : true;
+      
+      // Rating filtering
+      const matchesRating = minRating === 0 || (product.rating || 0) >= minRating;
+      
+      // Quality filtering
+      const matchesQuality = qualityFilter === 'all' || 
+        (qualityFilter === 'premium' && product.isPremium) ||
+        (qualityFilter === 'premium' && product.price > 5000); // Fallback: high price = premium
+      
+      // Stock location filtering
+      const matchesStockFilter = stockFilter === 'all' || 
+        (stockFilter === 'local' && product.isLocalStock) ||
+        (stockFilter === 'local' && (product.stock || 0) > 0); // Fallback: in stock = local
 
-      return matchesSearch && matchesCategory && matchesPrice && matchesStock;
+      return matchesSearch && matchesCategory && matchesPrice && matchesStock && 
+             matchesRating && matchesQuality && matchesStockFilter;
     });
-  }, [products, searchTerm, selectedCategory, priceRange, showInStockOnly]);
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'bestselling':
+          return (b.salesCount || 0) - (a.salesCount || 0);
+        case 'newest':
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        case 'price-low-high':
+          return (a.salePrice || a.price || 0) - (b.salePrice || b.price || 0);
+        case 'price-high-low':
+          return (b.salePrice || b.price || 0) - (a.salePrice || a.price || 0);
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        case 'name':
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+
+    return filtered;
+  }, [products, searchTerm, selectedCategory, priceRange, showInStockOnly, minRating, qualityFilter, stockFilter, sortBy]);
 
   const handleAddToCart = (product: any) => {
     addToCart(product, 1);

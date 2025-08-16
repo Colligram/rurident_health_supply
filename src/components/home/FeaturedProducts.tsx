@@ -68,8 +68,13 @@ export function FeaturedProducts() {
   }
 
   return (
-    <section className="section-padding bg-gradient-to-br from-white via-orange-50/30 to-white">
-      <div className="container-max">
+    <section className="section-padding relative overflow-hidden">
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="w-full h-full bg-gradient-animated"></div>
+      </div>
+      
+      <div className="container-max relative z-10">
         {/* Enhanced Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
