@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { HiLocationMarker, HiPhone, HiSearch, HiHeart, HiShoppingCart, HiUser, HiMenu, HiChevronDown } from 'react-icons/hi';
+import { HiLocationMarker, HiPhone, HiSearch, HiHeart, HiShoppingCart, HiMenu, HiChevronDown } from 'react-icons/hi';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { SearchBar } from '../common/SearchBar';
@@ -179,13 +179,7 @@ export function Header() {
               )}
             </Link>
 
-            {/* User Account - Hidden on small screens */}
-            <Link
-              to="/account"
-              className="hidden sm:block p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out hover:bg-orange-50 rounded-lg"
-            >
-              <HiUser className="h-5 w-5" />
-            </Link>
+
 
             {/* Mobile menu button */}
             <button

@@ -3,7 +3,7 @@ import { HiUserGroup, HiStar, HiTruck, HiShieldCheck, HiAcademicCap, HiGlobe, Hi
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-20">
       {/* SEO Meta Information */}
       <div style={{ display: 'none' }}>
         <h1>Rurident Health Supplies - Kenya's Premier Dental Equipment Supplier</h1>

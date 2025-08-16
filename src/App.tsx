@@ -315,21 +315,7 @@ function App() {
                       </>
                     } 
                   />
-                  <Route 
-                    path="/account" 
-                    element={
-                      <>
-                        <Header />
-                        <main className="flex-1">
-                          <div className="min-h-screen flex items-center justify-center">
-                            <p className="text-gray-600">Account Page - Coming Soon</p>
-                          </div>
-                        </main>
-                        <Footer />
-                        <ChatBot />
-                      </>
-                    } 
-                  />
+
                   <Route 
                     path="/delivery" 
                     element={
