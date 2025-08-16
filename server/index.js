@@ -2,7 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const PDFDocument = require('pdfkit');
-require('dotenv').config();
+const path = require('path');
+
+// Load environment variables from both server/.env and parent .env
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +19,9 @@ app.use(express.json());
 const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/rurident';
 
 console.log('Attempting to connect to MongoDB...');
+console.log('MONGODB_URI from env:', process.env.MONGODB_URI ? 'Found' : 'Not found');
+console.log('MONGO_URL from env:', process.env.MONGO_URL ? 'Found' : 'Not found');
+console.log('Using connection string:', MONGODB_URI.replace(/:[^:@]*@/, ':***@'));
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,

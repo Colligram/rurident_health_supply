@@ -5,7 +5,15 @@ echo "=========================================="
 
 # Function to check if a port is in use
 check_port() {
-    netstat -tuln 2>/dev/null | grep ":$1 " > /dev/null
+    # Try multiple methods to check if port is in use
+    if command -v ss >/dev/null 2>&1; then
+        ss -tuln 2>/dev/null | grep ":$1 " > /dev/null
+    elif command -v netstat >/dev/null 2>&1; then
+        netstat -tuln 2>/dev/null | grep ":$1 " > /dev/null
+    else
+        # Fallback: try to connect to the port
+        timeout 1 bash -c "cat < /dev/null > /dev/tcp/localhost/$1" 2>/dev/null
+    fi
     return $?
 }
 
