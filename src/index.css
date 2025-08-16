@@ -605,6 +605,6 @@
   }
 }
 
-.bg-gradient-animated {
+.animate-gradient-shift {
   animation: gradient-shift 9s ease-in-out infinite;
 }
