@@ -268,7 +268,7 @@ export function ProductGrid() {
                   <div className="flex items-center space-x-0.5">
                     {[...Array(5)].map((_, i) => (
                       <FiStar
-                        key={i}
+                        key={`rating-${product.id}-${i}`}
                         className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
                           i < (product.rating || 0)
                             ? 'text-yellow-400 fill-current'
@@ -379,7 +379,7 @@ export function ProductGrid() {
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
                         <FiStar 
-                          key={i}
+                          key={`modal-rating-${selectedProduct.id}-${i}`}
                           className={`w-4 h-4 ${
                             i < Math.floor(selectedProduct.rating || 4.5)
                               ? 'text-yellow-400 fill-current'
