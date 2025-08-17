@@ -197,11 +197,11 @@ export function ProductGrid() {
       }`}>
         {filteredAndSortedProducts.map((product) => (
           <div
-            key={product.id}
+            key={product._id || product.id}
             className={`bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 ${
               viewMode === 'list' ? 'flex' : ''
             }`}
-            onMouseEnter={() => setHoveredProduct(product.id)}
+            onMouseEnter={() => setHoveredProduct(product._id || product.id)}
             onMouseLeave={() => setHoveredProduct(null)}
           >
             {/* Product Image */}
@@ -268,7 +268,7 @@ export function ProductGrid() {
                   <div className="flex items-center space-x-0.5">
                     {[...Array(5)].map((_, i) => (
                       <FiStar
-                        key={`rating-${product.id}-${i}`}
+                        key={`rating-${product._id || product.id}-${i}`}
                         className={`w-2.5 h-2.5 md:w-3 md:h-3 ${
                           i < (product.rating || 0)
                             ? 'text-yellow-400 fill-current'
@@ -379,7 +379,7 @@ export function ProductGrid() {
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
                         <FiStar 
-                          key={`modal-rating-${selectedProduct.id}-${i}`}
+                          key={`modal-rating-${selectedProduct._id || selectedProduct.id}-${i}`}
                           className={`w-4 h-4 ${
                             i < Math.floor(selectedProduct.rating || 4.5)
                               ? 'text-yellow-400 fill-current'
