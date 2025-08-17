@@ -39,12 +39,17 @@ export function HomeLayout() {
           
           {/* Right Content - Products */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
-              <div className="mb-6">
+            <div className="featured-products-section bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+              {/* Animated gradient background */}
+              <div className="featured-products-gradient"></div>
+              
+              <div className="relative z-10 mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">Featured Products</h2>
                 <p className="text-gray-600">Discover our latest and most popular dental supplies</p>
               </div>
-              <ProductGrid />
+              <div className="relative z-10">
+                <ProductGrid />
+              </div>
             </div>
           </div>
         </div>

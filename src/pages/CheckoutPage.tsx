@@ -260,7 +260,7 @@ export const CheckoutPage: React.FC = () => {
 
   if (paymentSuccess && currentStep === 3) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-12 pt-24">
         <div className="max-w-2xl mx-auto px-4">
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -313,7 +313,7 @@ export const CheckoutPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-8 pt-24">
       <div className="max-w-6xl mx-auto px-4">
         {/* Progress Steps */}
         <div className="mb-8">
@@ -508,135 +508,148 @@ export const CheckoutPage: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="space-y-4 mb-8">
-                    {/* M-Pesa Option */}
+                  <div className="space-y-6 mb-8">
+                    {/* M-Pesa Option - Enhanced Green Design */}
                     <div 
-                      className={`border-2 rounded-xl p-6 cursor-pointer transition-all ${
-                        paymentMethod === 'mpesa' ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'
+                      className={`border-3 rounded-xl p-6 cursor-pointer transition-all shadow-lg ${
+                        paymentMethod === 'mpesa' 
+                          ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-green-200' 
+                          : 'border-green-300 bg-green-50 hover:border-green-400 hover:shadow-green-100'
                       }`}
                       onClick={() => setPaymentMethod('mpesa')}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <FiSmartphone className="w-6 h-6 text-green-600 mr-3" />
+                          <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mr-4">
+                            <FiSmartphone className="w-6 h-6 text-white" />
+                          </div>
                           <div>
-                            <h3 className="font-bold text-gray-900">M-Pesa</h3>
-                            <p className="text-sm text-gray-600">Pay with your mobile money</p>
+                            <h3 className="font-bold text-green-800 text-lg">M-Pesa</h3>
+                            <p className="text-sm text-green-700">Pay with your mobile money - Safe & Secure</p>
+                            <p className="text-xs text-green-600 mt-1">✓ Instant payment confirmation</p>
                           </div>
                         </div>
-                        <div className={`w-5 h-5 rounded-full border-2 ${
-                          paymentMethod === 'mpesa' ? 'border-green-500 bg-green-500' : 'border-gray-300'
+                        <div className={`w-6 h-6 rounded-full border-3 ${
+                          paymentMethod === 'mpesa' ? 'border-green-600 bg-green-600' : 'border-green-400'
                         }`}>
-                          {paymentMethod === 'mpesa' && <FiCheck className="w-3 h-3 text-white m-0.5" />}
+                          {paymentMethod === 'mpesa' && <FiCheck className="w-4 h-4 text-white m-0.5" />}
                         </div>
                       </div>
                     </div>
 
-                    {/* Card Option - Disabled */}
-                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed">
+                    {/* Card Option - Properly Dimmed */}
+                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed bg-gray-50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <FiCreditCard className="w-6 h-6 text-gray-300 mr-3" />
+                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                            <FiCreditCard className="w-6 h-6 text-gray-400" />
+                          </div>
                           <div>
-                            <h3 className="font-bold text-gray-400">Credit/Debit Card</h3>
-                            <p className="text-sm text-gray-400">Not supported - Visa, Mastercard</p>
+                            <h3 className="font-bold text-gray-400 text-lg">Credit/Debit Card</h3>
+                            <p className="text-sm text-gray-400">Visa, Mastercard - Currently unavailable</p>
+                            <p className="text-xs text-gray-400 mt-1">✗ Not supported at this time</p>
                           </div>
                         </div>
-                        <span className="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-sm font-medium">
+                        <span className="bg-gray-300 text-gray-500 px-4 py-2 rounded-full text-sm font-bold">
                           Disabled
                         </span>
                       </div>
                     </div>
 
-                    {/* Bank Transfer Option - Disabled */}
-                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed">
+                    {/* Bank Transfer Option - Properly Dimmed */}
+                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed bg-gray-50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
-                          <FaUniversity className="w-6 h-6 text-gray-300 mr-3" />
+                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                            <FaUniversity className="w-6 h-6 text-gray-400" />
+                          </div>
                           <div>
-                            <h3 className="font-bold text-gray-400">Bank Transfer</h3>
-                            <p className="text-sm text-gray-400">Not supported - Direct bank transfer</p>
+                            <h3 className="font-bold text-gray-400 text-lg">Bank Transfer</h3>
+                            <p className="text-sm text-gray-400">Direct bank transfer - Currently unavailable</p>
+                            <p className="text-xs text-gray-400 mt-1">✗ Not supported at this time</p>
                           </div>
                         </div>
-                        <span className="bg-gray-200 text-gray-500 px-3 py-1 rounded-full text-sm font-medium">
+                        <span className="bg-gray-300 text-gray-500 px-4 py-2 rounded-full text-sm font-bold">
                           Disabled
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* M-Pesa Payment Flow */}
+                  {/* M-Pesa Payment Flow - Enhanced Green Theme */}
                   {paymentMethod === 'mpesa' && (
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-6 mb-6">
-                      <h4 className="font-bold text-green-800 mb-4 flex items-center">
+                    <div className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-xl p-6 mb-6 shadow-lg">
+                      <h4 className="font-bold text-green-800 mb-4 flex items-center text-lg">
                         <FiLock className="w-5 h-5 mr-2" />
                         Secure M-Pesa Payment
                       </h4>
                       
                       {!mpesaPromptSent ? (
                         <div>
-                          <p className="text-green-700 mb-4">
-                            You will receive an M-Pesa prompt on <strong>{customerInfo.phone}</strong> to complete your payment of <strong>{formatPrice(total)}</strong>
+                          <p className="text-green-700 mb-4 text-base">
+                            You will receive an M-Pesa prompt on <strong className="text-green-800">{customerInfo.phone}</strong> to complete your payment of <strong className="text-green-800">{formatPrice(total)}</strong>
                           </p>
                           <button
                             onClick={simulateMpesaPrompt}
                             disabled={fraudCheck?.risk === 'high'}
-                            className={`w-full py-3 rounded-lg font-bold transition-all ${
+                            className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
                               fraudCheck?.risk === 'high'
                                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl'
+                                : 'bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                             }`}
                           >
                             {fraudCheck?.risk === 'high' ? 'Payment Blocked - Contact Support' : 'Send M-Pesa Prompt'}
                           </button>
                         </div>
-                                             ) : !paymentConfirmed && !paymentRevoked ? (
-                         <div className="text-center">
-                           <div className="animate-spin w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full mx-auto mb-4"></div>
-                           <p className="text-green-700 font-medium mb-2">M-Pesa prompt sent to your phone</p>
-                           <p className="text-sm text-green-600 mb-4">Please check your phone and enter your M-Pesa PIN</p>
-                           
-                           {/* Countdown Timer */}
-                           <div className="bg-green-100 border border-green-300 rounded-lg p-4 mb-4">
-                             <div className="flex items-center justify-center mb-2">
-                               <FiClock className="w-5 h-5 mr-2 text-green-600" />
-                               <span className="text-lg font-bold text-green-800">
-                                 Time Remaining: {formatTime(timeRemaining)}
-                               </span>
-                             </div>
-                             <div className="w-full bg-green-200 rounded-full h-2">
-                               <div 
-                                 className="bg-green-600 h-2 rounded-full transition-all duration-1000"
-                                 style={{ width: `${(timeRemaining / 180) * 100}%` }}
-                               ></div>
-                             </div>
-                           </div>
-                           
-                           <p className="text-sm text-green-600">Waiting for payment confirmation...</p>
-                         </div>
-                       ) : paymentRevoked ? (
-                         <div className="text-center">
-                           <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                             <FiX className="w-6 h-6 text-red-600" />
-                           </div>
-                           <p className="text-red-700 font-medium mb-2">Payment Timed Out</p>
-                           <p className="text-sm text-red-600 mb-4">Please initiate payment again</p>
-                           <button
-                             onClick={() => {
-                               setPaymentRevoked(false);
-                               setMpesaPromptSent(false);
-                               setError('');
-                             }}
-                             className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-                           >
-                             Try Again
-                           </button>
-                         </div>
+                      ) : !paymentConfirmed && !paymentRevoked ? (
+                        <div className="text-center">
+                          <div className="animate-spin w-8 h-8 border-4 border-green-200 border-t-green-600 rounded-full mx-auto mb-4"></div>
+                          <p className="text-green-800 font-bold mb-2 text-lg">M-Pesa prompt sent to your phone</p>
+                          <p className="text-sm text-green-700 mb-4">Please check your phone and enter your M-Pesa PIN</p>
+                          
+                          {/* Countdown Timer */}
+                          <div className="bg-green-200 border-2 border-green-400 rounded-lg p-4 mb-4">
+                            <div className="flex items-center justify-center mb-2">
+                              <FiClock className="w-5 h-5 mr-2 text-green-700" />
+                              <span className="text-lg font-bold text-green-800">
+                                Time Remaining: {formatTime(timeRemaining)}
+                              </span>
+                            </div>
+                            <div className="w-full bg-green-300 rounded-full h-3">
+                              <div 
+                                className="bg-green-600 h-3 rounded-full transition-all duration-1000"
+                                style={{ width: `${(timeRemaining / 180) * 100}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          
+                          <p className="text-sm text-green-700 font-medium">Waiting for payment confirmation...</p>
+                        </div>
+                      ) : paymentRevoked ? (
+                        <div className="text-center">
+                          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <FiX className="w-6 h-6 text-red-600" />
+                          </div>
+                          <p className="text-red-700 font-medium mb-2">Payment Timed Out</p>
+                          <p className="text-sm text-red-600 mb-4">Please initiate payment again</p>
+                          <button
+                            onClick={() => {
+                              setPaymentRevoked(false);
+                              setMpesaPromptSent(false);
+                              setError('');
+                            }}
+                            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                          >
+                            Try Again
+                          </button>
+                        </div>
                       ) : (
                         <div className="text-center">
-                          <FiCheck className="w-12 h-12 text-green-600 mx-auto mb-4" />
-                          <p className="text-green-700 font-medium">Payment Confirmed!</p>
-                          <p className="text-sm text-green-600">Processing your order...</p>
+                          <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <FiCheck className="w-8 h-8 text-green-700" />
+                          </div>
+                          <p className="text-green-800 font-bold text-lg">Payment Confirmed!</p>
+                          <p className="text-sm text-green-700">Processing your order...</p>
                         </div>
                       )}
                     </div>
@@ -657,7 +670,7 @@ export const CheckoutPage: React.FC = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
+            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
               
               <div className="space-y-4 mb-6">
@@ -711,14 +724,14 @@ export const CheckoutPage: React.FC = () => {
                 </div>
               )}
 
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center text-gray-600 mb-2">
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg space-y-3">
+                <div className="flex items-center text-gray-600">
                   <FiShield className="w-4 h-4 mr-2" />
-                  <span className="text-sm">Secure checkout</span>
+                  <span className="text-sm font-medium">Secure checkout</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <FiTruck className="w-4 h-4 mr-2" />
-                  <span className="text-sm">2-4 business days delivery</span>
+                  <span className="text-sm font-medium">2-4 business days delivery</span>
                 </div>
               </div>
             </div>
