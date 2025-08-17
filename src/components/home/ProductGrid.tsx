@@ -84,8 +84,8 @@ export function ProductGrid() {
   const handleWishlistToggle = (product: any, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
+    if (isInWishlist(product._id || product.id)) {
+      removeFromWishlist(product._id || product.id);
     } else {
       addToWishlist(product);
     }
@@ -210,7 +210,7 @@ export function ProductGrid() {
                 src={product.images?.[0] || 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop&crop=center'}
                 alt={product.name}
                 className={`w-full object-cover transition-transform duration-300 ${
-                  hoveredProduct === product.id ? 'scale-105' : 'scale-100'
+                  hoveredProduct === (product._id || product.id) ? 'scale-105' : 'scale-100'
                 } ${viewMode === 'list' ? 'h-48' : 'h-32 md:h-48'}`}
                 onError={(e) => {
                   e.currentTarget.src = 'https://via.placeholder.com/400x400?text=Dental+Product';
@@ -231,7 +231,7 @@ export function ProductGrid() {
               
               {/* Quick Actions - Always visible on mobile, hover on desktop */}
               <div className={`absolute inset-0 bg-black/20 transition-opacity duration-300 ${
-                hoveredProduct === product.id ? 'opacity-100' : 'md:opacity-0 opacity-100'
+                hoveredProduct === (product._id || product.id) ? 'opacity-100' : 'md:opacity-0 opacity-100'
               }`}>
                 <div className="absolute bottom-2 right-2 flex space-x-2">
                   <button
@@ -244,11 +244,11 @@ export function ProductGrid() {
                   <button
                     onClick={(e) => handleWishlistToggle(product, e)}
                     className={`w-8 h-8 rounded-full shadow-md flex items-center justify-center transition-colors duration-200 ${
-                      isInWishlist(product.id)
+                      isInWishlist(product._id || product.id)
                         ? 'bg-red-500 text-white hover:bg-red-600'
                         : 'bg-white text-gray-600 hover:bg-gray-50'
                     }`}
-                    title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                    title={isInWishlist(product._id || product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                   >
                     <FiHeart className="w-4 h-4" />
                   </button>
@@ -465,19 +465,19 @@ export function ProductGrid() {
                     <button 
                       onClick={(e) => handleWishlistToggle(selectedProduct, e)}
                       className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center ${
-                        isInWishlist(selectedProduct.id)
+                        isInWishlist(selectedProduct._id || selectedProduct.id)
                           ? 'bg-red-500 text-white hover:bg-red-600'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
-                      <FiHeart className={`w-4 h-4 ${isInWishlist(selectedProduct.id) ? 'fill-current' : ''}`} />
+                      <FiHeart className={`w-4 h-4 ${isInWishlist(selectedProduct._id || selectedProduct.id) ? 'fill-current' : ''}`} />
                     </button>
                   </div>
                   
                   {/* View Full Details Link */}
                   <div className="mt-4 text-center">
                     <Link
-                      to={`/product/${selectedProduct.id}`}
+                      to={`/product/${selectedProduct._id || selectedProduct.id}`}
                       className="text-orange-600 hover:text-orange-700 font-medium text-sm"
                       onClick={closeModal}
                     >
