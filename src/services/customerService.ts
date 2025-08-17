@@ -17,7 +17,7 @@ export interface Customer {
 }
 
 class CustomerService {
-  private baseURL = '/api';
+  private baseURL = 'http://localhost:5000/api';
   private useMockData = false; // Try real API first, fallback to mock data if needed
 
   // Mock customers data for development
@@ -177,8 +177,27 @@ class CustomerService {
         return { success: true, data: this.mockCustomers };
       }
       
+      // Map database format to frontend format
+      const mappedData = data.map(customer => ({
+        id: customer._id || customer.id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        address: customer.address,
+        totalOrders: customer.totalOrders || 0,
+        totalSpent: customer.totalSpent || 0,
+        lastOrderDate: customer.lastOrderDate,
+        status: customer.status,
+        joinDate: customer.joinDate || customer.createdAt,
+        city: customer.city,
+        country: customer.country || 'Kenya',
+        postalCode: customer.postalCode,
+        notes: customer.notes,
+        tags: customer.tags || []
+      }));
+      
       this.useMockData = false;
-      return { success: true, data };
+      return { success: true, data: mappedData };
     } catch (error) {
       console.warn('Error fetching customers, using mock data:', error);
       this.useMockData = true;
