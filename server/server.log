@@ -1,0 +1,8 @@
+nohup: ignoring input
+
+> rurident-server@1.0.0 start
+> node index.js
+
+Attempting to connect to MongoDB...
+Server running on port 5000
+✅ Connected to MongoDB successfully
