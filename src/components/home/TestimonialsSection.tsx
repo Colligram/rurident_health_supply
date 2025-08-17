@@ -109,7 +109,7 @@ export function TestimonialsSection() {
             <div key={testimonial.id} className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex items-center mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <span key={i} className="text-yellow-400">⭐</span>
+                  <span key={`testimonial-rating-${testimonial.id}-${i}`} className="text-yellow-400">⭐</span>
                 ))}
               </div>
               <p className="text-gray-700 mb-4">"{testimonial.content}"</p>

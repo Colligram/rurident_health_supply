@@ -55,7 +55,7 @@ export function HeroSection() {
               <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
                 <div className="flex items-center justify-center text-yellow-400 mb-1">
                   {[...Array(5)].map((_, i) => (
-                    <HiStar key={i} className="h-4 w-4" />
+                    <HiStar key={`hero-rating-${i}`} className="h-4 w-4" />
                   ))}
                 </div>
                 <div className="text-primary-200 text-sm">5-Star Rated</div>

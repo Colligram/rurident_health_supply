@@ -53,7 +53,7 @@ export function FeaturedProducts() {
             <div className="h-4 bg-gray-200 rounded w-96 mx-auto mb-8"></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(12)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl p-4 shadow-sm">
+                <div key={`featured-skeleton-${i}`} className="bg-white rounded-2xl p-4 shadow-sm">
                   <div className="h-48 bg-gray-200 rounded-xl mb-4"></div>
                   <div className="h-4 bg-gray-200 rounded mb-2"></div>
                   <div className="h-6 bg-gray-200 rounded mb-3"></div>
@@ -176,7 +176,7 @@ export function FeaturedProducts() {
                   <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <FiStar
-                        key={i}
+                        key={`rating-${product.id}-${i}`}
                         className={`w-4 h-4 ${
                           i < Math.floor(product.rating || 4.5)
                             ? 'text-yellow-400 fill-current'
@@ -283,7 +283,7 @@ export function FeaturedProducts() {
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <FiStar
-                          key={i}
+                          key={`trending-rating-${product.id}-${i}`}
                           className={`w-3 h-3 ${
                             i < Math.floor(product.rating || 4.5)
                               ? 'text-yellow-400 fill-current'
