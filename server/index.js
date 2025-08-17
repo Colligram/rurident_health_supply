@@ -17,40 +17,52 @@ const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb
 
 console.log('Attempting to connect to MongoDB...');
 
+// Validate MongoDB URI format
+function isValidMongoURI(uri) {
+  return uri && (uri.startsWith('mongodb://') || uri.startsWith('mongodb+srv://'));
+}
+
 async function connectToDatabase() {
-  try {
-    // Try to connect to the specified MongoDB URI first
-    await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // 5 second timeout
-    });
-    console.log('✅ Connected to MongoDB successfully');
-  } catch (error) {
-    console.log('❌ Failed to connect to MongoDB:', error.message);
+  // Check if URI is valid before attempting connection
+  if (!isValidMongoURI(MONGODB_URI)) {
+    console.log('❌ Invalid MongoDB URI format. Expected "mongodb://" or "mongodb+srv://"');
     console.log('🔄 Starting in-memory MongoDB server for development...');
-    
+  } else {
     try {
-      // Start in-memory MongoDB server
-      const mongod = await MongoMemoryServer.create();
-      const uri = mongod.getUri();
-      
-      await mongoose.connect(uri, {
+      // Try to connect to the specified MongoDB URI first
+      await mongoose.connect(MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 5000, // 5 second timeout
       });
-      
-      console.log('✅ Connected to in-memory MongoDB successfully');
-      console.log('📝 Note: Using in-memory database - data will not persist between restarts');
-      console.log('📝 To use persistent database, set MONGODB_URI environment variable');
-      
-      // Seed some initial data for development
-      await seedInitialData();
-      
-    } catch (memoryError) {
-      console.error('❌ Failed to start in-memory MongoDB:', memoryError.message);
-      console.log('🔄 Server will continue without database connection...');
+      console.log('✅ Connected to MongoDB successfully');
+      return; // Exit function if successful
+    } catch (error) {
+      console.log('❌ Failed to connect to MongoDB:', error.message);
+      console.log('🔄 Starting in-memory MongoDB server for development...');
     }
+  }
+    
+  try {
+    // Start in-memory MongoDB server
+    const mongod = await MongoMemoryServer.create();
+    const uri = mongod.getUri();
+    
+    await mongoose.connect(uri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    
+    console.log('✅ Connected to in-memory MongoDB successfully');
+    console.log('📝 Note: Using in-memory database - data will not persist between restarts');
+    console.log('📝 To use persistent database, set MONGODB_URI environment variable');
+    
+    // Seed some initial data for development
+    await seedInitialData();
+    
+  } catch (memoryError) {
+    console.error('❌ Failed to start in-memory MongoDB:', memoryError.message);
+    console.log('🔄 Server will continue without database connection...');
   }
 }
 
