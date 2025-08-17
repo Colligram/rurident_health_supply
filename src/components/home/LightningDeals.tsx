@@ -313,7 +313,7 @@ export function LightningDeals() {
             <div className="flex justify-center space-x-1 mt-2">
               {lightningDeals.map((_, index) => (
                 <div
-                  key={index}
+                  key={`scroll-indicator-${index}`}
                   className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                     index === currentIndex ? 'bg-orange-500' : 'bg-gray-300'
                   }`}

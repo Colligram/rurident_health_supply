@@ -53,7 +53,7 @@ export function ProductHeroSection() {
             <div className="h-8 bg-gray-200 rounded w-64 mx-auto mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl p-6 shadow-sm">
+                <div key={`hero-skeleton-${i}`} className="bg-white rounded-2xl p-6 shadow-sm">
                   <div className="h-48 bg-gray-200 rounded-xl mb-4"></div>
                   <div className="h-4 bg-gray-200 rounded mb-2"></div>
                   <div className="h-6 bg-gray-200 rounded mb-3"></div>
@@ -311,7 +311,7 @@ export function ProductHeroSection() {
                   <div className="flex items-center">
                     {[...Array(5)].map((_, i) => (
                       <FiStar
-                        key={i}
+                        key={`hero-product-rating-${product.id}-${i}`}
                         className={`w-4 h-4 ${
                           i < Math.floor(product.rating || 4.5)
                             ? 'text-yellow-400 fill-current'
@@ -486,7 +486,7 @@ export function ProductHeroSection() {
               <div className="flex items-center mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <FiStar key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    <FiStar key={`testimonial-1-rating-${i}`} className="w-4 h-4 text-yellow-400 fill-current" />
                   ))}
                 </div>
                 <span className="ml-2 text-sm text-gray-600">5.0</span>
@@ -504,7 +504,7 @@ export function ProductHeroSection() {
               <div className="flex items-center mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <FiStar key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    <FiStar key={`testimonial-2-rating-${i}`} className="w-4 h-4 text-yellow-400 fill-current" />
                   ))}
                 </div>
                 <span className="ml-2 text-sm text-gray-600">5.0</span>
@@ -522,7 +522,7 @@ export function ProductHeroSection() {
               <div className="flex items-center mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <FiStar key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                    <FiStar key={`testimonial-3-rating-${i}`} className="w-4 h-4 text-yellow-400 fill-current" />
                   ))}
                 </div>
                 <span className="ml-2 text-sm text-gray-600">5.0</span>
@@ -530,10 +530,10 @@ export function ProductHeroSection() {
               <p className="text-gray-700 mb-4">
                 "Professional service and reliable equipment. The handpiece kit is excellent quality and the after-sales support is outstanding."
               </p>
-              <div className="text-sm text-gray-600">
-                <strong>Dr. Mary Wanjiku</strong><br />
-                Kisumu Dental Hospital
-              </div>
+                              <div className="text-sm text-gray-600">
+                  <strong>Dr. Mary Wanjiku</strong><br />
+                  Kisumu Dental Hospital
+                </div>
             </div>
           </div>
         </div>

@@ -365,7 +365,7 @@ export function ProductsPage() {
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
                             <FiStar
-                              key={i}
+                              key={`product-rating-${product.id}-${i}`}
                               className={`w-3 h-3 ${
                                 i < Math.floor(product.rating)
                                   ? 'text-yellow-400 fill-current'

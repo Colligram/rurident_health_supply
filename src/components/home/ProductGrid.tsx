@@ -107,7 +107,7 @@ export function ProductGrid() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div key={`product-grid-skeleton-${i}`} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="skeleton h-48 w-full"></div>
             <div className="p-4 space-y-3">
               <div className="skeleton h-4 w-3/4"></div>
