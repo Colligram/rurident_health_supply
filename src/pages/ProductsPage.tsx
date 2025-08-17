@@ -203,7 +203,10 @@ export function ProductsPage() {
   }, [filteredProducts, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32">
+    <div className="min-h-screen bg-gray-50 pt-32 products-page-container">
+      {/* Wave Gradient Background */}
+      <div className="wave-gradient-bg"></div>
+      
       <div className="container-max py-4 md:py-6">
         {/* Page Header */}
         <div className="text-center mb-6">
