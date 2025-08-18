@@ -62,28 +62,20 @@ class AnalyticsService {
       });
 
       if (!response.ok) {
-        if (response.status === 404 || response.status >= 500) {
-          console.warn('Server unavailable, using mock data');
-          this.useMockData = true;
-          return { success: true, data: this.getMockAnalytics() };
-        }
         throw new Error(`HTTP ${response.status}: Failed to fetch analytics`);
       }
 
       const data = await response.json();
       
       if (!data) {
-        console.warn('Server returned empty data, using mock data as fallback');
-        this.useMockData = true;
-        return { success: true, data: this.getMockAnalytics() };
+        return { success: false, error: 'Empty analytics response' };
       }
       
       this.useMockData = false;
       return { success: true, data };
     } catch (error) {
-      console.warn('Error fetching analytics, using mock data:', error);
-      this.useMockData = true;
-      return { success: true, data: this.getMockAnalytics() };
+      console.error('Error fetching analytics:', error);
+      return { success: false, error: 'Failed to fetch analytics' };
     }
   }
 
