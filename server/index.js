@@ -148,6 +148,23 @@ const customerSchema = new mongoose.Schema({
 });
 const Customer = mongoose.model('Customer', customerSchema);
 
+// Category Schema
+const categorySchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  description: { type: String, required: true },
+  icon: { type: String, default: '📦' },
+  subcategories: [{
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    path: { type: String, required: true },
+    icon: { type: String, default: '📦' }
+  }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const Category = mongoose.model('Category', categorySchema);
+
 /* =========================
    DB CONNECTION + SEEDING
    ========================= */
@@ -297,6 +314,66 @@ async function seedInitialData() {
 
       await Customer.insertMany(sampleCustomers);
       console.log('✅ Sample customers added to database');
+    }
+
+    const categoryCount = await Category.countDocuments();
+    if (categoryCount === 0) {
+      const sampleCategories = [
+        {
+          name: 'Dental Laboratory',
+          description: 'Laboratory equipment and tools for dental technicians',
+          icon: '🔬',
+          subcategories: [
+            { id: 'dl1', name: 'Crown and Bridge', path: '/products?category=crown-and-bridge', icon: '👑' },
+            { id: 'dl2', name: 'Orthodontics', path: '/products?category=orthodontics', icon: '🦷' },
+            { id: 'dl3', name: 'Complete Dentures', path: '/products?category=complete-dentures', icon: '🦴' },
+            { id: 'dl4', name: 'Partial Dentures (Cobalt Chrome)', path: '/products?category=partial-dentures-cobalt-chrome', icon: '⚙️' }
+          ]
+        },
+        {
+          name: 'Dental Chairs',
+          description: 'Professional dental chairs and units',
+          icon: '🪑',
+          subcategories: [
+            { id: 'dc1', name: 'Electric Chairs', path: '/products?category=electric-chairs', icon: '⚡' },
+            { id: 'dc2', name: 'Hydraulic Chairs', path: '/products?category=hydraulic-chairs', icon: '💧' },
+            { id: 'dc3', name: 'Portable Units', path: '/products?category=portable-units', icon: '📦' }
+          ]
+        },
+        {
+          name: 'Clinical Machines & Equipment',
+          description: 'Medical and dental equipment',
+          icon: '⚙️',
+          subcategories: [
+            { id: 'eq1', name: 'Handpieces', path: '/products?category=handpieces', icon: '🔧' },
+            { id: 'eq2', name: 'Scalers', path: '/products?category=scalers', icon: '🔪' },
+            { id: 'eq3', name: 'Surgical Tools', path: '/products?category=surgical-tools', icon: '🩺' }
+          ]
+        },
+        {
+          name: 'Consumables',
+          description: 'Daily use consumables and disposables',
+          icon: '📦',
+          subcategories: [
+            { id: 'cs1', name: 'Gloves', path: '/products?category=gloves', icon: '🧤' },
+            { id: 'cs2', name: 'Masks', path: '/products?category=masks', icon: '😷' },
+            { id: 'cs3', name: 'Dental Materials', path: '/products?category=dental-materials', icon: '🧪' }
+          ]
+        },
+        {
+          name: 'Student Kits',
+          description: 'Complete student dental kits',
+          icon: '🎓',
+          subcategories: [
+            { id: 'sk1', name: 'Basic Kits', path: '/products?category=basic-kits', icon: '📚' },
+            { id: 'sk2', name: 'Advanced Kits', path: '/products?category=advanced-kits', icon: '🔬' },
+            { id: 'sk3', name: 'Specialty Kits', path: '/products?category=specialty-kits', icon: '⭐' }
+          ]
+        }
+      ];
+
+      await Category.insertMany(sampleCategories);
+      console.log('✅ Sample categories added to database');
     }
   } catch (error) {
     console.log('Warning: Could not seed initial data:', error.message);
@@ -786,6 +863,78 @@ app.get('/api/customers/stats', async (req, res) => {
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching customer stats', error: error.message });
+  }
+});
+
+// CATEGORIES
+
+// Get all categories
+app.get('/api/categories', async (req, res) => {
+  try {
+    const categories = await Category.find().sort({ createdAt: -1 });
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching categories', error: error.message });
+  }
+});
+
+// Get single category
+app.get('/api/categories/:id', async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+    res.json(category);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching category', error: error.message });
+  }
+});
+
+// Create category
+app.post('/api/categories', async (req, res) => {
+  try {
+    const categoryData = req.body;
+    const category = new Category(categoryData);
+    const savedCategory = await category.save();
+    res.status(201).json({ id: savedCategory._id, success: true, message: 'Category created successfully' });
+  } catch (error) {
+    console.error('Error creating category:', error);
+    res.status(500).json({ message: 'Error creating category', error: error.message });
+  }
+});
+
+// Update category
+app.put('/api/categories/:id', async (req, res) => {
+  try {
+    const updates = { ...req.body, updatedAt: new Date() };
+    const category = await Category.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+
+    res.json({ success: true, category });
+  } catch (error) {
+    console.error('Error updating category:', error);
+    res.status(500).json({ message: 'Error updating category', error: error.message });
+  }
+});
+
+// Delete category
+app.delete('/api/categories/:id', async (req, res) => {
+  try {
+    const category = await Category.findByIdAndDelete(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+    res.json({ success: true, message: 'Category deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    res.status(500).json({ message: 'Error deleting category', error: error.message });
   }
 });
 
