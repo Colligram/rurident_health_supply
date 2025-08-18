@@ -30,7 +30,9 @@ export function AdminDashboardPage() {
         }
         setLastOrderCount(data.length);
       } catch (err) {
-        // handle error
+        console.error('Error fetching orders:', err);
+        // Set empty array to prevent undefined errors
+        setOrders([]);
       }
     };
     fetchOrders();
@@ -45,10 +47,13 @@ export function AdminDashboardPage() {
         const result = await customerService.getCustomers();
         if (result.success && result.data) {
           setCustomers(result.data);
+        } else {
+          console.error('Failed to fetch customers:', result.error);
+          setCustomers([]);
         }
       } catch (err) {
-        // handle error
-        console.error('Failed to fetch customers:', err);
+        console.error('Error fetching customers:', err);
+        setCustomers([]);
       }
     };
     fetchCustomers();

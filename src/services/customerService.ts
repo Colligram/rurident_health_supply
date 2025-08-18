@@ -17,7 +17,7 @@ export interface Customer {
 }
 
 class CustomerService {
-  private baseURL = 'http://localhost:5000/api';
+  private baseURL = '/api';
   private useMockData = false; // Try real API first, fallback to mock data if needed
 
   // Mock customers data for development
@@ -161,12 +161,9 @@ class CustomerService {
       });
 
       if (!response.ok) {
-        if (response.status === 404 || response.status >= 500) {
-          console.warn('Server unavailable, using mock data');
-          this.useMockData = true;
-          return { success: true, data: this.mockCustomers };
-        }
-        throw new Error(`HTTP ${response.status}: Failed to fetch customers`);
+        console.warn(`Server returned ${response.status}, using mock data as fallback`);
+        this.useMockData = true;
+        return { success: true, data: this.mockCustomers };
       }
 
       const data = await response.json();
