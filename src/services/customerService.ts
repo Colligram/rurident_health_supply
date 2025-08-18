@@ -168,8 +168,8 @@ class CustomerService {
 
       const data = await response.json();
       
-      if (!Array.isArray(data) || data.length === 0) {
-        console.warn('Server returned empty data, using mock data as fallback');
+      if (!Array.isArray(data)) {
+        console.warn('Server returned invalid data format, using mock data as fallback');
         this.useMockData = true;
         return { success: true, data: this.mockCustomers };
       }
