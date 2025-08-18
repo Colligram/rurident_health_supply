@@ -104,6 +104,16 @@ export function ProductsManagementPage() {
     return <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">In Stock</span>;
   };
 
+  const getStockBadge = (stock: number) => {
+    if (stock === 0) {
+      return <span className="px-1.5 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded">Out</span>;
+    }
+    if (stock <= 5) {
+      return <span className="px-1.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">Low</span>;
+    }
+    return <span className="px-1.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded">In Stock</span>;
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">

@@ -1,8 +1,33 @@
-nohup: ignoring input
-
-> rurident-server@1.0.0 start
-> node index.js
-
 Attempting to connect to MongoDB...
+(node:9444) [MONGOOSE] Warning: `isNew` is a reserved schema pathname and may break some functionality. You are allowed to use it, but use at your own risk. To disable this warning pass `suppressReservedKeysWarning` as a schema option.
+(Use `node --trace-warnings ...` to show where the warning was created)
 Server running on port 5000
-✅ Connected to MongoDB successfully
+MongoDB disconnected
+❌ Failed to connect to MongoDB: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017
+🔄 Starting in-memory MongoDB server for development...
+MongoDB connection error: MongoServerSelectionError: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017
+    at Timeout._onTimeout (/workspace/server/node_modules/mongoose/node_modules/mongodb/lib/sdam/topology.js:278:38)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  reason: TopologyDescription {
+    type: 'Unknown',
+    servers: Map(1) { 'localhost:27017' => [ServerDescription] },
+    stale: false,
+    compatible: true,
+    heartbeatFrequencyMS: 10000,
+    localThresholdMS: 15,
+    setName: null,
+    maxElectionId: null,
+    maxSetVersion: null,
+    commonWireVersion: 0,
+    logicalSessionTimeoutMinutes: null
+  },
+  code: undefined,
+  [Symbol(errorLabels)]: Set(0) {}
+}
+✅ Connected to in-memory MongoDB successfully
+📝 Note: Using in-memory database - data will not persist between restarts
+📝 To use persistent database, set MONGODB_URI environment variable
+✅ Sample products added to database
+✅ Sample customers added to database
+✅ Sample categories added to database

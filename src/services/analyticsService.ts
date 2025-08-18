@@ -72,8 +72,8 @@ class AnalyticsService {
 
       const data = await response.json();
       
-      if (!data) {
-        console.warn('Server returned empty data, using mock data as fallback');
+      if (!data || typeof data !== 'object') {
+        console.warn('Server returned invalid data format, using mock data as fallback');
         this.useMockData = true;
         return { success: true, data: this.getMockAnalytics() };
       }

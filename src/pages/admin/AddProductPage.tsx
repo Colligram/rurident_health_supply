@@ -1,9 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { FiArrowLeft, FiUpload, FiX } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
+import { categoryService } from '../../services/categoryService';
 
 interface ProductFormData {
   name: string;
@@ -37,36 +38,30 @@ export function AddProductPage() {
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
 
-  // Dynamic categories - in a real app, this would come from an API or context
-  const [categories, setCategories] = useState([
-    'Dental Chairs',
-    'Equipment', 
-    'Consumables',
-    'Student Kits',
-    'Orthodontics',
-    'Endodontics',
-    'Periodontics',
-    'Radiology',
-    'Diagnostic Instruments',
-    'Operative / Restorative Instruments', 
-    'Endodontic (RCT) Instruments',
-    'Surgical / Extraction Instruments',
-    'Prosthodontic Instruments',
-    'Orthodontic Instruments',
-    'Lab Consumables',
-    'Lab Polishing & Finishing',
-    'Gypsum Products',
-    'Laboratory Machines',
-    'Restorative Materials',
-    'Impression & Casting Materials',
-    'Clinical Machines & Equipment',
-    'Sterilization Equipment',
-    'Sterilization Consumables',
-    'Complete Student Kits',
-    'Crown and Bridge',
-    'Complete Dentures',
-    'Partial Dentures (Cobalt Chrome)'
-  ]);
+  // Dynamic categories loaded from API
+  const [categories, setCategories] = useState<string[]>([]);
+
+  // Load categories on component mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const result = await categoryService.getCategories();
+        if (result.success && result.data) {
+          const categoryNames = result.data.map(cat => cat.name);
+          setCategories(categoryNames);
+        }
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        // Fallback to hardcoded categories if API fails
+        setCategories([
+          'Dental Chairs', 'Clinical Machines & Equipment', 'Consumables',
+          'Student Kits', 'Orthodontics', 'Endodontics', 'Periodontics',
+          'Radiology', 'Diagnostic Instruments'
+        ]);
+      }
+    };
+    loadCategories();
+  }, []);
 
   const handleInputChange = (field: keyof ProductFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
