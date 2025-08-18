@@ -17,7 +17,7 @@ export interface Customer {
 }
 
 class CustomerService {
-  private baseURL = '/api';
+  private baseURL = 'http://localhost:5000/api';
   private useMockData = false; // Try real API first, fallback to mock data if needed
 
   // Mock customers data for development

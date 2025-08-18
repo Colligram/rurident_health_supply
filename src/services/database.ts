@@ -56,30 +56,7 @@ class APIService {
         throw new Error(`HTTP ${response.status}: Failed to fetch products`);
       }
 
-      const raw = await response.json();
-      const data = Array.isArray(raw) ? raw.map((p: any) => ({
-        id: p._id || p.id,
-        name: p.name,
-        description: p.description,
-        price: p.price,
-        salePrice: p.salePrice,
-        originalPrice: p.originalPrice,
-        images: p.images || (p.image ? [p.image] : []),
-        category: p.category,
-        inStock: typeof p.inStock === 'boolean' ? p.inStock : (typeof p.stock === 'number' ? p.stock > 0 : true),
-        stock: p.stock ?? 0,
-        rating: p.rating ?? 0,
-        reviewCount: p.reviewCount ?? 0,
-        specifications: p.specifications || {},
-        features: p.features || [],
-        brand: p.brand,
-        isBestSeller: p.isBestSeller,
-        isFeatured: p.isFeatured,
-        seller: p.seller,
-        soldCount: p.soldCount,
-        createdAt: p.createdAt ? new Date(p.createdAt) : undefined,
-        updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined,
-      })) : [];
+      const data = await response.json();
       
       // If server returns empty array, use mock data as fallback
       if (!Array.isArray(data) || data.length === 0) {
@@ -114,16 +91,12 @@ class APIService {
     }
 
     try {
-      const safeProduct: any = { ...product };
-      if (Object.prototype.hasOwnProperty.call(safeProduct, 'isNew')) {
-        delete safeProduct.isNew;
-      }
       const response = await fetch(`${this.baseURL}/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(safeProduct),
+        body: JSON.stringify(product),
       });
 
       if (!response.ok) {
