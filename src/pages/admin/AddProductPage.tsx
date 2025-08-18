@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { FiArrowLeft, FiUpload, FiX } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
+import { useCategories } from '../../context/CategoriesContext';
 
 interface ProductFormData {
   name: string;
@@ -21,6 +21,7 @@ interface ProductFormData {
 export function AddProductPage() {
   const navigate = useNavigate();
   const { addProduct } = useProducts();
+  const { categories: apiCategories, loading: loadingCategories } = useCategories();
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     category: '',
@@ -37,36 +38,8 @@ export function AddProductPage() {
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
 
-  // Dynamic categories - in a real app, this would come from an API or context
-  const [categories, setCategories] = useState([
-    'Dental Chairs',
-    'Equipment', 
-    'Consumables',
-    'Student Kits',
-    'Orthodontics',
-    'Endodontics',
-    'Periodontics',
-    'Radiology',
-    'Diagnostic Instruments',
-    'Operative / Restorative Instruments', 
-    'Endodontic (RCT) Instruments',
-    'Surgical / Extraction Instruments',
-    'Prosthodontic Instruments',
-    'Orthodontic Instruments',
-    'Lab Consumables',
-    'Lab Polishing & Finishing',
-    'Gypsum Products',
-    'Laboratory Machines',
-    'Restorative Materials',
-    'Impression & Casting Materials',
-    'Clinical Machines & Equipment',
-    'Sterilization Equipment',
-    'Sterilization Consumables',
-    'Complete Student Kits',
-    'Crown and Bridge',
-    'Complete Dentures',
-    'Partial Dentures (Cobalt Chrome)'
-  ]);
+  // Build category options from API categories
+  const categoryOptions = (apiCategories || []).map(c => c.name);
 
   const handleInputChange = (field: keyof ProductFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -219,9 +192,13 @@ export function AddProductPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="">Select category</option>
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
+                      {categoryOptions.length > 0 ? (
+                        categoryOptions.map(category => (
+                          <option key={category} value={category}>{category}</option>
+                        ))
+                      ) : (
+                        <option value="" disabled>{loadingCategories ? 'Loading categories...' : 'No categories available'}</option>
+                      )}
                     </select>
                   </div>
 
@@ -253,7 +230,7 @@ export function AddProductPage() {
                     />
                   </div>
                 </div>
-
+              
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description *
@@ -291,7 +268,7 @@ export function AddProductPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text sm font-medium text-gray-700 mb-2">
                       Sale Price (KES)
                     </label>
                     <input
@@ -449,7 +426,7 @@ export function AddProductPage() {
                           alt={`Preview ${index + 1}`}
                           className="w-full h-32 object-cover rounded-lg border"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            (e.currentTarget as HTMLImageElement).style.display = 'none';
                           }}
                         />
                       )}

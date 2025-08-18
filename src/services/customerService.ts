@@ -161,17 +161,13 @@ class CustomerService {
       });
 
       if (!response.ok) {
-        console.warn(`Server returned ${response.status}, using mock data as fallback`);
-        this.useMockData = true;
-        return { success: true, data: this.mockCustomers };
+        throw new Error(`HTTP ${response.status}: Failed to fetch customers`);
       }
 
       const data = await response.json();
       
       if (!Array.isArray(data)) {
-        console.warn('Server returned invalid data format, using mock data as fallback');
-        this.useMockData = true;
-        return { success: true, data: this.mockCustomers };
+        throw new Error('Invalid data format for customers');
       }
       
       // Map database format to frontend format
@@ -196,9 +192,8 @@ class CustomerService {
       this.useMockData = false;
       return { success: true, data: mappedData };
     } catch (error) {
-      console.warn('Error fetching customers, using mock data:', error);
-      this.useMockData = true;
-      return { success: true, data: this.mockCustomers };
+      console.error('Error fetching customers:', error);
+      return { success: false, error: 'Failed to fetch customers' };
     }
   }
 

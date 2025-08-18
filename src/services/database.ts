@@ -1,5 +1,4 @@
 // Backend API service to communicate with our server
-import { mockProducts } from '../data/mockProducts';
 
 export interface Product {
   id: string;
@@ -28,14 +27,15 @@ export interface Product {
 
 class APIService {
   private baseURL = '/api';
-  private useMockData = false;
+  // When true, the service will not attempt to use mock data; it will surface real errors instead
+  private alwaysUseLiveApi = true;
 
   async getProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
     try {
       // Create a more compatible timeout approach
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
-      
+
       const response = await fetch(`${this.baseURL}/products`, {
         method: 'GET',
         headers: {
@@ -43,53 +43,55 @@ class APIService {
         },
         signal: controller.signal
       });
-      
+
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        // If server is not available, return mock data
-        if (response.status === 404 || response.status >= 500) {
-          console.warn('Server unavailable, using mock data');
-          this.useMockData = true;
-          return { success: true, data: mockProducts };
-        }
         throw new Error(`HTTP ${response.status}: Failed to fetch products`);
       }
 
       const data = await response.json();
-      
-      // If server returns empty array, that's okay - it means no products exist yet
+
       if (!Array.isArray(data)) {
-        console.warn('Server returned invalid data format, using mock data as fallback');
-        this.useMockData = true;
-        return { success: true, data: mockProducts };
+        throw new Error('Invalid data format received');
       }
-      
-      this.useMockData = false;
-      return { success: true, data };
+
+      // Map API data to frontend Product shape
+      const mapped: Product[] = data.map((p: any) => ({
+        id: p._id || p.id,
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        salePrice: p.salePrice,
+        originalPrice: p.originalPrice,
+        images: Array.isArray(p.images)
+          ? p.images
+          : (p.image ? [p.image] : []),
+        category: p.category,
+        inStock: typeof p.inStock === 'boolean' ? p.inStock : (typeof p.stock === 'number' ? p.stock > 0 : true),
+        stock: typeof p.stock === 'number' ? p.stock : (p.inStock ? 1 : 0),
+        rating: typeof p.rating === 'number' ? p.rating : 0,
+        reviewCount: typeof p.reviewCount === 'number' ? p.reviewCount : 0,
+        specifications: p.specifications,
+        features: p.features,
+        brand: p.brand,
+        isNew: p.isNew,
+        isBestSeller: p.isBestSeller,
+        isFeatured: p.isFeatured,
+        seller: p.seller,
+        soldCount: p.soldCount,
+        createdAt: p.createdAt ? new Date(p.createdAt) : undefined,
+        updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined,
+      }));
+
+      return { success: true, data: mapped };
     } catch (error) {
-      if (error.name === 'AbortError') {
-        console.warn('Request aborted (timeout), using mock data');
-      } else if (error.name === 'TimeoutError') {
-        console.warn('Request timeout, using mock data');
-      } else if (error.name === 'TypeError') {
-        console.warn('Network error (server may be down), using mock data');
-      } else {
-        console.error('Error fetching products:', error);
-      }
-      // Return mock data instead of empty array when server is unavailable
-      this.useMockData = true;
-      return { success: true, data: mockProducts };
+      console.error('Error fetching products:', error);
+      return { success: false, error: 'Failed to fetch products' };
     }
   }
 
   async addProduct(product: Omit<Product, 'id'>): Promise<{ success: boolean; id?: string }> {
-    // If using mock data, simulate success but don't actually add
-    if (this.useMockData) {
-      console.warn('Using mock data - product add simulated');
-      return { success: true, id: 'mock-' + Date.now() };
-    }
-
     try {
       const response = await fetch(`${this.baseURL}/products`, {
         method: 'POST',
@@ -112,12 +114,6 @@ class APIService {
   }
 
   async updateProduct(id: string, updates: Partial<Product>): Promise<boolean> {
-    // If using mock data, simulate success but don't actually update
-    if (this.useMockData) {
-      console.warn('Using mock data - product update simulated');
-      return true;
-    }
-
     try {
       const response = await fetch(`${this.baseURL}/products/${id}`, {
         method: 'PUT',
@@ -135,12 +131,6 @@ class APIService {
   }
 
   async deleteProduct(id: string): Promise<boolean> {
-    // If using mock data, simulate success but don't actually delete
-    if (this.useMockData) {
-      console.warn('Using mock data - product delete simulated');
-      return true;
-    }
-
     try {
       const response = await fetch(`${this.baseURL}/products/${id}`, {
         method: 'DELETE',

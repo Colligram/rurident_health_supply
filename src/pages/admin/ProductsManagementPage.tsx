@@ -5,49 +5,7 @@ import { FiPlus, FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiDownload, FiPack
 import { formatPrice } from '../../utils';
 import { useProducts } from '../../context/ProductsContext';
 
-// Mock products data - in production this would come from your backend
-const mockProducts = [
-  {
-    id: '1',
-    name: 'Premium Dental Chair Unit',
-    category: 'Dental Chairs',
-    price: 450000,
-    stock: 5,
-    status: 'active',
-    image: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    name: 'Digital X-Ray System',
-    category: 'Equipment',
-    price: 280000,
-    stock: 3,
-    status: 'active',
-    image: 'https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400',
-    createdAt: '2024-01-14'
-  },
-  {
-    id: '3',
-    name: 'Complete Student Kit',
-    category: 'Student Kits',
-    price: 25000,
-    stock: 12,
-    status: 'active',
-    image: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=400',
-    createdAt: '2024-01-13'
-  },
-  {
-    id: '4',
-    name: 'Composite Filling Kit',
-    category: 'Materials',
-    price: 8500,
-    stock: 0,
-    status: 'out_of_stock',
-    image: 'https://images.pexels.com/photos/3779709/pexels-photo-3779709.jpeg?auto=compress&cs=tinysrgb&w=400',
-    createdAt: '2024-01-12'
-  }
-];
+// Removed mockProducts; the page reads from ProductsContext which fetches from backend
 
 export function ProductsManagementPage() {
   const { products, deleteProduct, toggleProductSelection } = useProducts();
