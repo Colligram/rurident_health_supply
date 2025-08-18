@@ -1,8 +1,17 @@
+// index.js
+// Express + MongoDB API server that ALSO serves the built React frontend from ../dist
+// Changes made:
+// 1) Serve React build (static + catch-all).
+// 2) Added /api/products POST/PUT/DELETE to match frontend calls.
+// 3) Moved Mongoose model definitions ABOVE seeding/connection so seeding works.
+// 4) Added /api/placeholder/:w/:h for seeded image URLs.
+
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const PDFDocument = require('pdfkit');
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -13,40 +22,158 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection with fallback to in-memory database
-const MONGODB_URI = process.env.MONGODB_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/rurident';
+const MONGODB_URI =
+  process.env.MONGODB_URI ||
+  process.env.MONGO_URL ||
+  'mongodb://localhost:27017/rurident';
 
 console.log('Attempting to connect to MongoDB...');
+
+/* =========================
+   MONGOOSE SCHEMAS/MODELS
+   (defined BEFORE seeding/connection)
+   ========================= */
+
+// Product Schema (extended to align with frontend interface)
+const productSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+
+  // pricing
+  price: { type: Number, required: true },
+  salePrice: { type: Number },
+  originalPrice: { type: Number },
+
+  // images (support both single "image" and array "images")
+  image: { type: String }, // optional (fallback to images[0] if provided)
+  images: { type: [String], default: [] },
+
+  category: { type: String, required: true },
+
+  // inventory
+  inStock: { type: Boolean, default: true },
+  stock: { type: Number, default: 0 },
+
+  // ratings & misc (optional)
+  rating: { type: Number, default: 0 },
+  reviewCount: { type: Number, default: 0 },
+  specifications: { type: Object },
+  features: { type: [String], default: [] },
+  brand: { type: String },
+  isNew: { type: Boolean, default: false },
+  isBestSeller: { type: Boolean, default: false },
+  isFeatured: { type: Boolean, default: false },
+  seller: { type: String },
+  soldCount: { type: Number, default: 0 },
+
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+productSchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  if (!this.image && this.images && this.images.length > 0) {
+    this.image = this.images[0];
+  }
+  if (typeof this.inStock === 'undefined' && typeof this.stock === 'number') {
+    this.inStock = this.stock > 0;
+  }
+  next();
+});
+
+const Product = mongoose.model('Product', productSchema);
+
+// Order Schema
+const orderSchema = new mongoose.Schema({
+  orderId: { type: String, required: true, unique: true },
+  orderNumber: { type: String, required: true, unique: true },
+  orderDate: { type: String, required: true },
+  customerInfo: {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    county: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    nairobiArea: { type: String }
+  },
+  items: [
+    {
+      id: { type: String, required: true },
+      name: { type: String, required: true },
+      price: { type: Number, required: true },
+      quantity: { type: Number, required: true },
+      image: { type: String },
+      totalPrice: { type: Number, required: true }
+    }
+  ],
+  subtotal: { type: Number, required: true },
+  shipping: { type: Number, required: true },
+  tax: { type: Number, required: true },
+  total: { type: Number, required: true },
+  paymentMethod: { type: String, enum: ['mpesa', 'card'], required: true },
+  paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+  status: {
+    type: String,
+    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    default: 'pending'
+  },
+  mpesaTransactionId: { type: String },
+  notes: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+const Order = mongoose.model('Order', orderSchema);
+
+// Customer Schema
+const customerSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: { type: String, required: true },
+  address: { type: String, required: true },
+  totalOrders: { type: Number, default: 0 },
+  totalSpent: { type: Number, default: 0 },
+  lastOrderDate: { type: Date },
+  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+  joinDate: { type: Date, default: Date.now },
+  city: { type: String },
+  country: { type: String, default: 'Kenya' },
+  postalCode: { type: String },
+  notes: { type: String },
+  tags: [{ type: String }],
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+const Customer = mongoose.model('Customer', customerSchema);
+
+/* =========================
+   DB CONNECTION + SEEDING
+   ========================= */
 
 async function connectToDatabase() {
   try {
     // Try to connect to the specified MongoDB URI first
     await mongoose.connect(MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // 5 second timeout
+      serverSelectionTimeoutMS: 5000 // 5 second timeout
     });
     console.log('✅ Connected to MongoDB successfully');
   } catch (error) {
     console.log('❌ Failed to connect to MongoDB:', error.message);
     console.log('🔄 Starting in-memory MongoDB server for development...');
-    
+
     try {
-      // Start in-memory MongoDB server
       const mongod = await MongoMemoryServer.create();
       const uri = mongod.getUri();
-      
-      await mongoose.connect(uri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-      
+
+      await mongoose.connect(uri, {});
       console.log('✅ Connected to in-memory MongoDB successfully');
       console.log('📝 Note: Using in-memory database - data will not persist between restarts');
       console.log('📝 To use persistent database, set MONGODB_URI environment variable');
-      
+
       // Seed some initial data for development
       await seedInitialData();
-      
     } catch (memoryError) {
       console.error('❌ Failed to start in-memory MongoDB:', memoryError.message);
       console.log('🔄 Server will continue without database connection...');
@@ -61,31 +188,34 @@ async function seedInitialData() {
     if (productCount === 0) {
       const sampleProducts = [
         {
-          name: "Digital Thermometer",
-          description: "Accurate digital thermometer for medical use",
+          name: 'Digital Thermometer',
+          description: 'Accurate digital thermometer for medical use',
           price: 25.99,
-          image: "/api/placeholder/300/200",
-          category: "Medical Devices",
-          inStock: true
+          image: '/api/placeholder/300/200',
+          category: 'Medical Devices',
+          inStock: true,
+          stock: 50
         },
         {
-          name: "Blood Pressure Monitor",
-          description: "Automatic blood pressure monitor with large display",
+          name: 'Blood Pressure Monitor',
+          description: 'Automatic blood pressure monitor with large display',
           price: 89.99,
-          image: "/api/placeholder/300/200",
-          category: "Medical Devices",
-          inStock: true
+          image: '/api/placeholder/300/200',
+          category: 'Medical Devices',
+          inStock: true,
+          stock: 25
         },
         {
-          name: "First Aid Kit",
-          description: "Complete first aid kit for home and office",
+          name: 'First Aid Kit',
+          description: 'Complete first aid kit for home and office',
           price: 34.99,
-          image: "/api/placeholder/300/200",
-          category: "Medical Supplies",
-          inStock: true
+          image: '/api/placeholder/300/200',
+          category: 'Medical Supplies',
+          inStock: true,
+          stock: 100
         }
       ];
-      
+
       await Product.insertMany(sampleProducts);
       console.log('✅ Sample products added to database');
     }
@@ -94,77 +224,77 @@ async function seedInitialData() {
     if (customerCount === 0) {
       const sampleCustomers = [
         {
-          name: "Dr. Sarah Johnson",
-          email: "sarah@dentalclinic.com",
-          phone: "+254712345678",
-          address: "Westlands, Nairobi",
-          city: "Nairobi",
-          country: "Kenya",
+          name: 'Dr. Sarah Johnson',
+          email: 'sarah@dentalclinic.com',
+          phone: '+254712345678',
+          address: 'Westlands, Nairobi',
+          city: 'Nairobi',
+          country: 'Kenya',
           totalOrders: 15,
           totalSpent: 2450000,
           lastOrderDate: new Date('2024-01-15T10:00:00Z'),
-          status: "active",
+          status: 'active',
           joinDate: new Date('2023-06-12T08:00:00Z'),
-          tags: ["VIP", "Dentist", "Regular Customer"]
+          tags: ['VIP', 'Dentist', 'Regular Customer']
         },
         {
-          name: "Dr. Michael Ochieng",
-          email: "michael@smilecenter.com",
-          phone: "+254723456789",
-          address: "Kilifi, Mombasa",
-          city: "Mombasa",
-          country: "Kenya",
+          name: 'Dr. Michael Ochieng',
+          email: 'michael@smilecenter.com',
+          phone: '+254723456789',
+          address: 'Kilifi, Mombasa',
+          city: 'Mombasa',
+          country: 'Kenya',
           totalOrders: 8,
           totalSpent: 890000,
           lastOrderDate: new Date('2024-01-10T14:30:00Z'),
-          status: "active",
+          status: 'active',
           joinDate: new Date('2023-09-20T10:15:00Z'),
-          tags: ["Premium", "Dentist"]
+          tags: ['Premium', 'Dentist']
         },
         {
-          name: "Jane Wambui",
-          email: "jane.student@uon.ac.ke",
-          phone: "+254734567890",
-          address: "Karen, Nairobi",
-          city: "Nairobi",
-          country: "Kenya",
+          name: 'Jane Wambui',
+          email: 'jane.student@uon.ac.ke',
+          phone: '+254734567890',
+          address: 'Karen, Nairobi',
+          city: 'Nairobi',
+          country: 'Kenya',
           totalOrders: 3,
           totalSpent: 75000,
           lastOrderDate: new Date('2023-12-20T09:45:00Z'),
-          status: "active",
+          status: 'active',
           joinDate: new Date('2023-11-05T14:22:00Z'),
-          tags: ["Student", "New Customer"]
+          tags: ['Student', 'New Customer']
         },
         {
-          name: "Dr. Peter Mwangi",
-          email: "peter@healthcenter.co.ke",
-          phone: "+254745678901",
-          address: "Thika, Kiambu",
-          city: "Thika",
-          country: "Kenya",
+          name: 'Dr. Peter Mwangi',
+          email: 'peter@healthcenter.co.ke',
+          phone: '+254745678901',
+          address: 'Thika, Kiambu',
+          city: 'Thika',
+          country: 'Kenya',
           totalOrders: 22,
           totalSpent: 3200000,
           lastOrderDate: new Date('2024-01-12T16:20:00Z'),
-          status: "active",
+          status: 'active',
           joinDate: new Date('2023-03-15T11:30:00Z'),
-          tags: ["VIP", "Dentist", "High Value"]
+          tags: ['VIP', 'Dentist', 'High Value']
         },
         {
-          name: "Dr. Grace Kiprotich",
-          email: "grace@ruraldental.org",
-          phone: "+254756789012",
-          address: "Eldoret, Uasin Gishu",
-          city: "Eldoret",
-          country: "Kenya",
+          name: 'Dr. Grace Kiprotich',
+          email: 'grace@ruraldental.org',
+          phone: '+254756789012',
+          address: 'Eldoret, Uasin Gishu',
+          city: 'Eldoret',
+          country: 'Kenya',
           totalOrders: 1,
           totalSpent: 45000,
           lastOrderDate: new Date('2023-11-30T13:15:00Z'),
-          status: "inactive",
+          status: 'inactive',
           joinDate: new Date('2023-11-25T09:00:00Z'),
-          tags: ["Rural", "Inactive"]
+          tags: ['Rural', 'Inactive']
         }
       ];
-      
+
       await Customer.insertMany(sampleCustomers);
       console.log('✅ Sample customers added to database');
     }
@@ -187,86 +317,33 @@ db.on('reconnected', () => {
   console.log('MongoDB reconnected');
 });
 
-// Product Schema
-const productSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  image: { type: String, required: true },
-  category: { type: String, required: true },
-  inStock: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now }
+/* =========================
+   ROUTES
+   ========================= */
+
+// Simple placeholder image route used by seeded products
+app.get('/api/placeholder/:w/:h', (req, res) => {
+  const { w, h } = req.params;
+  const width = parseInt(w, 10) || 300;
+  const height = parseInt(h, 10) || 200;
+  const svg = `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="#e5e7eb"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="16" fill="#6b7280">
+        ${width}×${height}
+      </text>
+    </svg>
+  `;
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.send(svg);
 });
 
-const Product = mongoose.model('Product', productSchema);
-
-// Order Schema - Updated with new fields
-const orderSchema = new mongoose.Schema({
-  orderId: { type: String, required: true, unique: true },
-  orderNumber: { type: String, required: true, unique: true },
-  orderDate: { type: String, required: true },
-  customerInfo: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    county: { type: String, required: true },
-    postalCode: { type: String, required: true },
-    nairobiArea: { type: String }
-  },
-  items: [{
-    id: { type: String, required: true },
-    name: { type: String, required: true },
-    price: { type: Number, required: true },
-    quantity: { type: Number, required: true },
-    image: { type: String },
-    totalPrice: { type: Number, required: true }
-  }],
-  subtotal: { type: Number, required: true },
-  shipping: { type: Number, required: true },
-  tax: { type: Number, required: true },
-  total: { type: Number, required: true },
-  paymentMethod: { type: String, enum: ['mpesa', 'card'], required: true },
-  paymentStatus: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
-  status: { type: String, enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], default: 'pending' },
-  mpesaTransactionId: { type: String },
-  notes: { type: String },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
-
-const Order = mongoose.model('Order', orderSchema);
-
-// Customer Schema
-const customerSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String, required: true },
-  address: { type: String, required: true },
-  totalOrders: { type: Number, default: 0 },
-  totalSpent: { type: Number, default: 0 },
-  lastOrderDate: { type: Date },
-  status: { type: String, enum: ['active', 'inactive'], default: 'active' },
-  joinDate: { type: Date, default: Date.now },
-  city: { type: String },
-  country: { type: String, default: 'Kenya' },
-  postalCode: { type: String },
-  notes: { type: String },
-  tags: [{ type: String }],
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
-});
-
-const Customer = mongoose.model('Customer', customerSchema);
-
-// Routes
+// PRODUCTS
 
 // Get all products
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().sort({ createdAt: -1 });
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error: error.message });
@@ -286,13 +363,95 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
+// Create product (ADDED)
+app.post('/api/products', async (req, res) => {
+  try {
+    const data = { ...req.body };
+
+    // Normalize images/image
+    if (!data.image && Array.isArray(data.images) && data.images.length > 0) {
+      data.image = data.images[0];
+    }
+    if (!Array.isArray(data.images) && data.image) {
+      data.images = [data.image];
+    }
+
+    // Derive inStock from stock if provided
+    if (typeof data.stock === 'number') {
+      data.inStock = data.stock > 0;
+    }
+
+    const product = new Product(data);
+    const saved = await product.save();
+    res.status(201).json({ id: saved._id, success: true, message: 'Product created successfully' });
+  } catch (error) {
+    console.error('Error creating product:', error);
+    res.status(500).json({ message: 'Error creating product', error: error.message });
+  }
+});
+
+// Update product (ADDED)
+app.put('/api/products/:id', async (req, res) => {
+  try {
+    const updates = { ...req.body, updatedAt: new Date() };
+
+    if (!updates.image && Array.isArray(updates.images) && updates.images.length > 0) {
+      updates.image = updates.images[0];
+    }
+    if (typeof updates.stock === 'number') {
+      updates.inStock = updates.stock > 0;
+    }
+
+    const product = await Product.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json({ success: true, product });
+  } catch (error) {
+    console.error('Error updating product:', error);
+    res.status(500).json({ message: 'Error updating product', error: error.message });
+  }
+});
+
+// Delete product (ADDED)
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json({ success: true, message: 'Product deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    res.status(500).json({ message: 'Error deleting product', error: error.message });
+  }
+});
+
+// ORDERS
+
 // Create order
 app.post('/api/orders', async (req, res) => {
   try {
     const orderData = req.body;
-    
+
     // Validate required fields
-    const requiredFields = ['orderId', 'orderNumber', 'orderDate', 'customerInfo', 'items', 'subtotal', 'shipping', 'tax', 'total', 'paymentMethod'];
+    const requiredFields = [
+      'orderId',
+      'orderNumber',
+      'orderDate',
+      'customerInfo',
+      'items',
+      'subtotal',
+      'shipping',
+      'tax',
+      'total',
+      'paymentMethod'
+    ];
     for (const field of requiredFields) {
       if (!orderData[field]) {
         return res.status(400).json({ message: `Missing required field: ${field}` });
@@ -302,9 +461,9 @@ app.post('/api/orders', async (req, res) => {
     // Create or update customer record
     const customerInfo = orderData.customerInfo;
     const customerName = `${customerInfo.firstName} ${customerInfo.lastName}`;
-    
+
     let customer = await Customer.findOne({ email: customerInfo.email });
-    
+
     if (customer) {
       // Update existing customer
       customer.totalOrders += 1;
@@ -312,12 +471,11 @@ app.post('/api/orders', async (req, res) => {
       customer.lastOrderDate = new Date();
       customer.status = 'active';
       customer.updatedAt = new Date();
-      
-      // Update contact info if provided
+
       if (customerInfo.phone) customer.phone = customerInfo.phone;
       if (customerInfo.address) customer.address = customerInfo.address;
       if (customerInfo.city) customer.city = customerInfo.city;
-      
+
       await customer.save();
     } else {
       // Create new customer
@@ -335,17 +493,17 @@ app.post('/api/orders', async (req, res) => {
         status: 'active',
         tags: ['Customer']
       });
-      
+
       await customer.save();
     }
 
     const order = new Order(orderData);
     const savedOrder = await order.save();
-    
-    res.status(201).json({ 
-      id: savedOrder._id, 
-      success: true, 
-      message: 'Order created successfully' 
+
+    res.status(201).json({
+      id: savedOrder._id,
+      success: true,
+      message: 'Order created successfully'
     });
   } catch (error) {
     console.error('Error creating order:', error);
@@ -381,20 +539,19 @@ app.put('/api/orders/:id', async (req, res) => {
   try {
     const { status, paymentStatus } = req.body;
     const updates = { updatedAt: new Date() };
-    
+
     if (status) updates.status = status;
     if (paymentStatus) updates.paymentStatus = paymentStatus;
-    
-    const order = await Order.findByIdAndUpdate(
-      req.params.id, 
-      updates, 
-      { new: true, runValidators: true }
-    );
-    
+
+    const order = await Order.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true
+    });
+
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    
+
     res.json({ success: true, order });
   } catch (error) {
     res.status(500).json({ message: 'Error updating order', error: error.message });
@@ -427,11 +584,7 @@ app.get('/api/orders/:id/receipt', async (req, res) => {
       return res.status(400).json({ message: 'Receipt only available after payment confirmation' });
     }
 
-    // Create PDF document
-    const doc = new PDFDocument({
-      size: 'A4',
-      margin: 50
-    });
+    const doc = new PDFDocument({ size: 'A4', margin: 50 });
 
     // Set response headers for PDF download
     res.setHeader('Content-Type', 'application/pdf');
@@ -441,39 +594,16 @@ app.get('/api/orders/:id/receipt', async (req, res) => {
     doc.pipe(res);
 
     // Add content to PDF
-    doc
-      .fontSize(24)
-      .text('RURIDENT HEALTH SUPPLIES', { align: 'center' })
-      .moveDown()
-      .fontSize(18)
-      .text('RECEIPT', { align: 'center' })
-      .moveDown(2);
+    doc.fontSize(24).text('RURIDENT HEALTH SUPPLIES', { align: 'center' }).moveDown().fontSize(18).text('RECEIPT', { align: 'center' }).moveDown(2);
 
     // Order details
-    doc
-      .fontSize(12)
-      .text(`Order Number: ${order.orderNumber}`)
-      .text(`Date: ${order.orderDate}`)
-      .moveDown();
+    doc.fontSize(12).text(`Order Number: ${order.orderNumber}`).text(`Date: ${order.orderDate}`).moveDown();
 
     // Customer information
-    doc
-      .fontSize(14)
-      .text('CUSTOMER INFORMATION', { underline: true })
-      .moveDown()
-      .fontSize(12)
-      .text(`${order.customerInfo.firstName} ${order.customerInfo.lastName}`)
-      .text(`Email: ${order.customerInfo.email}`)
-      .text(`Phone: ${order.customerInfo.phone}`)
-      .text(`Address: ${order.customerInfo.address}`)
-      .text(`${order.customerInfo.city}, ${order.customerInfo.county}`)
-      .moveDown();
+    doc.fontSize(14).text('CUSTOMER INFORMATION', { underline: true }).moveDown().fontSize(12).text(`${order.customerInfo.firstName} ${order.customerInfo.lastName}`).text(`Email: ${order.customerInfo.email}`).text(`Phone: ${order.customerInfo.phone}`).text(`Address: ${order.customerInfo.address}`).text(`${order.customerInfo.city}, ${order.customerInfo.county}`).moveDown();
 
     // Items table
-    doc
-      .fontSize(14)
-      .text('ITEMS', { underline: true })
-      .moveDown();
+    doc.fontSize(14).text('ITEMS', { underline: true }).moveDown();
 
     // Table headers
     const tableTop = doc.y;
@@ -482,28 +612,17 @@ app.get('/api/orders/:id/receipt', async (req, res) => {
     const priceCol = 300;
     const totalCol = 400;
 
-    doc
-      .fontSize(10)
-      .text('Item', itemCol, tableTop)
-      .text('Qty', qtyCol, tableTop)
-      .text('Price', priceCol, tableTop)
-      .text('Total', totalCol, tableTop)
-      .moveDown();
+    doc.fontSize(10).text('Item', itemCol, tableTop).text('Qty', qtyCol, tableTop).text('Price', priceCol, tableTop).text('Total', totalCol, tableTop).moveDown();
 
     // Table rows
     let currentY = doc.y;
-    order.items.forEach((item, index) => {
-      if (currentY > 700) { // Check if we need a new page
+    order.items.forEach((item) => {
+      if (currentY > 700) {
         doc.addPage();
         currentY = 50;
       }
 
-      doc
-        .fontSize(10)
-        .text(item.name, itemCol, currentY)
-        .text(item.quantity.toString(), qtyCol, currentY)
-        .text(`$${item.price.toFixed(2)}`, priceCol, currentY)
-        .text(`$${item.totalPrice.toFixed(2)}`, totalCol, currentY);
+      doc.fontSize(10).text(item.name, itemCol, currentY).text(item.quantity.toString(), qtyCol, currentY).text(`$${item.price.toFixed(2)}`, priceCol, currentY).text(`$${item.totalPrice.toFixed(2)}`, totalCol, currentY);
 
       currentY += 20;
     });
@@ -511,45 +630,23 @@ app.get('/api/orders/:id/receipt', async (req, res) => {
     doc.moveDown(2);
 
     // Summary
-    doc
-      .fontSize(14)
-      .text('SUMMARY', { underline: true })
-      .moveDown()
-      .fontSize(12);
+    doc.fontSize(14).text('SUMMARY', { underline: true }).moveDown().fontSize(12);
 
     const summaryY = doc.y;
-    doc
-      .text('Subtotal:', 300, summaryY)
-      .text(`$${order.subtotal.toFixed(2)}`, 400, summaryY)
-      .text('Shipping:', 300, summaryY + 20)
-      .text(`$${order.shipping.toFixed(2)}`, 400, summaryY + 20)
-      .text('Tax (16% VAT):', 300, summaryY + 40)
-      .text(`$${order.tax.toFixed(2)}`, 400, summaryY + 40)
-      .moveDown()
-      .fontSize(14)
-      .text('TOTAL:', 300, doc.y)
-      .text(`$${order.total.toFixed(2)}`, 400, doc.y)
-      .moveDown(2);
+    doc.text('Subtotal:', 300, summaryY).text(`$${order.subtotal.toFixed(2)}`, 400, summaryY).text('Shipping:', 300, summaryY + 20).text(`$${order.shipping.toFixed(2)}`, 400, summaryY + 20).text('Tax (16% VAT):', 300, summaryY + 40).text(`$${order.tax.toFixed(2)}`, 400, summaryY + 40).moveDown().fontSize(14).text('TOTAL:', 300, doc.y).text(`$${order.total.toFixed(2)}`, 400, doc.y).moveDown(2);
 
     // Payment and status info
-    doc
-      .fontSize(10)
-      .text(`Payment Method: ${order.paymentMethod.toUpperCase()}`)
-      .text(`Payment Status: ${order.paymentStatus}`)
-      .text(`Order Status: ${order.status}`)
-      .moveDown()
-      .text('Thank you for your purchase!', { align: 'center' });
+    doc.fontSize(10).text(`Payment Method: ${order.paymentMethod.toUpperCase()}`).text(`Payment Status: ${order.paymentStatus}`).text(`Order Status: ${order.status}`).moveDown().text('Thank you for your purchase!', { align: 'center' });
 
     // Finalize PDF
     doc.end();
-
   } catch (error) {
     console.error('Error generating receipt:', error);
     res.status(500).json({ message: 'Error generating receipt', error: error.message });
   }
 });
 
-// Customer Routes
+// CUSTOMERS
 
 // Get all customers
 app.get('/api/customers', async (req, res) => {
@@ -578,7 +675,7 @@ app.get('/api/customers/:id', async (req, res) => {
 app.post('/api/customers', async (req, res) => {
   try {
     const customerData = req.body;
-    
+
     // Check if customer with same email already exists
     const existingCustomer = await Customer.findOne({ email: customerData.email });
     if (existingCustomer) {
@@ -587,11 +684,11 @@ app.post('/api/customers', async (req, res) => {
 
     const customer = new Customer(customerData);
     const savedCustomer = await customer.save();
-    
-    res.status(201).json({ 
-      id: savedCustomer._id, 
-      success: true, 
-      message: 'Customer created successfully' 
+
+    res.status(201).json({
+      id: savedCustomer._id,
+      success: true,
+      message: 'Customer created successfully'
     });
   } catch (error) {
     console.error('Error creating customer:', error);
@@ -603,17 +700,16 @@ app.post('/api/customers', async (req, res) => {
 app.put('/api/customers/:id', async (req, res) => {
   try {
     const updates = { ...req.body, updatedAt: new Date() };
-    
-    const customer = await Customer.findByIdAndUpdate(
-      req.params.id, 
-      updates, 
-      { new: true, runValidators: true }
-    );
-    
+
+    const customer = await Customer.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true
+    });
+
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
     }
-    
+
     res.json({ success: true, customer });
   } catch (error) {
     res.status(500).json({ message: 'Error updating customer', error: error.message });
@@ -664,14 +760,13 @@ app.get('/api/customers/stats', async (req, res) => {
     const total = await Customer.countDocuments();
     const active = await Customer.countDocuments({ status: 'active' });
     const inactive = await Customer.countDocuments({ status: 'inactive' });
-    
-    // Calculate customer segments based on spending
+
     const customers = await Customer.find();
-    const vip = customers.filter(c => c.totalSpent >= 2000000).length;
-    const premium = customers.filter(c => c.totalSpent >= 500000 && c.totalSpent < 2000000).length;
-    const regular = customers.filter(c => c.totalSpent >= 100000 && c.totalSpent < 500000).length;
-    const newCustomers = customers.filter(c => c.totalSpent < 100000).length;
-    
+    const vip = customers.filter((c) => c.totalSpent >= 2000000).length;
+    const premium = customers.filter((c) => c.totalSpent >= 500000 && c.totalSpent < 2000000).length;
+    const regular = customers.filter((c) => c.totalSpent >= 100000 && c.totalSpent < 500000).length;
+    const newCustomers = customers.filter((c) => c.totalSpent < 100000).length;
+
     const totalRevenue = customers.reduce((sum, c) => sum + c.totalSpent, 0);
     const totalOrders = customers.reduce((sum, c) => sum + c.totalOrders, 0);
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
@@ -694,21 +789,23 @@ app.get('/api/customers/stats', async (req, res) => {
   }
 });
 
-// Analytics Routes
+// ANALYTICS
 
 // Get comprehensive analytics
 app.get('/api/analytics', async (req, res) => {
   try {
-    // Get orders data
     const orders = await Order.find();
     const customers = await Customer.find();
     const products = await Product.find();
 
     // Calculate revenue metrics
-    const totalRevenue = orders.reduce((sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0), 0);
-    const completedOrders = orders.filter(o => o.paymentStatus === 'completed');
+    const totalRevenue = orders.reduce(
+      (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
+      0
+    );
+    const completedOrders = orders.filter((o) => o.paymentStatus === 'completed');
     const monthlyRevenue = completedOrders
-      .filter(o => {
+      .filter((o) => {
         const orderDate = new Date(o.createdAt);
         const now = new Date();
         return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
@@ -721,32 +818,32 @@ app.get('/api/analytics', async (req, res) => {
     // Order statistics
     const orderStats = {
       total: orders.length,
-      pending: orders.filter(o => o.status === 'pending').length,
-      completed: orders.filter(o => o.status === 'delivered' || o.paymentStatus === 'completed').length,
-      cancelled: orders.filter(o => o.status === 'cancelled').length
+      pending: orders.filter((o) => o.status === 'pending').length,
+      completed: orders.filter((o) => o.status === 'delivered' || o.paymentStatus === 'completed').length,
+      cancelled: orders.filter((o) => o.status === 'cancelled').length
     };
 
     // Customer statistics
     const now = new Date();
-    const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-    const newCustomers = customers.filter(c => new Date(c.createdAt) >= thirtyDaysAgo).length;
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const newCustomers = customers.filter((c) => new Date(c.createdAt) >= thirtyDaysAgo).length;
 
     const customerStats = {
       total: customers.length,
       new: newCustomers,
-      active: customers.filter(c => c.status === 'active').length,
-      inactive: customers.filter(c => c.status === 'inactive').length
+      active: customers.filter((c) => c.status === 'active').length,
+      inactive: customers.filter((c) => c.status === 'inactive').length
     };
 
     // Product statistics
     const productStats = {
       total: products.length,
-      inStock: products.filter(p => p.inStock && p.stock > 5).length,
-      lowStock: products.filter(p => p.inStock && p.stock <= 5 && p.stock > 0).length,
-      outOfStock: products.filter(p => !p.inStock || p.stock === 0).length
+      inStock: products.filter((p) => p.inStock && p.stock > 5).length,
+      lowStock: products.filter((p) => p.inStock && p.stock <= 5 && p.stock > 0).length,
+      outOfStock: products.filter((p) => !p.inStock || p.stock === 0).length
     };
 
-    // Top products (mock data for now - would need order items analysis)
+    // Top products (mock data for now)
     const topProducts = [
       { id: 'PROD-001', name: 'Professional Dental Handpiece Set', sales: 156, revenue: 7020000 },
       { id: 'PROD-002', name: 'Digital X-Ray Sensor Kit', sales: 89, revenue: 11125000 },
@@ -766,22 +863,23 @@ app.get('/api/analytics', async (req, res) => {
       const date = new Date();
       date.setMonth(date.getMonth() - i);
       const monthName = date.toLocaleDateString('en', { month: 'short' });
-      
-      const monthOrders = orders.filter(o => {
+
+      const monthOrders = orders.filter((o) => {
         const orderDate = new Date(o.createdAt);
-        return orderDate.getMonth() === date.getMonth() && 
-               orderDate.getFullYear() === date.getFullYear();
+        return orderDate.getMonth() === date.getMonth() && orderDate.getFullYear() === date.getFullYear();
       });
-      
-      const monthCustomers = customers.filter(c => {
+
+      const monthCustomers = customers.filter((c) => {
         const customerDate = new Date(c.createdAt);
-        return customerDate.getMonth() === date.getMonth() && 
-               customerDate.getFullYear() === date.getFullYear();
+        return customerDate.getMonth() === date.getMonth() && customerDate.getFullYear() === date.getFullYear();
       });
 
       monthlyData.push({
         month: monthName,
-        revenue: monthOrders.reduce((sum, o) => sum + (o.paymentStatus === 'completed' ? o.total : 0), 0),
+        revenue: monthOrders.reduce(
+          (sum, o) => sum + (o.paymentStatus === 'completed' ? o.total : 0),
+          0
+        ),
         orders: monthOrders.length,
         customers: monthCustomers.length
       });
@@ -812,15 +910,21 @@ app.get('/api/analytics', async (req, res) => {
 app.get('/api/analytics/revenue', async (req, res) => {
   try {
     const orders = await Order.find();
-    const totalRevenue = orders.reduce((sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0), 0);
-    
+    const totalRevenue = orders.reduce(
+      (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
+      0
+    );
+
     const now = new Date();
     const monthlyRevenue = orders
-      .filter(o => {
+      .filter((o) => {
         const orderDate = new Date(o.createdAt);
         return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
       })
-      .reduce((sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0), 0);
+      .reduce(
+        (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
+        0
+      );
 
     res.json({
       total: totalRevenue,
@@ -835,12 +939,12 @@ app.get('/api/analytics/revenue', async (req, res) => {
 app.get('/api/analytics/orders', async (req, res) => {
   try {
     const orders = await Order.find();
-    
+
     const stats = {
       total: orders.length,
-      pending: orders.filter(o => o.status === 'pending').length,
-      completed: orders.filter(o => o.status === 'delivered' || o.paymentStatus === 'completed').length,
-      cancelled: orders.filter(o => o.status === 'cancelled').length
+      pending: orders.filter((o) => o.status === 'pending').length,
+      completed: orders.filter((o) => o.status === 'delivered' || o.paymentStatus === 'completed').length,
+      cancelled: orders.filter((o) => o.status === 'cancelled').length
     };
 
     res.json(stats);
@@ -853,13 +957,13 @@ app.get('/api/analytics/customers', async (req, res) => {
   try {
     const customers = await Customer.find();
     const now = new Date();
-    const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-    
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
     const stats = {
       total: customers.length,
-      new: customers.filter(c => new Date(c.createdAt) >= thirtyDaysAgo).length,
-      active: customers.filter(c => c.status === 'active').length,
-      inactive: customers.filter(c => c.status === 'inactive').length
+      new: customers.filter((c) => new Date(c.createdAt) >= thirtyDaysAgo).length,
+      active: customers.filter((c) => c.status === 'active').length,
+      inactive: customers.filter((c) => c.status === 'inactive').length
     };
 
     res.json(stats);
@@ -871,18 +975,31 @@ app.get('/api/analytics/customers', async (req, res) => {
 app.get('/api/analytics/products', async (req, res) => {
   try {
     const products = await Product.find();
-    
+
     const stats = {
       total: products.length,
-      inStock: products.filter(p => p.inStock && p.stock > 5).length,
-      lowStock: products.filter(p => p.inStock && p.stock <= 5 && p.stock > 0).length,
-      outOfStock: products.filter(p => !p.inStock || p.stock === 0).length
+      inStock: products.filter((p) => p.inStock && p.stock > 5).length,
+      lowStock: products.filter((p) => p.inStock && p.stock <= 5 && p.stock > 0).length,
+      outOfStock: products.filter((p) => !p.inStock || p.stock === 0).length
     };
 
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product analytics', error: error.message });
   }
+});
+
+/* =========================
+   SERVE REACT FRONTEND
+   ========================= */
+
+// IMPORTANT: Ensure your React build outputs to ../dist relative to this file.
+const distPath = path.join(__dirname, '..', 'dist');
+app.use(express.static(distPath));
+
+// Catch-all so React Router handles client routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Start server
