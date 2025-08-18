@@ -1,0 +1,319 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+/api/products:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+database.ts:47 Server unavailable, using mock data
+getProducts @ database.ts:47Understand this warning
+/api/products:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
+database.ts:47 Server unavailable, using mock data
+getProducts @ database.ts:47Understand this warning
+/notification.mp3:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at fetchOrders (AdminDashboardPage.tsx:25:41)
+    at AdminDashboardPage.tsx:37:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+getOrders @ orderService.ts:78Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at fetchOrders (AdminDashboardPage.tsx:25:41)
+    at AdminDashboardPage.tsx:37:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+getOrders @ orderService.ts:78Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+getOrders @ orderService.ts:78Understand this error
+OrdersManagementPage.tsx:42 Error loading orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+loadOrders @ OrdersManagementPage.tsx:42Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+getOrders @ orderService.ts:78Understand this error
+OrdersManagementPage.tsx:42 Error loading orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+loadOrders @ OrdersManagementPage.tsx:42Understand this error
+/notification.mp3:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at fetchOrders (AdminDashboardPage.tsx:25:41)
+    at AdminDashboardPage.tsx:37:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+getOrders @ orderService.ts:78Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at fetchOrders (AdminDashboardPage.tsx:25:41)
+    at AdminDashboardPage.tsx:37:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+getOrders @ orderService.ts:78Understand this error
+17chunk-BUQ3EWXL.js?v=fe3dcd0b:521 Warning: Encountered two children with the same key, `Orthodontics`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at select
+    at div
+    at div
+    at div
+    at div
+    at div
+    at form
+    at div
+    at main
+    at div
+    at div
+    at AdminLayout (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/components/admin/AdminLayout.tsx:22:3)
+    at AddProductPage (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/pages/admin/AddProductPage.tsx:24:20)
+    at ProtectedRoute (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/components/admin/ProtectedRoute.tsx:20:3)
+    at RenderedRoute (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4103:5)
+    at Routes (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4574:5)
+    at div
+    at Router (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4517:15)
+    at BrowserRouter (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:5266:5)
+    at AnalyticsProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/AnalyticsContext.tsx:128:3)
+    at ProductsProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/ProductsContext.tsx:21:3)
+    at WishlistProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/WishlistContext.tsx:29:3)
+    at CartProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/CartContext.tsx:29:3)
+    at AdminAuthProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/AdminAuthContext.tsx:33:3)
+    at App
+printWarning @ chunk-BUQ3EWXL.js?v=fe3dcd0b:521Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+getOrders @ orderService.ts:78Understand this error
+OrdersManagementPage.tsx:42 Error loading orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+loadOrders @ OrdersManagementPage.tsx:42Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+getOrders @ orderService.ts:78Understand this error
+OrdersManagementPage.tsx:42 Error loading orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+loadOrders @ OrdersManagementPage.tsx:42Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at fetchOrders (AdminDashboardPage.tsx:25:41)
+    at AdminDashboardPage.tsx:37:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+getOrders @ orderService.ts:78Understand this error
+/notification.mp3:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at fetchOrders (AdminDashboardPage.tsx:25:41)
+    at AdminDashboardPage.tsx:37:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+getOrders @ orderService.ts:78Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+getOrders @ orderService.ts:78Understand this error
+OrdersManagementPage.tsx:42 Error loading orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at commitPassiveMountOnFiber (chunk-BUQ3EWXL.js?v=fe3dcd0b:18184:19)
+    at commitPassiveMountEffects_complete (chunk-BUQ3EWXL.js?v=fe3dcd0b:18157:17)
+    at commitPassiveMountEffects_begin (chunk-BUQ3EWXL.js?v=fe3dcd0b:18147:15)
+    at commitPassiveMountEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:18137:11)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19518:11)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+loadOrders @ OrdersManagementPage.tsx:42Understand this error
+chunk-BUQ3EWXL.js?v=fe3dcd0b:521 Warning: Encountered two children with the same key, `Orthodontics`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at select
+    at div
+    at div
+    at div
+    at div
+    at div
+    at form
+    at div
+    at main
+    at div
+    at div
+    at AdminLayout (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/components/admin/AdminLayout.tsx:22:3)
+    at AddProductPage (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/pages/admin/AddProductPage.tsx:24:20)
+    at ProtectedRoute (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/components/admin/ProtectedRoute.tsx:20:3)
+    at RenderedRoute (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4103:5)
+    at Routes (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4574:5)
+    at div
+    at Router (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4517:15)
+    at BrowserRouter (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:5266:5)
+    at AnalyticsProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/AnalyticsContext.tsx:128:3)
+    at ProductsProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/ProductsContext.tsx:21:3)
+    at WishlistProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/WishlistContext.tsx:29:3)
+    at CartProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/CartContext.tsx:29:3)
+    at AdminAuthProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/AdminAuthContext.tsx:33:3)
+    at App
+printWarning @ chunk-BUQ3EWXL.js?v=fe3dcd0b:521Understand this error
+localhost:5000/api/orders:1  Failed to load resource: net::ERR_CONNECTION_REFUSEDUnderstand this error
+orderService.ts:78 Error fetching orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+getOrders @ orderService.ts:78Understand this error
+OrdersManagementPage.tsx:42 Error loading orders: TypeError: Failed to fetch
+    at OrderService.getOrders (orderService.ts:69:30)
+    at loadOrders (OrdersManagementPage.tsx:38:48)
+    at OrdersManagementPage.tsx:29:5
+    at commitHookEffectListMount (chunk-BUQ3EWXL.js?v=fe3dcd0b:16936:34)
+    at invokePassiveEffectMountInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:18352:19)
+    at invokeEffectsInDev (chunk-BUQ3EWXL.js?v=fe3dcd0b:19729:19)
+    at commitDoubleInvokeEffectsInDEV (chunk-BUQ3EWXL.js?v=fe3dcd0b:19714:15)
+    at flushPassiveEffectsImpl (chunk-BUQ3EWXL.js?v=fe3dcd0b:19531:13)
+    at flushPassiveEffects (chunk-BUQ3EWXL.js?v=fe3dcd0b:19475:22)
+    at chunk-BUQ3EWXL.js?v=fe3dcd0b:19356:17
+loadOrders @ OrdersManagementPage.tsx:42Understand this error
+chunk-BUQ3EWXL.js?v=fe3dcd0b:521 Warning: Encountered two children with the same key, `Orthodontics`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at select
+    at div
+    at div
+    at div
+    at div
+    at div
+    at form
+    at div
+    at main
+    at div
+    at div
+    at AdminLayout (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/components/admin/AdminLayout.tsx:22:3)
+    at AddProductPage (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/pages/admin/AddProductPage.tsx:24:20)
+    at ProtectedRoute (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/components/admin/ProtectedRoute.tsx:20:3)
+    at RenderedRoute (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4103:5)
+    at Routes (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4574:5)
+    at div
+    at Router (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:4517:15)
+    at BrowserRouter (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/node_modules/.vite/deps/react-router-dom.js?v=fe3dcd0b:5266:5)
+    at AnalyticsProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/AnalyticsContext.tsx:128:3)
+    at ProductsProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/ProductsContext.tsx:21:3)
+    at WishlistProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/WishlistContext.tsx:29:3)
+    at CartProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/CartContext.tsx:29:3)
+    at AdminAuthProvider (https://7715e244-6533-4eb8-8546-9f2d5d1ad7a2-00-1n2mimazz03be.riker.replit.dev/src/context/AdminAuthContext.tsx:33:3)
+    at App
+printWarning @ chunk-BUQ3EWXL.js?v=fe3dcd0b:521Understand this error
