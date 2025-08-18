@@ -39,7 +39,7 @@ export interface Order {
   updatedAt?: Date;
 }
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 class OrderService {
   async createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ id: string; success: boolean }> {
