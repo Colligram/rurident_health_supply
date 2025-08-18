@@ -16,8 +16,10 @@ export interface Customer {
   tags?: string[];
 }
 
+import { getApiBaseURL, withTimeout } from './config';
+
 class CustomerService {
-  private baseURL = '/api';
+  private baseURL = getApiBaseURL();
   private useMockData = false; // Try real API first, fallback to mock data if needed
 
   // Mock customers data for development
@@ -152,13 +154,15 @@ class CustomerService {
         return { success: true, data: this.mockCustomers };
       }
 
+      const t = withTimeout();
       const response = await fetch(`${this.baseURL}/customers`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        signal: AbortSignal.timeout(10000)
+        signal: t.signal
       });
+      t.clear();
 
       if (!response.ok) {
         if (response.status === 404 || response.status >= 500) {
@@ -215,7 +219,9 @@ class CustomerService {
         return { success: true, data: customer };
       }
 
-      const response = await fetch(`${this.baseURL}/customers/${id}`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/customers/${id}`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch customer');
@@ -238,13 +244,16 @@ class CustomerService {
         return { success: true, id: newId };
       }
 
+      const t = withTimeout();
       const response = await fetch(`${this.baseURL}/customers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(customer),
+        signal: t.signal
       });
+      t.clear();
 
       if (!response.ok) {
         throw new Error('Failed to add customer');
@@ -269,13 +278,16 @@ class CustomerService {
         return { success: true };
       }
 
+      const t = withTimeout();
       const response = await fetch(`${this.baseURL}/customers/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updates),
+        signal: t.signal
       });
+      t.clear();
 
       if (!response.ok) {
         throw new Error('Failed to update customer');
@@ -299,9 +311,12 @@ class CustomerService {
         return { success: true };
       }
 
+      const t = withTimeout();
       const response = await fetch(`${this.baseURL}/customers/${id}`, {
         method: 'DELETE',
+        signal: t.signal
       });
+      t.clear();
 
       if (!response.ok) {
         throw new Error('Failed to delete customer');
@@ -326,7 +341,9 @@ class CustomerService {
         return { success: true, data: filtered };
       }
 
-      const response = await fetch(`${this.baseURL}/customers/search?q=${encodeURIComponent(query)}`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/customers/search?q=${encodeURIComponent(query)}`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to search customers');
@@ -357,7 +374,9 @@ class CustomerService {
         return { success: true, data: stats };
       }
 
-      const response = await fetch(`${this.baseURL}/customers/stats`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/customers/stats`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch customer stats');

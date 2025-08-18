@@ -39,7 +39,8 @@ export interface Order {
   updatedAt?: Date;
 }
 
-const API_BASE_URL = '/api';
+import { getApiBaseURL, withTimeout } from './config';
+const API_BASE_URL = getApiBaseURL();
 
 class OrderService {
   async createOrder(orderData: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ id: string; success: boolean }> {
@@ -66,7 +67,9 @@ class OrderService {
 
   async getOrders(): Promise<Order[]> {
     try {
-      const response = await fetch(`${API_BASE_URL}/orders`);
+      const t = withTimeout();
+      const response = await fetch(`${API_BASE_URL}/orders`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
@@ -82,7 +85,9 @@ class OrderService {
 
   async getOrderById(orderId: string): Promise<Order | null> {
     try {
-      const response = await fetch(`${API_BASE_URL}/orders/${orderId}`);
+      const t = withTimeout();
+      const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         if (response.status === 404) {
@@ -106,13 +111,16 @@ class OrderService {
         updates.paymentStatus = paymentStatus;
       }
 
+      const t = withTimeout();
       const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updates),
+        signal: t.signal
       });
+      t.clear();
 
       if (!response.ok) {
         throw new Error('Failed to update order');
@@ -127,9 +135,12 @@ class OrderService {
 
   async deleteOrder(orderId: string): Promise<boolean> {
     try {
+      const t = withTimeout();
       const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
         method: 'DELETE',
+        signal: t.signal
       });
+      t.clear();
 
       if (!response.ok) {
         throw new Error('Failed to delete order');
@@ -146,7 +157,9 @@ class OrderService {
   async generateReceiptPDF(order: Order): Promise<Blob> {
     try {
       // Use the backend PDF endpoint
-      const response = await fetch(`${API_BASE_URL}/orders/${order.id}/receipt`);
+      const t = withTimeout(20000);
+      const response = await fetch(`${API_BASE_URL}/orders/${order.id}/receipt`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to generate receipt');

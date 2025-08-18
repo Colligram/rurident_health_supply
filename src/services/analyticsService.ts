@@ -41,8 +41,10 @@ export interface AnalyticsData {
   }>;
 }
 
+import { getApiBaseURL, withTimeout } from './config';
+
 class AnalyticsService {
-  private baseURL = '/api';
+  private baseURL = getApiBaseURL();
   private useMockData = false; // Try real API first, fallback to mock data if needed
 
   async getAnalytics(): Promise<{ success: boolean; data?: AnalyticsData; error?: string }> {
@@ -53,13 +55,15 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics() };
       }
 
+      const t = withTimeout();
       const response = await fetch(`${this.baseURL}/analytics`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        signal: AbortSignal.timeout(10000)
+        signal: t.signal
       });
+      t.clear();
 
       if (!response.ok) {
         if (response.status === 404 || response.status >= 500) {
@@ -194,7 +198,9 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics().revenue };
       }
 
-      const response = await fetch(`${this.baseURL}/analytics/revenue`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/analytics/revenue`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch revenue analytics');
@@ -214,7 +220,9 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics().orders };
       }
 
-      const response = await fetch(`${this.baseURL}/analytics/orders`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/analytics/orders`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch order analytics');
@@ -234,7 +242,9 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics().customers };
       }
 
-      const response = await fetch(`${this.baseURL}/analytics/customers`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/analytics/customers`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch customer analytics');
@@ -254,7 +264,9 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics().products };
       }
 
-      const response = await fetch(`${this.baseURL}/analytics/products`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/analytics/products`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch product analytics');
@@ -274,7 +286,9 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics().topProducts };
       }
 
-      const response = await fetch(`${this.baseURL}/analytics/top-products`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/analytics/top-products`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch top products');
@@ -294,7 +308,9 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics().topCategories };
       }
 
-      const response = await fetch(`${this.baseURL}/analytics/top-categories`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/analytics/top-categories`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch top categories');
@@ -314,7 +330,9 @@ class AnalyticsService {
         return { success: true, data: this.getMockAnalytics().monthlyData };
       }
 
-      const response = await fetch(`${this.baseURL}/analytics/monthly`);
+      const t = withTimeout();
+      const response = await fetch(`${this.baseURL}/analytics/monthly`, { signal: t.signal });
+      t.clear();
       
       if (!response.ok) {
         throw new Error('Failed to fetch monthly data');
