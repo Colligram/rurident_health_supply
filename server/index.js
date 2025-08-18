@@ -64,25 +64,28 @@ async function seedInitialData() {
           name: "Digital Thermometer",
           description: "Accurate digital thermometer for medical use",
           price: 25.99,
-          image: "/api/placeholder/300/200",
+          images: ["/api/placeholder/300/200"],
           category: "Medical Devices",
-          inStock: true
+          inStock: true,
+          stock: 50
         },
         {
           name: "Blood Pressure Monitor",
           description: "Automatic blood pressure monitor with large display",
           price: 89.99,
-          image: "/api/placeholder/300/200",
+          images: ["/api/placeholder/300/200"],
           category: "Medical Devices",
-          inStock: true
+          inStock: true,
+          stock: 30
         },
         {
           name: "First Aid Kit",
           description: "Complete first aid kit for home and office",
           price: 34.99,
-          image: "/api/placeholder/300/200",
+          images: ["/api/placeholder/300/200"],
           category: "Medical Supplies",
-          inStock: true
+          inStock: true,
+          stock: 100
         }
       ];
       
@@ -187,15 +190,29 @@ db.on('reconnected', () => {
   console.log('MongoDB reconnected');
 });
 
-// Product Schema
+// Product Schema - aligned with frontend requirements
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
-  image: { type: String, required: true },
+  salePrice: { type: Number },
+  originalPrice: { type: Number },
+  images: { type: [String], default: [] },
   category: { type: String, required: true },
   inStock: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now }
+  stock: { type: Number, default: 0 },
+  rating: { type: Number, default: 0 },
+  reviewCount: { type: Number, default: 0 },
+  specifications: { type: mongoose.Schema.Types.Mixed, default: {} },
+  features: { type: [String], default: [] },
+  brand: { type: String },
+  seller: { type: String },
+  soldCount: { type: Number, default: 0 },
+  isBestSeller: { type: Boolean, default: false },
+  isFeatured: { type: Boolean, default: false },
+  // Do NOT add `isNew` here. It's a reserved Mongoose property on documents.
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 });
 
 const Product = mongoose.model('Product', productSchema);
@@ -270,6 +287,63 @@ app.get('/api/products', async (req, res) => {
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error: error.message });
+  }
+});
+
+// Create product
+app.post('/api/products', async (req, res) => {
+  try {
+    const payload = req.body || {};
+    // Prevent use of reserved pathnames like isNew
+    if (Object.prototype.hasOwnProperty.call(payload, 'isNew')) {
+      delete payload.isNew;
+    }
+
+    // Default images array
+    if (!payload.images && payload.image) {
+      payload.images = [payload.image];
+      delete payload.image;
+    }
+
+    // Ensure stock and derived fields
+    if (typeof payload.stock === 'number') {
+      payload.inStock = payload.stock > 0;
+    }
+
+    const product = new Product(payload);
+    const saved = await product.save();
+    res.status(201).json({ id: saved._id, success: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating product', error: error.message });
+  }
+});
+
+// Update product
+app.put('/api/products/:id', async (req, res) => {
+  try {
+    const updates = { ...req.body, updatedAt: new Date() };
+    if (Object.prototype.hasOwnProperty.call(updates, 'isNew')) {
+      delete updates.isNew;
+    }
+    if (typeof updates.stock === 'number') {
+      updates.inStock = updates.stock > 0;
+    }
+    const updated = await Product.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+    if (!updated) return res.status(404).json({ message: 'Product not found' });
+    res.json({ success: true, id: updated._id });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating product', error: error.message });
+  }
+});
+
+// Delete product
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Product not found' });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting product', error: error.message });
   }
 });
 
