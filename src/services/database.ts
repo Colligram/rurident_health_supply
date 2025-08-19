@@ -91,8 +91,10 @@ class APIService {
     }
   }
 
-  async addProduct(product: Omit<Product, 'id'>): Promise<{ success: boolean; id?: string }> {
+  async addProduct(product: Omit<Product, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
     try {
+      console.log('Sending product data:', product);
+      
       const response = await fetch(`${this.baseURL}/products`, {
         method: 'POST',
         headers: {
@@ -102,14 +104,21 @@ class APIService {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add product');
+        let errorMessage = `HTTP ${response.status}: Failed to add product`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use the default error message
+        }
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
       return { success: true, id: result.id };
-    } catch (error) {
-      console.error('Error adding product:', error);
-      return { success: false };
+    } catch (error: any) {
+      console.error('Error adding product:', error, error?.message, error?.stack);
+      return { success: false, error: error.message || 'Failed to add product' };
     }
   }
 

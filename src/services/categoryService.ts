@@ -84,23 +84,41 @@ class CategoryService {
 
   async addCategory(category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ success: boolean; id?: string; error?: string }> {
     try {
+      // Ensure unique subcategory IDs if they exist
+      const categoryData = {
+        ...category,
+        subcategories: category.subcategories?.map((sub, index) => ({
+          ...sub,
+          id: sub.id || `${category.name.toLowerCase().replace(/\s+/g, '-')}-${index + 1}`
+        })) || []
+      };
+
+      console.log('Sending category data:', categoryData);
+
       const response = await fetch(`${this.baseURL}/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(category),
+        body: JSON.stringify(categoryData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add category');
+        let errorMessage = `HTTP ${response.status}: Failed to add category`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use the default error message
+        }
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
       return { success: true, id: result.id };
-    } catch (error) {
-      console.error('Error adding category:', error);
-      return { success: false, error: 'Failed to add category' };
+    } catch (error: any) {
+      console.error('Error adding category:', error, error?.message, error?.stack);
+      return { success: false, error: error.message || 'Failed to add category' };
     }
   }
 

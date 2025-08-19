@@ -120,9 +120,9 @@ export function CategorySidebar() {
               {isExpanded(category.id) && (
                 <div className="bg-gray-50 border-t border-gray-100">
                   <div className="px-6 py-3 space-y-2">
-                    {category.subcategories.map((subcategory) => (
+                    {category.subcategories.map((subcategory, index) => (
                       <Link
-                        key={subcategory.id}
+                        key={`${category.id}-${subcategory.id}-${index}`}
                         to={subcategory.path}
                         className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200 group/sub"
                       >
@@ -223,9 +223,9 @@ export function CategorySidebar() {
                 {isExpanded(category.id) && (
                   <div className="bg-gray-50 border-t border-gray-100">
                     <div className="px-6 py-3 space-y-2">
-                      {category.subcategories.map((subcategory) => (
+                      {category.subcategories.map((subcategory, index) => (
                         <Link
-                          key={subcategory.id}
+                          key={`${category.id}-${subcategory.id}-${index}`}
                           to={subcategory.path}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200 group/sub"
