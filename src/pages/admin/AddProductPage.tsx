@@ -22,6 +22,7 @@ export function AddProductPage() {
   const navigate = useNavigate();
   const { addProduct } = useProducts();
   const { categories: apiCategories, loading: loadingCategories } = useCategories();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     category: '',
@@ -110,16 +111,55 @@ export function AddProductPage() {
   };
 
   const handleFileUpload = (index: number, file: File) => {
+    // Check file size (limit to 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image file is too large. Please select an image smaller than 5MB.');
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const result = e.target?.result as string;
-      updateImageUrl(index, result);
+      
+      // Create an image element to compress the image
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Calculate new dimensions (max 800px width/height)
+        const maxSize = 800;
+        let { width, height } = img;
+        
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and compress
+        ctx?.drawImage(img, 0, 0, width, height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8); // 80% quality
+        updateImageUrl(index, compressedDataUrl);
+      };
+      img.src = result;
     };
     reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) return; // Prevent double submission
     
     // Filter out empty features and images
     const cleanedData = {
@@ -131,14 +171,39 @@ export function AddProductPage() {
       reviewCount: 0
     };
 
+    // Check if we have any images that might be too large
+    const totalImageSize = cleanedData.images.reduce((total, img) => {
+      return total + (img.length * 0.75); // Rough estimate of base64 size
+    }, 0);
+    
+    if (totalImageSize > 30 * 1024 * 1024) { // 30MB total limit
+      alert('Total image size is too large. Please use smaller images or fewer images.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
     try {
       // Add to products context which will call the API
       await addProduct(cleanedData);
       alert('Product added successfully!');
       navigate('/admin/products');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding product:', error);
-      alert('Failed to add product. Please try again.');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to add product. Please try again.';
+      if (error?.message?.includes('413')) {
+        errorMessage = 'Product data is too large. Please use smaller images or reduce the amount of data.';
+      } else if (error?.message?.includes('400')) {
+        errorMessage = 'Invalid product data. Please check all required fields.';
+      } else if (error?.message?.includes('500')) {
+        errorMessage = 'Server error. Please try again later.';
+      }
+      
+      alert(errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -420,6 +485,9 @@ export function AddProductPage() {
                         />
                         <span className="text-xs text-gray-500">or</span>
                       </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Max file size: 5MB. Images will be automatically compressed to 800px max dimension.
+                      </p>
                       {image && (
                         <img
                           src={image}
@@ -440,9 +508,10 @@ export function AddProductPage() {
                 <div className="space-y-3">
                   <button
                     type="submit"
-                    className="btn-primary w-full"
+                    disabled={isSubmitting}
+                    className={`btn-primary w-full ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    Add Product
+                    {isSubmitting ? 'Adding Product...' : 'Add Product'}
                   </button>
                   <button
                     type="button"
