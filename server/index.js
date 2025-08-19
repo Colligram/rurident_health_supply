@@ -325,7 +325,7 @@ async function seedInitialData() {
           icon: '🔬',
           subcategories: [
             { id: 'dl1', name: 'Crown and Bridge', path: '/products?category=crown-and-bridge', icon: '👑' },
-            { id: 'dl2', name: 'Orthodontics', path: '/products?category=orthodontics', icon: '🦷' },
+            { id: 'dl2', name: 'Dental Lab Orthodontics', path: '/products?category=dental-lab-orthodontics', icon: '🦷' },
             { id: 'dl3', name: 'Complete Dentures', path: '/products?category=complete-dentures', icon: '🦴' },
             { id: 'dl4', name: 'Partial Dentures (Cobalt Chrome)', path: '/products?category=partial-dentures-cobalt-chrome', icon: '⚙️' }
           ]
@@ -347,7 +347,8 @@ async function seedInitialData() {
           subcategories: [
             { id: 'eq1', name: 'Handpieces', path: '/products?category=handpieces', icon: '🔧' },
             { id: 'eq2', name: 'Scalers', path: '/products?category=scalers', icon: '🔪' },
-            { id: 'eq3', name: 'Surgical Tools', path: '/products?category=surgical-tools', icon: '🩺' }
+            { id: 'eq3', name: 'Surgical Tools', path: '/products?category=surgical-tools', icon: '🩺' },
+            { id: 'eq4', name: 'Clinical Orthodontics', path: '/products?category=clinical-orthodontics', icon: '🦷' }
           ]
         },
         {
