@@ -4,6 +4,7 @@ import { FiStar, FiShoppingCart, FiHeart, FiTruck, FiEye, FiX } from 'react-icon
 import { useCart } from '../../context/CartContext';
 import { useCartAnimation } from '../../context/CartAnimationContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useWishlistAnimation } from '../../context/WishlistAnimationContext';
 
 const lightningDeals = [
   {
@@ -77,6 +78,7 @@ export function LightningDeals() {
   const { addToCart } = useCart();
   const { triggerAnimation } = useCartAnimation();
   const { addToWishlist, removeFromWishlist, items: wishlistItems } = useWishlist();
+  const { triggerWishlistAnimation } = useWishlistAnimation();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showPopup, setShowPopup] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -175,7 +177,7 @@ export function LightningDeals() {
     }
   };
 
-  const handleWishlist = (deal: any) => {
+  const handleWishlist = (deal: any, event?: React.MouseEvent) => {
     const product = {
       id: deal.id.toString(),
       name: deal.name,
@@ -190,6 +192,9 @@ export function LightningDeals() {
       removeFromWishlist(deal.id.toString());
     } else {
       addToWishlist(product);
+      if (event) {
+        triggerWishlistAnimation(event.currentTarget as HTMLElement);
+      }
     }
   };
 
@@ -266,7 +271,7 @@ export function LightningDeals() {
                         <FiEye className="w-3 h-3 text-gray-600" />
                       </button>
                       <button 
-                        onClick={() => handleWishlist(deal)}
+                        onClick={(e) => handleWishlist(deal, e)}
                         className={`w-7 h-7 rounded-full shadow-md flex items-center justify-center transition-all duration-200 hover:scale-110 ${
                           isInWishlist 
                             ? 'bg-red-500 text-white' 

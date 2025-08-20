@@ -4,12 +4,14 @@ import { FiShoppingCart, FiHeart, FiEye, FiStar, FiTruck, FiShield, FiZap, FiArr
 import { useProducts } from '../../context/ProductsContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useWishlistAnimation } from '../../context/WishlistAnimationContext';
 import { formatPrice } from '../../utils';
 
 export function ProductHeroSection() {
   const { products, loading } = useProducts();
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { triggerWishlistAnimation } = useWishlistAnimation();
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
@@ -32,6 +34,7 @@ export function ProductHeroSection() {
       removeFromWishlist(product.id);
     } else {
       addToWishlist(product);
+      triggerWishlistAnimation(event.currentTarget as HTMLElement);
     }
   };
 
