@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiSearch, FiMapPin, FiShield, FiTruck, FiHeadphones } from 'react-icons/fi';
 
 export function SearchBanner() {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to products page with search query
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery.trim())}`;
+      // Navigate to products page with search query using React Router
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 

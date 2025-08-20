@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useProducts } from '../context/ProductsContext';
 import { useCart } from '../context/CartContext';
+import { useCartAnimation } from '../context/CartAnimationContext';
 import { useWishlist } from '../context/WishlistContext';
 import { FiSearch, FiFilter, FiHeart, FiShoppingCart, FiStar } from 'react-icons/fi';
 import { formatPrice } from '../utils';
@@ -9,6 +10,7 @@ import { formatPrice } from '../utils';
 export function ProductsPage() {
   const { products, loading, error } = useProducts(); // Assuming these are provided by context
   const { addToCart } = useCart();
+  const { triggerAnimation } = useCartAnimation();
   const { wishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -163,10 +165,12 @@ export function ProductsPage() {
     return filtered;
   }, [products, searchTerm, selectedCategory, priceRange, showInStockOnly, minRating, qualityFilter, stockFilter, sortBy]);
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: any, event: React.MouseEvent<HTMLButtonElement>) => {
     addToCart(product, 1);
+    // Trigger cart animation
+    triggerAnimation(event.currentTarget);
     // Navigate to cart page after adding product
-    navigate('/cart');
+    setTimeout(() => navigate('/cart'), 900);
   };
 
   const toggleWishlist = (product: any) => {
@@ -409,7 +413,7 @@ export function ProductsPage() {
 
                     {/* Add to Cart Button */}
                     <button
-                      onClick={() => handleAddToCart(product)}
+                      onClick={(e) => handleAddToCart(product, e)}
                       disabled={!product.inStock}
                       className={`w-full py-1.5 px-2 rounded-md font-medium transition-all duration-200 text-xs flex items-center justify-center space-x-1 ${
                         product.inStock

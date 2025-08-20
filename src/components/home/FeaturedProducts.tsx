@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiShoppingCart, FiHeart, FiEye, FiStar, FiTruck, FiShield, FiZap } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
 import { useCart } from '../../context/CartContext';
+import { useCartAnimation } from '../../context/CartAnimationContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { formatPrice } from '../../utils';
 
 export function FeaturedProducts() {
   const { products, loading } = useProducts();
   const { addToCart } = useCart();
+  const { triggerAnimation } = useCartAnimation();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
@@ -17,12 +19,7 @@ export function FeaturedProducts() {
     event.preventDefault();
     event.stopPropagation();
     addToCart(product);
-    // Show a quick feedback
-    const button = event.currentTarget;
-    button.classList.add('animate-pulse');
-    setTimeout(() => {
-      button.classList.remove('animate-pulse');
-    }, 300);
+    triggerAnimation(event.currentTarget as HTMLElement);
   };
 
   const handleWishlistToggle = (product: any, event: React.MouseEvent) => {

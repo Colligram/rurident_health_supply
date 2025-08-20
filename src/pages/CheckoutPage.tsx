@@ -141,7 +141,7 @@ export const CheckoutPage: React.FC = () => {
 
     setMpesaPromptSent(true);
     setPaymentRevoked(false);
-    setTimeRemaining(180); // 3 minutes in seconds
+    setTimeRemaining(120); // 2 minutes in seconds
     setError('');
 
     // Start countdown timer
@@ -166,10 +166,10 @@ export const CheckoutPage: React.FC = () => {
         setMpesaPromptSent(false);
         setError('Payment timed out. Please initiate payment again.');
       }
-    }, 180000); // 3 minutes
+    }, 120000); // 2 minutes
 
-    // Simulate successful payment after random time (30 seconds to 2.5 minutes for demo)
-    const paymentDelay = Math.random() * 120000 + 30000; // 30s to 2.5 minutes
+    // Simulate successful payment after random time (30 seconds to 1.5 minutes for demo)
+    const paymentDelay = Math.random() * 90000 + 30000; // 30s to 2 minutes
     const paymentSimulation = setTimeout(() => {
       if (!paymentRevoked && mpesaPromptSent) {
         clearInterval(countdownInterval);
@@ -537,40 +537,50 @@ export const CheckoutPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Card Option - Properly Dimmed */}
-                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed bg-gray-50">
+                    {/* Card Option - Coming Soon */}
+                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed bg-gray-50 relative overflow-hidden">
+                      <div className="absolute top-2 right-2">
+                        <FiX className="w-6 h-6 text-red-400" />
+                      </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
                             <FiCreditCard className="w-6 h-6 text-gray-400" />
                           </div>
                           <div>
-                            <h3 className="font-bold text-gray-400 text-lg">Credit/Debit Card</h3>
-                            <p className="text-sm text-gray-400">Visa, Mastercard - Currently unavailable</p>
-                            <p className="text-xs text-gray-400 mt-1">✗ Not supported at this time</p>
+                            <h3 className="font-bold text-gray-400 text-lg">
+                              <span className="line-through">Credit/Debit Card</span>
+                            </h3>
+                            <p className="text-sm text-gray-400">Visa, Mastercard</p>
+                            <p className="text-xs text-orange-500 mt-1 font-semibold">🚀 Coming Soon</p>
                           </div>
                         </div>
-                        <span className="bg-gray-300 text-gray-500 px-4 py-2 rounded-full text-sm font-bold">
-                          Disabled
+                        <span className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-bold">
+                          Coming Soon
                         </span>
                       </div>
                     </div>
 
-                    {/* Bank Transfer Option - Properly Dimmed */}
-                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-40 cursor-not-allowed bg-gray-50">
+                    {/* Bank Transfer Option - Coming Soon */}
+                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed bg-gray-50 relative overflow-hidden">
+                      <div className="absolute top-2 right-2">
+                        <FiX className="w-6 h-6 text-red-400" />
+                      </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center">
                           <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
                             <FaUniversity className="w-6 h-6 text-gray-400" />
                           </div>
                           <div>
-                            <h3 className="font-bold text-gray-400 text-lg">Bank Transfer</h3>
-                            <p className="text-sm text-gray-400">Direct bank transfer - Currently unavailable</p>
-                            <p className="text-xs text-gray-400 mt-1">✗ Not supported at this time</p>
+                            <h3 className="font-bold text-gray-400 text-lg">
+                              <span className="line-through">Bank Transfer</span>
+                            </h3>
+                            <p className="text-sm text-gray-400">Direct bank transfer</p>
+                            <p className="text-xs text-orange-500 mt-1 font-semibold">🚀 Coming Soon</p>
                           </div>
                         </div>
-                        <span className="bg-gray-300 text-gray-500 px-4 py-2 rounded-full text-sm font-bold">
-                          Disabled
+                        <span className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-bold">
+                          Coming Soon
                         </span>
                       </div>
                     </div>
@@ -618,7 +628,7 @@ export const CheckoutPage: React.FC = () => {
                             <div className="w-full bg-green-300 rounded-full h-3">
                               <div 
                                 className="bg-green-600 h-3 rounded-full transition-all duration-1000"
-                                style={{ width: `${(timeRemaining / 180) * 100}%` }}
+                                style={{ width: `${(timeRemaining / 120) * 100}%` }}
                               ></div>
                             </div>
                           </div>
