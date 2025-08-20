@@ -5,6 +5,7 @@ import { useProducts } from '../../context/ProductsContext';
 import { useCart } from '../../context/CartContext';
 import { useCartAnimation } from '../../context/CartAnimationContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useWishlistAnimation } from '../../context/WishlistAnimationContext';
 import { formatPrice } from '../../utils';
 
 export function FeaturedProducts() {
@@ -12,6 +13,7 @@ export function FeaturedProducts() {
   const { addToCart } = useCart();
   const { triggerAnimation } = useCartAnimation();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { triggerWishlistAnimation } = useWishlistAnimation();
   const navigate = useNavigate();
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
@@ -29,6 +31,7 @@ export function FeaturedProducts() {
       removeFromWishlist(product.id);
     } else {
       addToWishlist(product);
+      triggerWishlistAnimation(event.currentTarget as HTMLElement);
     }
   };
 

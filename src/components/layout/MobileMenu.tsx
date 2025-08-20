@@ -28,9 +28,9 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
-      <div className="fixed inset-0 bg-black bg-opacity-50" onClick={onClose} />
-      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-xl">
+    <div className="fixed inset-0 z-[9999] lg:hidden">
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-2xl border-l border-gray-200">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-orange-500 to-orange-600">
           <div className="flex items-center space-x-2">
@@ -69,19 +69,21 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                       />
                     </button>
                     {expandedItems.includes(item.name) && (
-                      <ul className="ml-4 mt-2 space-y-2">
-                        {item.dropdown.map((subItem) => (
-                          <li key={subItem.name}>
-                            <Link
-                              to={subItem.href}
-                              onClick={onClose}
-                              className="block py-2 px-3 text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                            >
-                              {subItem.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="ml-4 mt-2 bg-gray-50 rounded-lg p-2">
+                        <ul className="space-y-1">
+                          {item.dropdown.map((subItem) => (
+                            <li key={subItem.name}>
+                              <Link
+                                to={subItem.href}
+                                onClick={onClose}
+                                className="block py-2 px-3 text-gray-700 hover:text-orange-600 hover:bg-white rounded-md transition-all duration-200 text-sm font-medium"
+                              >
+                                {subItem.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     )}
                   </div>
                 ) : (

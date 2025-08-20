@@ -33,6 +33,7 @@ import { SettingsPage } from './pages/admin/SettingsPage';
 import { CartProvider } from './context/CartContext';
 import { CartAnimationProvider } from './context/CartAnimationContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { WishlistAnimationProvider } from './context/WishlistAnimationContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import { ProductsProvider } from './context/ProductsContext';
 import { AnalyticsProvider } from './context/AnalyticsContext';
@@ -47,6 +48,7 @@ function App() {
       <CartProvider>
         <CartAnimationProvider>
           <WishlistProvider>
+            <WishlistAnimationProvider>
             <CategoriesProvider>
               <ProductsProvider>
                 <AnalyticsProvider>
@@ -393,6 +395,7 @@ function App() {
               </AnalyticsProvider>
             </ProductsProvider>
           </CategoriesProvider>
+            </WishlistAnimationProvider>
         </WishlistProvider>
         </CartAnimationProvider>
       </CartProvider>
