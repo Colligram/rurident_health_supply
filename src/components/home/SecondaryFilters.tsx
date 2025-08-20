@@ -48,7 +48,7 @@ export function SecondaryFilters() {
   };
 
   return (
-    <div className="bg-white border-b border-gray-100 py-4">
+    <div className="bg-white border-b border-gray-100 py-4 hidden md:block">
       <div className="container-max">
         <div className="flex items-center space-x-6 overflow-x-auto scrollbar-hide">
           {filters.map((filter) => (

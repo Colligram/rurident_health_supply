@@ -12,7 +12,8 @@ import {
   FiMenu, 
   FiX,
   FiTrendingUp,
-  FiTag
+  FiTag,
+  FiZap
 } from 'react-icons/fi';
 
 interface AdminLayoutProps {
@@ -34,6 +35,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Dashboard', href: '/admin/dashboard', icon: FiHome },
     { name: 'Categories', href: '/admin/categories', icon: FiTag },
     { name: 'Products', href: '/admin/products', icon: FiPackage },
+    { name: 'Lightning Deals', href: '/admin/lightning-deals', icon: FiZap },
     { name: 'Orders', href: '/admin/orders', icon: FiShoppingCart },
     { name: 'Customers', href: '/admin/customers', icon: FiUsers },
     { name: 'Analytics', href: '/admin/analytics', icon: FiTrendingUp },

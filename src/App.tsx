@@ -25,11 +25,13 @@ import { ProductsManagementPage } from './pages/admin/ProductsManagementPage';
 import { AddProductPage } from './pages/admin/AddProductPage';
 import { EditProductPage } from './pages/admin/EditProductPage';
 import { CategoryManagementPage } from './pages/admin/CategoryManagementPage';
+import { LightningDealsManagementPage } from './pages/admin/LightningDealsManagementPage';
 import { OrdersManagementPage } from './pages/admin/OrdersManagementPage';
 import { CustomersManagementPage } from './pages/admin/CustomersManagementPage';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
 import { CartProvider } from './context/CartContext';
+import { CartAnimationProvider } from './context/CartAnimationContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import { ProductsProvider } from './context/ProductsContext';
@@ -43,10 +45,11 @@ function App() {
   return (
     <AdminAuthProvider>
       <CartProvider>
-        <WishlistProvider>
-          <CategoriesProvider>
-            <ProductsProvider>
-              <AnalyticsProvider>
+        <CartAnimationProvider>
+          <WishlistProvider>
+            <CategoriesProvider>
+              <ProductsProvider>
+                <AnalyticsProvider>
               <Router 
                 future={{ 
                   v7_startTransition: true,
@@ -96,6 +99,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <EditProductPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/admin/lightning-deals" 
+                      element={
+                        <ProtectedRoute>
+                          <LightningDealsManagementPage />
                         </ProtectedRoute>
                       } 
                     />
@@ -383,6 +394,7 @@ function App() {
             </ProductsProvider>
           </CategoriesProvider>
         </WishlistProvider>
+        </CartAnimationProvider>
       </CartProvider>
     </AdminAuthProvider>
   );

@@ -206,6 +206,7 @@ export function Header() {
             <Link
               to="/cart"
               className="p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out relative hover:bg-orange-50 rounded-lg"
+              data-cart-icon
             >
               <HiShoppingCart className="mobile-icon-md" />
               {cartItemCount > 0 && (

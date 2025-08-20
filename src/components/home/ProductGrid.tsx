@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiShoppingCart, FiHeart, FiEye, FiStar, FiTruck, FiShield, FiFilter, FiGrid, FiList, FiX } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
 import { useCart } from '../../context/CartContext';
+import { useCartAnimation } from '../../context/CartAnimationContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { formatPrice } from '../../utils';
 
 export function ProductGrid() {
   const { products, loading } = useProducts();
   const { addToCart } = useCart();
+  const { triggerAnimation } = useCartAnimation();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const navigate = useNavigate();
   
@@ -79,6 +81,7 @@ export function ProductGrid() {
     event.preventDefault();
     event.stopPropagation();
     addToCart(product);
+    triggerAnimation(event.currentTarget as HTMLElement);
   };
 
   const handleWishlistToggle = (product: any, event: React.MouseEvent) => {

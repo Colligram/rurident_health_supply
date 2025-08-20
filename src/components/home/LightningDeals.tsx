@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiStar, FiShoppingCart, FiHeart, FiTruck, FiEye, FiX } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
+import { useCartAnimation } from '../../context/CartAnimationContext';
 import { useWishlist } from '../../context/WishlistContext';
 
 const lightningDeals = [
@@ -74,6 +75,7 @@ const lightningDeals = [
 
 export function LightningDeals() {
   const { addToCart } = useCart();
+  const { triggerAnimation } = useCartAnimation();
   const { addToWishlist, removeFromWishlist, items: wishlistItems } = useWishlist();
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -155,7 +157,7 @@ export function LightningDeals() {
     }
   };
 
-  const handleAddToCart = (deal: any) => {
+  const handleAddToCart = (deal: any, event?: React.MouseEvent<HTMLButtonElement>) => {
     // Convert deal to Product format
     const product = {
       id: deal.id.toString(),
@@ -166,6 +168,11 @@ export function LightningDeals() {
       category: 'dental-equipment'
     };
     addToCart(product, 1);
+    
+    // Trigger animation if event is provided
+    if (event) {
+      triggerAnimation(event.currentTarget);
+    }
   };
 
   const handleWishlist = (deal: any) => {
@@ -295,7 +302,7 @@ export function LightningDeals() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-500">{deal.sold}</span>
                       <button 
-                        onClick={() => handleAddToCart(deal)}
+                        onClick={(e) => handleAddToCart(deal, e)}
                         className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-all duration-200 hover:scale-110 shadow-md"
                         title="Add to Cart"
                       >
@@ -362,7 +369,7 @@ export function LightningDeals() {
                 
                 <div className="flex space-x-3">
                   <button 
-                    onClick={() => handleAddToCart(selectedProduct)}
+                    onClick={(e) => handleAddToCart(selectedProduct, e)}
                     className="flex-1 bg-orange-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2"
                   >
                     <FiShoppingCart className="w-4 h-4" />
