@@ -241,7 +241,7 @@ export function ProductHeroSection() {
               >
               {/* Product Badges */}
               <div className="absolute top-3 left-3 z-20 flex flex-col gap-1">
-                {product.isNew && (
+                {product.is_new && (
                   <span className="bg-gradient-to-r from-green-500 to-green-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg">
                     NEW
                   </span>

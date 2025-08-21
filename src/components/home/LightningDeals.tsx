@@ -17,7 +17,7 @@ const lightningDeals = [
     badge: 'Local',
     rating: 4.8,
     reviews: 89,
-    isNew: false,
+    is_new: false,
     description: 'High-quality dental handpiece set with multiple attachments for various dental procedures. Includes maintenance kit and warranty.'
   },
   {
@@ -30,7 +30,7 @@ const lightningDeals = [
     badge: 'Best Seller',
     rating: 4.9,
     reviews: 234,
-    isNew: false,
+    is_new: false,
     description: 'Advanced digital X-ray sensor kit with high resolution imaging and easy integration with existing dental systems.'
   },
   {
@@ -43,7 +43,7 @@ const lightningDeals = [
     badge: 'Hot',
     rating: 4.7,
     reviews: 567,
-    isNew: false,
+    is_new: false,
     description: 'Complete orthodontic bracket kit with various sizes and colors. Perfect for orthodontic procedures and treatments.'
   },
   {
@@ -56,7 +56,7 @@ const lightningDeals = [
     badge: 'Premium',
     rating: 4.9,
     reviews: 45,
-    isNew: true,
+    is_new: true,
     description: 'Complete dental chair unit with advanced features including hydraulic positioning, LED lighting, and integrated suction system.'
   },
   {
@@ -69,7 +69,7 @@ const lightningDeals = [
     badge: 'Essential',
     rating: 4.6,
     reviews: 312,
-    isNew: false,
+    is_new: false,
     description: 'Comprehensive infection control kit with sterilization equipment, protective gear, and cleaning solutions for dental practices.'
   }
 ];
@@ -255,7 +255,7 @@ export function LightningDeals() {
                         {deal.badge}
                       </div>
                     )}
-                    {deal.isNew && (
+                    {deal.is_new && (
                       <div className={`absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium ${
                         isMobile ? 'animate-bounce' : ''
                       }`}>

@@ -14,7 +14,7 @@ export interface Product {
   rating?: number;
   reviews?: Review[];
   reviewCount?: number;
-  isNew?: boolean;
+  is_new?: boolean;
   isBestSeller?: boolean;
   isFeatured?: boolean;
   seller?: string;

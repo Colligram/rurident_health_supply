@@ -66,7 +66,7 @@ export function PartnershipBanner() {
       </div>
       
       {/* Animation styles */}
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;

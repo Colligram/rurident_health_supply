@@ -66,7 +66,7 @@ const productSchema = new mongoose.Schema({
   specifications: { type: Object },
   features: { type: [String], default: [] },
   brand: { type: String },
-  isNew: { type: Boolean, default: false },
+  is_new: { type: Boolean, default: false },
   isBestSeller: { type: Boolean, default: false },
   isFeatured: { type: Boolean, default: false },
   seller: { type: String },

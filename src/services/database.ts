@@ -16,7 +16,7 @@ export interface Product {
   specifications?: Record<string, any>;
   features?: string[];
   brand?: string;
-  isNew?: boolean;
+  is_new?: boolean;
   isBestSeller?: boolean;
   isFeatured?: boolean;
   seller?: string;
@@ -75,7 +75,7 @@ class APIService {
         specifications: p.specifications,
         features: p.features,
         brand: p.brand,
-        isNew: p.isNew,
+        is_new: p.is_new,
         isBestSeller: p.isBestSeller,
         isFeatured: p.isFeatured,
         seller: p.seller,

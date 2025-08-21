@@ -12,7 +12,7 @@ interface LightningDeal {
   badge: string;
   rating: number;
   reviews: number;
-  isNew: boolean;
+  is_new: boolean;
   description: string;
 }
 
@@ -30,7 +30,7 @@ export function LightningDealsManagementPage() {
     badge: '',
     rating: 0,
     reviews: 0,
-    isNew: false,
+    is_new: false,
     description: ''
   });
 
@@ -50,7 +50,7 @@ export function LightningDealsManagementPage() {
           badge: 'Local',
           rating: 4.8,
           reviews: 89,
-          isNew: false,
+          is_new: false,
           description: 'High-quality dental handpiece set with multiple attachments for various dental procedures.'
         },
         {
@@ -63,7 +63,7 @@ export function LightningDealsManagementPage() {
           badge: 'Best Seller',
           rating: 4.9,
           reviews: 234,
-          isNew: false,
+          is_new: false,
           description: 'Advanced digital X-ray sensor kit with high resolution imaging.'
         }
       ];
@@ -92,7 +92,7 @@ export function LightningDealsManagementPage() {
       badge: newDeal.badge || 'New',
       rating: newDeal.rating || 0,
       reviews: newDeal.reviews || 0,
-      isNew: newDeal.isNew || true,
+      is_new: newDeal.is_new || true,
       description: newDeal.description || ''
     };
 
@@ -107,7 +107,7 @@ export function LightningDealsManagementPage() {
       badge: '',
       rating: 0,
       reviews: 0,
-      isNew: false,
+      is_new: false,
       description: ''
     });
     alert('Lightning deal added successfully');
@@ -273,8 +273,8 @@ export function LightningDealsManagementPage() {
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={newDeal.isNew || false}
-                  onChange={(e) => setNewDeal(prev => ({ ...prev, isNew: e.target.checked }))}
+                  checked={newDeal.is_new || false}
+                  onChange={(e) => setNewDeal(prev => ({ ...prev, is_new: e.target.checked }))}
                   className="form-checkbox h-4 w-4 text-primary-600 rounded"
                 />
                 <span className="text-sm font-medium text-gray-700">Mark as New Product</span>
