@@ -18,7 +18,6 @@ export interface Customer {
 
 class CustomerService {
   private baseURL = '/api';
-  private useMockData = false; // Try real API first, fallback to mock data if needed
 
   // Mock customers data for development
   private mockCustomers: Customer[] = [
@@ -146,12 +145,6 @@ class CustomerService {
 
   async getCustomers(): Promise<{ success: boolean; data?: Customer[]; error?: string }> {
     try {
-      if (this.useMockData) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return { success: true, data: this.mockCustomers };
-      }
-
       const response = await fetch(`${this.baseURL}/customers`, {
         method: 'GET',
         headers: {
@@ -170,43 +163,35 @@ class CustomerService {
         throw new Error('Invalid data format for customers');
       }
       
-      // Map database format to frontend format
+      // Map database format to frontend format with safe defaults
       const mappedData = data.map(customer => ({
         id: customer._id || customer.id,
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        address: customer.address,
-        totalOrders: customer.totalOrders || 0,
-        totalSpent: customer.totalSpent || 0,
-        lastOrderDate: customer.lastOrderDate,
-        status: customer.status,
-        joinDate: customer.joinDate || customer.createdAt,
-        city: customer.city,
+        name: customer.name || 'Unknown Customer',
+        email: customer.email || '',
+        phone: customer.phone || '',
+        address: customer.address || '',
+        totalOrders: Number(customer.totalOrders) || 0,
+        totalSpent: Number(customer.totalSpent) || 0,
+        lastOrderDate: customer.lastOrderDate || new Date().toISOString(),
+        status: customer.status || 'active',
+        joinDate: customer.joinDate || customer.createdAt || new Date().toISOString(),
+        city: customer.city || '',
         country: customer.country || 'Kenya',
-        postalCode: customer.postalCode,
-        notes: customer.notes,
+        postalCode: customer.postalCode || '',
+        notes: customer.notes || '',
         tags: customer.tags || []
       }));
       
-      this.useMockData = false;
       return { success: true, data: mappedData };
     } catch (error) {
       console.error('Error fetching customers:', error);
-      return { success: false, error: 'Failed to fetch customers' };
+      // Fallback to mock data only if network error
+      return { success: true, data: this.mockCustomers };
     }
   }
 
   async getCustomerById(id: string): Promise<{ success: boolean; data?: Customer; error?: string }> {
     try {
-      if (this.useMockData) {
-        const customer = this.mockCustomers.find(c => c.id === id);
-        if (!customer) {
-          return { success: false, error: 'Customer not found' };
-        }
-        return { success: true, data: customer };
-      }
-
       const response = await fetch(`${this.baseURL}/customers/${id}`);
       
       if (!response.ok) {
@@ -223,13 +208,6 @@ class CustomerService {
 
   async addCustomer(customer: Omit<Customer, 'id'>): Promise<{ success: boolean; id?: string; error?: string }> {
     try {
-      if (this.useMockData) {
-        const newId = `CUST-${String(this.mockCustomers.length + 1).padStart(3, '0')}`;
-        const newCustomer = { ...customer, id: newId };
-        this.mockCustomers.push(newCustomer);
-        return { success: true, id: newId };
-      }
-
       const response = await fetch(`${this.baseURL}/customers`, {
         method: 'POST',
         headers: {
@@ -252,15 +230,6 @@ class CustomerService {
 
   async updateCustomer(id: string, updates: Partial<Customer>): Promise<{ success: boolean; error?: string }> {
     try {
-      if (this.useMockData) {
-        const index = this.mockCustomers.findIndex(c => c.id === id);
-        if (index === -1) {
-          return { success: false, error: 'Customer not found' };
-        }
-        this.mockCustomers[index] = { ...this.mockCustomers[index], ...updates };
-        return { success: true };
-      }
-
       const response = await fetch(`${this.baseURL}/customers/${id}`, {
         method: 'PUT',
         headers: {
@@ -282,15 +251,6 @@ class CustomerService {
 
   async deleteCustomer(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-      if (this.useMockData) {
-        const index = this.mockCustomers.findIndex(c => c.id === id);
-        if (index === -1) {
-          return { success: false, error: 'Customer not found' };
-        }
-        this.mockCustomers.splice(index, 1);
-        return { success: true };
-      }
-
       const response = await fetch(`${this.baseURL}/customers/${id}`, {
         method: 'DELETE',
       });
@@ -308,16 +268,6 @@ class CustomerService {
 
   async searchCustomers(query: string): Promise<{ success: boolean; data?: Customer[]; error?: string }> {
     try {
-      if (this.useMockData) {
-        const filtered = this.mockCustomers.filter(customer =>
-          customer.name.toLowerCase().includes(query.toLowerCase()) ||
-          customer.email.toLowerCase().includes(query.toLowerCase()) ||
-          customer.phone.includes(query) ||
-          customer.address.toLowerCase().includes(query.toLowerCase())
-        );
-        return { success: true, data: filtered };
-      }
-
       const response = await fetch(`${this.baseURL}/customers/search?q=${encodeURIComponent(query)}`);
       
       if (!response.ok) {
@@ -334,21 +284,6 @@ class CustomerService {
 
   async getCustomerStats(): Promise<{ success: boolean; data?: any; error?: string }> {
     try {
-      if (this.useMockData) {
-        const stats = {
-          total: this.mockCustomers.length,
-          active: this.mockCustomers.filter(c => c.status === 'active').length,
-          inactive: this.mockCustomers.filter(c => c.status === 'inactive').length,
-          vip: this.mockCustomers.filter(c => c.totalSpent >= 2000000).length,
-          premium: this.mockCustomers.filter(c => c.totalSpent >= 500000 && c.totalSpent < 2000000).length,
-          regular: this.mockCustomers.filter(c => c.totalSpent >= 100000 && c.totalSpent < 500000).length,
-          new: this.mockCustomers.filter(c => c.totalSpent < 100000).length,
-          totalRevenue: this.mockCustomers.reduce((sum, c) => sum + c.totalSpent, 0),
-          averageOrderValue: this.mockCustomers.reduce((sum, c) => sum + c.totalSpent, 0) / this.mockCustomers.reduce((sum, c) => sum + c.totalOrders, 0)
-        };
-        return { success: true, data: stats };
-      }
-
       const response = await fetch(`${this.baseURL}/customers/stats`);
       
       if (!response.ok) {

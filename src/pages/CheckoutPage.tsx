@@ -227,11 +227,11 @@ export const CheckoutPage: React.FC = () => {
             totalPrice: item.price * item.quantity
           })),
           subtotal,
-          delivery,
+          shipping: delivery, // Use 'shipping' to match server schema
           tax,
           total,
           paymentMethod,
-          paymentStatus: 'confirmed' as const,
+          paymentStatus: 'completed' as const, // Mark as completed for successful payments
           status: 'pending' as const,
           mpesaTransactionId: mpesaResponse.transactionId || `MPESA_${Date.now()}`,
           fraudRisk: fraudCheck?.risk || 'low',

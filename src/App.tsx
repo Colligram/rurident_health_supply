@@ -30,6 +30,7 @@ import { OrdersManagementPage } from './pages/admin/OrdersManagementPage';
 import { CustomersManagementPage } from './pages/admin/CustomersManagementPage';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
+import { EnhancedSettingsPage } from './pages/admin/EnhancedSettingsPage';
 import { CartProvider } from './context/CartContext';
 import { CartAnimationProvider } from './context/CartAnimationContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -131,7 +132,7 @@ function App() {
                     <Route 
                       path="/admin/analytics" 
                       element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredPermission="view_analytics" staffRestricted={true}>
                           <AnalyticsPage />
                         </ProtectedRoute>
                       } 
@@ -139,8 +140,8 @@ function App() {
                     <Route 
                       path="/admin/settings" 
                       element={
-                        <ProtectedRoute>
-                          <SettingsPage />
+                        <ProtectedRoute requiredPermission="manage_settings" staffRestricted={true}>
+                          <EnhancedSettingsPage />
                         </ProtectedRoute>
                       } 
                     />

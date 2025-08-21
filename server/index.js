@@ -12,20 +12,133 @@ const mongoose = require('mongoose');
 const PDFDocument = require('pdfkit');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const path = require('path');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const validator = require('validator');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '50mb' })); // Increased limit to handle base64 image uploads
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'", "https://api.safaricom.co.ke"]
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  message: 'Too many requests from this IP, please try again later.'
+});
+app.use('/api/', limiter);
+
+// Auth rate limiting
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: 'Too many authentication attempts, please try again later.'
+});
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = process.env.NODE_ENV === 'production'
+      ? ['https://rurident.com', 'https://www.rurident.com']
+      : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:5000'];
+    
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
+app.use(express.json({ limit: '10mb' })); // Reduced limit for security
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 // Security headers
 app.use((req, res, next) => {
-  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
   next();
 });
+
+// Input sanitization middleware
+const sanitizeInput = (req, res, next) => {
+  const sanitize = (obj) => {
+    for (let key in obj) {
+      if (typeof obj[key] === 'string') {
+        obj[key] = validator.escape(obj[key]);
+      } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+        sanitize(obj[key]);
+      }
+    }
+  };
+  
+  if (req.body) sanitize(req.body);
+  if (req.query) sanitize(req.query);
+  if (req.params) sanitize(req.params);
+  
+  next();
+};
+app.use('/api/', sanitizeInput);
+
+// JWT secret
+const JWT_SECRET = process.env.JWT_SECRET || 'rurident-jwt-secret-2024';
+
+// Authentication middleware
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  try {
+    const user = jwt.verify(token, JWT_SECRET);
+    req.user = user;
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
+};
+
+// Role-based access control
+const requireRole = (roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Authentication required' });
+    }
+
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'Insufficient permissions' });
+    }
+
+    next();
+  };
+};
 
 // MongoDB connection with fallback to in-memory database
 const MONGODB_URI =
@@ -170,6 +283,31 @@ const categorySchema = new mongoose.Schema({
 });
 
 const Category = mongoose.model('Category', categorySchema);
+
+// Admin User Schema
+const adminUserSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true, maxlength: 100 },
+  passwordHash: { type: String, required: true },
+  name: { type: String, required: true, maxlength: 100 },
+  role: { type: String, enum: ['admin', 'staff'], default: 'staff' },
+  isActive: { type: Boolean, default: true },
+  lastLogin: { type: Date },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const AdminUser = mongoose.model('AdminUser', adminUserSchema);
+
+// Settings Schema
+const settingsSchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true, maxlength: 100 },
+  value: { type: mongoose.Schema.Types.Mixed, required: true },
+  description: { type: String, maxlength: 200 },
+  updatedBy: { type: String, maxlength: 100 },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const Settings = mongoose.model('Settings', settingsSchema);
 
 /* =========================
    DB CONNECTION + SEEDING
@@ -382,6 +520,45 @@ async function seedInitialData() {
       await Category.insertMany(sampleCategories);
       console.log('✅ Sample categories added to database');
     }
+
+    // Create default admin users
+    const adminCount = await AdminUser.countDocuments();
+    if (adminCount === 0) {
+      const defaultAdmins = [
+        {
+          email: 'admin@rurident.com',
+          passwordHash: await bcrypt.hash('secure123', 12),
+          name: 'Admin User',
+          role: 'admin'
+        },
+        {
+          email: 'staff@rurident.com',
+          passwordHash: await bcrypt.hash('staff123', 12),
+          name: 'Staff Member',
+          role: 'staff'
+        }
+      ];
+      await AdminUser.insertMany(defaultAdmins);
+      console.log('✅ Default admin users created');
+    }
+
+    // Create default settings
+    const settingsCount = await Settings.countDocuments();
+    if (settingsCount === 0) {
+      const defaultSettings = [
+        { key: 'store_name', value: 'Rurident Health Supplies', description: 'Store name' },
+        { key: 'store_description', value: 'Professional dental equipment and supplies', description: 'Store description' },
+        { key: 'contact_email', value: 'info@rurident.com', description: 'Contact email' },
+        { key: 'contact_phone', value: '+254-700-000-000', description: 'Contact phone' },
+        { key: 'currency', value: 'KES', description: 'Default currency' },
+        { key: 'mpesa_enabled', value: true, description: 'M-Pesa payments enabled' },
+        { key: 'mpesa_shortcode', value: '174379', description: 'M-Pesa shortcode' },
+        { key: 'email_notifications', value: true, description: 'Email notifications enabled' },
+        { key: 'sms_notifications', value: false, description: 'SMS notifications enabled' }
+      ];
+      await Settings.insertMany(defaultSettings);
+      console.log('✅ Default settings created');
+    }
   } catch (error) {
     console.log('Warning: Could not seed initial data:', error.message);
   }
@@ -420,6 +597,153 @@ app.get('/api/placeholder/:w/:h', (req, res) => {
   `;
   res.setHeader('Content-Type', 'image/svg+xml');
   res.send(svg);
+});
+
+// AUTHENTICATION ENDPOINTS
+
+// Admin login
+app.post('/api/auth/login', authLimiter, async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const adminUser = await AdminUser.findOne({ email, isActive: true });
+    if (!adminUser) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, adminUser.passwordHash);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Update last login
+    adminUser.lastLogin = new Date();
+    await adminUser.save();
+
+    const token = jwt.sign(
+      { id: adminUser._id, email: adminUser.email, role: adminUser.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: adminUser._id,
+        email: adminUser.email,
+        name: adminUser.name,
+        role: adminUser.role
+      }
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Change password
+app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new passwords are required' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'New password must be at least 8 characters long' });
+    }
+
+    const adminUser = await AdminUser.findById(req.user.id);
+    if (!adminUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isValidPassword = await bcrypt.compare(currentPassword, adminUser.passwordHash);
+    if (!isValidPassword) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    adminUser.passwordHash = await bcrypt.hash(newPassword, 12);
+    adminUser.updatedAt = new Date();
+    await adminUser.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('Change password error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// SETTINGS ENDPOINTS
+
+// Get settings
+app.get('/api/admin/settings', authenticateToken, requireRole(['admin']), async (req, res) => {
+  try {
+    const settings = await Settings.find();
+    const settingsObj = {};
+    settings.forEach(setting => {
+      settingsObj[setting.key] = setting.value;
+    });
+    res.json(settingsObj);
+  } catch (error) {
+    console.error('Get settings error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Update settings
+app.put('/api/admin/settings', authenticateToken, requireRole(['admin']), async (req, res) => {
+  try {
+    const updates = req.body;
+    
+    for (const [key, value] of Object.entries(updates)) {
+      await Settings.findOneAndUpdate(
+        { key },
+        { value, updatedBy: req.user.email, updatedAt: new Date() },
+        { upsert: true }
+      );
+    }
+    
+    res.json({ message: 'Settings updated successfully' });
+  } catch (error) {
+    console.error('Update settings error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// M-Pesa configuration
+app.put('/api/mpesa/config', authenticateToken, requireRole(['admin']), async (req, res) => {
+  try {
+    const { shortcode, passkey, tillNumbers } = req.body;
+    
+    await Settings.findOneAndUpdate(
+      { key: 'mpesa_shortcode' },
+      { value: shortcode, updatedBy: req.user.email, updatedAt: new Date() },
+      { upsert: true }
+    );
+    
+    await Settings.findOneAndUpdate(
+      { key: 'mpesa_passkey' },
+      { value: passkey, updatedBy: req.user.email, updatedAt: new Date() },
+      { upsert: true }
+    );
+    
+    await Settings.findOneAndUpdate(
+      { key: 'till_numbers' },
+      { value: tillNumbers, updatedBy: req.user.email, updatedAt: new Date() },
+      { upsert: true }
+    );
+    
+    res.json({ message: 'M-Pesa configuration updated successfully' });
+  } catch (error) {
+    console.error('M-Pesa config error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 // PRODUCTS
@@ -948,7 +1272,7 @@ app.delete('/api/categories/:id', async (req, res) => {
 // ANALYTICS
 
 // Get comprehensive analytics
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/analytics', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
     const { timeRange = '30d' } = req.query;
     
@@ -1036,19 +1360,58 @@ app.get('/api/analytics', async (req, res) => {
       outOfStock: products.filter((p) => !p.inStock || p.stock === 0).length
     };
 
-    // Top products (mock data for now)
-    const topProducts = [
-      { id: 'PROD-001', name: 'Professional Dental Handpiece Set', sales: 156, revenue: 7020000 },
-      { id: 'PROD-002', name: 'Digital X-Ray Sensor Kit', sales: 89, revenue: 11125000 },
-      { id: 'PROD-003', name: 'Orthodontic Bracket Kit', sales: 234, revenue: 1989000 }
-    ];
+    // Calculate top products from actual order data
+    const productSales = {};
+    orders.forEach(order => {
+      if (order.paymentStatus === 'completed') {
+        order.items.forEach(item => {
+          if (!productSales[item.id]) {
+            productSales[item.id] = {
+              id: item.id,
+              name: item.name,
+              sales: 0,
+              revenue: 0
+            };
+          }
+          productSales[item.id].sales += item.quantity;
+          productSales[item.id].revenue += item.totalPrice || (item.price * item.quantity);
+        });
+      }
+    });
+    
+    const topProducts = Object.values(productSales)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5);
 
-    // Top categories (mock data for now)
-    const topCategories = [
-      { name: 'Clinical Machines & Equipment', sales: 45, revenue: 8900000 },
-      { name: 'Sterilization Equipment', sales: 123, revenue: 4560000 },
-      { name: 'Consumables', sales: 567, revenue: 2340000 }
-    ];
+    // Calculate top categories from actual data
+    const categorySales = {};
+    const productCategories = {};
+    
+    // Map products to categories
+    products.forEach(product => {
+      productCategories[product._id.toString()] = product.category;
+    });
+    
+    orders.forEach(order => {
+      if (order.paymentStatus === 'completed') {
+        order.items.forEach(item => {
+          const category = productCategories[item.id] || 'Uncategorized';
+          if (!categorySales[category]) {
+            categorySales[category] = {
+              name: category,
+              sales: 0,
+              revenue: 0
+            };
+          }
+          categorySales[category].sales += item.quantity;
+          categorySales[category].revenue += item.totalPrice || (item.price * item.quantity);
+        });
+      }
+    });
+    
+    const topCategories = Object.values(categorySales)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 5);
 
     // Monthly data (simplified - last 12 months)
     const monthlyData = [];
