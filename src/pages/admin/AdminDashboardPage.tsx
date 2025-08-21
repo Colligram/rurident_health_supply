@@ -57,6 +57,8 @@ export function AdminDashboardPage() {
       }
     };
     fetchCustomers();
+    const interval = setInterval(fetchCustomers, 30000); // Refresh customers every 30 seconds
+    return () => clearInterval(interval);
   }, []);
 
   // Compute stats

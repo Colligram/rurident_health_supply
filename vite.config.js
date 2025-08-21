@@ -37,7 +37,7 @@ export default defineConfig({
     global: 'globalThis',
   },
   server: {
-    port: 3000,
+    port: 5173, // Changed from 3000 to 5173 to match actual running port
     allowedHosts: true,
     proxy: {
       '/api': {
@@ -50,17 +50,6 @@ export default defineConfig({
           });
           proxy.on('proxyReq', (proxyReq, req, res) => {
             console.log('🔄 Proxying:', req.method, req.url, '→', backendUrl);
-          });
-        },
-      },
-      '/products': {
-        target: `${backendUrl}/api`,
-        changeOrigin: true,
-        secure: false,
-        rewrite: path => path.replace(/^\/products/, '/products'),
-        configure: (proxy, options) => {
-          proxy.on('error', (err, req, res) => {
-            console.log('🔴 Products proxy error:', err.message);
           });
         },
       },
