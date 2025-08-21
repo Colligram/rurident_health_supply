@@ -224,7 +224,7 @@ export function ProductGrid() {
               />
               
               {/* Badges */}
-              {product.isNew && (
+              {product.is_new && (
                 <div className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                   NEW
                 </div>

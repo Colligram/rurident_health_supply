@@ -411,7 +411,7 @@ export function AboutPage() {
       </div>
       
       {/* Animation Styles */}
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInDown {
           from {
             opacity: 0;
