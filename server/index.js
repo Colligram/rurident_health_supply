@@ -1035,19 +1035,46 @@ app.get('/api/analytics', async (req, res) => {
       outOfStock: products.filter((p) => !p.inStock || p.stock === 0).length
     };
 
-    // Top products (mock data for now)
-    const topProducts = [
-      { id: 'PROD-001', name: 'Professional Dental Handpiece Set', sales: 156, revenue: 7020000 },
-      { id: 'PROD-002', name: 'Digital X-Ray Sensor Kit', sales: 89, revenue: 11125000 },
-      { id: 'PROD-003', name: 'Orthodontic Bracket Kit', sales: 234, revenue: 1989000 }
-    ];
+    // Top products (computed from completed orders within the selected range)
+    const productStatsMap = new Map();
+    for (const order of completedOrders) {
+      for (const item of order.items) {
+        const key = item.id || item._id || item.name;
+        if (!productStatsMap.has(key)) {
+          productStatsMap.set(key, {
+            id: key,
+            name: item.name,
+            sales: 0,
+            revenue: 0
+          });
+        }
+        const stats = productStatsMap.get(key);
+        stats.sales += Number(item.quantity) || 0;
+        stats.revenue += Number(item.totalPrice) || 0;
+      }
+    }
+    const topProducts = Array.from(productStatsMap.values())
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10);
 
-    // Top categories (mock data for now)
-    const topCategories = [
-      { name: 'Clinical Machines & Equipment', sales: 45, revenue: 8900000 },
-      { name: 'Sterilization Equipment', sales: 123, revenue: 4560000 },
-      { name: 'Consumables', sales: 567, revenue: 2340000 }
-    ];
+    // Top categories by revenue (aggregate all completed order items)
+    const productIdToCategory = new Map(products.map((p) => [String(p._id), p.category || 'Uncategorized']));
+    const categoryStatsMap = new Map();
+    for (const order of completedOrders) {
+      for (const item of order.items) {
+        const productId = String(item.id || item._id || '');
+        const categoryName = productIdToCategory.get(productId) || 'Uncategorized';
+        if (!categoryStatsMap.has(categoryName)) {
+          categoryStatsMap.set(categoryName, { name: categoryName, sales: 0, revenue: 0 });
+        }
+        const catStats = categoryStatsMap.get(categoryName);
+        catStats.sales += Number(item.quantity) || 0;
+        catStats.revenue += Number(item.totalPrice) || 0;
+      }
+    }
+    const topCategories = Array.from(categoryStatsMap.values())
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10);
 
     // Monthly data (simplified - last 12 months)
     const monthlyData = [];
@@ -1178,6 +1205,149 @@ app.get('/api/analytics/products', async (req, res) => {
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product analytics', error: error.message });
+  }
+});
+
+// Add live top products endpoint
+app.get('/api/analytics/top-products', async (req, res) => {
+  try {
+    const { timeRange = '30d' } = req.query;
+
+    const now = new Date();
+    let startDate = new Date();
+    switch (timeRange) {
+      case '7d':
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case '30d':
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case '90d':
+        startDate.setDate(now.getDate() - 90);
+        break;
+      case '1y':
+        startDate.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        startDate.setDate(now.getDate() - 30);
+    }
+
+    const orders = await Order.find({ createdAt: { $gte: startDate } });
+    const completedOrders = orders.filter((o) => o.paymentStatus === 'completed' || o.status === 'delivered');
+
+    const productStatsMap = new Map();
+    for (const order of completedOrders) {
+      for (const item of order.items) {
+        const key = item.id || item._id || item.name;
+        if (!productStatsMap.has(key)) {
+          productStatsMap.set(key, { id: key, name: item.name, sales: 0, revenue: 0 });
+        }
+        const stats = productStatsMap.get(key);
+        stats.sales += Number(item.quantity) || 0;
+        stats.revenue += Number(item.totalPrice) || 0;
+      }
+    }
+
+    const topProducts = Array.from(productStatsMap.values())
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10);
+
+    res.json(topProducts);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching top products', error: error.message });
+  }
+});
+
+// Add live top categories endpoint
+app.get('/api/analytics/top-categories', async (req, res) => {
+  try {
+    const { timeRange = '30d' } = req.query;
+
+    const now = new Date();
+    let startDate = new Date();
+    switch (timeRange) {
+      case '7d':
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case '30d':
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case '90d':
+        startDate.setDate(now.getDate() - 90);
+        break;
+      case '1y':
+        startDate.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        startDate.setDate(now.getDate() - 30);
+    }
+
+    const [orders, products] = await Promise.all([
+      Order.find({ createdAt: { $gte: startDate } }),
+      Product.find()
+    ]);
+
+    const completedOrders = orders.filter((o) => o.paymentStatus === 'completed' || o.status === 'delivered');
+
+    const productIdToCategory = new Map(products.map((p) => [String(p._id), p.category || 'Uncategorized']));
+
+    const categoryStatsMap = new Map();
+    for (const order of completedOrders) {
+      for (const item of order.items) {
+        const productId = String(item.id || item._id || '');
+        const categoryName = productIdToCategory.get(productId) || 'Uncategorized';
+        if (!categoryStatsMap.has(categoryName)) {
+          categoryStatsMap.set(categoryName, { name: categoryName, sales: 0, revenue: 0 });
+        }
+        const cat = categoryStatsMap.get(categoryName);
+        cat.sales += Number(item.quantity) || 0;
+        cat.revenue += Number(item.totalPrice) || 0;
+      }
+    }
+
+    const topCategories = Array.from(categoryStatsMap.values())
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10);
+
+    res.json(topCategories);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching top categories', error: error.message });
+  }
+});
+
+// Add live monthly analytics endpoint
+app.get('/api/analytics/monthly', async (req, res) => {
+  try {
+    const orders = await Order.find();
+    const customers = await Customer.find();
+
+    const monthlyData = [];
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(date.getMonth() - i);
+      const monthName = date.toLocaleDateString('en', { month: 'short' });
+
+      const monthOrders = orders.filter((o) => {
+        const orderDate = new Date(o.createdAt);
+        return orderDate.getMonth() === date.getMonth() && orderDate.getFullYear() === date.getFullYear();
+      });
+
+      const monthCustomers = customers.filter((c) => {
+        const customerDate = new Date(c.createdAt);
+        return customerDate.getMonth() === date.getMonth() && customerDate.getFullYear() === date.getFullYear();
+      });
+
+      monthlyData.push({
+        month: monthName,
+        revenue: monthOrders.reduce((sum, o) => sum + (o.paymentStatus === 'completed' ? o.total : 0), 0),
+        orders: monthOrders.length,
+        customers: monthCustomers.length
+      });
+    }
+
+    res.json(monthlyData);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching monthly analytics', error: error.message });
   }
 });
 
