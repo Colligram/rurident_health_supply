@@ -45,15 +45,9 @@ class AnalyticsService {
   private baseURL = '/api';
   private useMockData = false; // Try real API first, fallback to mock data if needed
 
-  async getAnalytics(): Promise<{ success: boolean; data?: AnalyticsData; error?: string }> {
+  async getAnalytics(timeRange: string = '30d'): Promise<{ success: boolean; data?: AnalyticsData; error?: string }> {
     try {
-      if (this.useMockData) {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-        return { success: true, data: this.getMockAnalytics() };
-      }
-
-      const response = await fetch(`${this.baseURL}/analytics`, {
+      const response = await fetch(`${this.baseURL}/analytics?timeRange=${timeRange}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -71,14 +65,60 @@ class AnalyticsService {
         return { success: false, error: 'Empty analytics response' };
       }
       
-      this.useMockData = false;
-      return { success: true, data };
+      // Sanitize data to prevent NaN values
+      const sanitizedData = this.sanitizeAnalyticsData(data);
+      
+      return { success: true, data: sanitizedData };
     } catch (error) {
       console.error('Error fetching analytics:', error);
       // Fallback to mock data if API fails
-      this.useMockData = true;
       return { success: true, data: this.getMockAnalytics() };
     }
+  }
+
+  private sanitizeAnalyticsData(data: any): AnalyticsData {
+    return {
+      revenue: {
+        total: Number(data.revenue?.total) || 0,
+        monthly: Number(data.revenue?.monthly) || 0,
+        growth: Number(data.revenue?.growth) || 0
+      },
+      orders: {
+        total: Number(data.orders?.total) || 0,
+        pending: Number(data.orders?.pending) || 0,
+        completed: Number(data.orders?.completed) || 0,
+        cancelled: Number(data.orders?.cancelled) || 0
+      },
+      customers: {
+        total: Number(data.customers?.total) || 0,
+        new: Number(data.customers?.new) || 0,
+        active: Number(data.customers?.active) || 0,
+        inactive: Number(data.customers?.inactive) || 0
+      },
+      products: {
+        total: Number(data.products?.total) || 0,
+        inStock: Number(data.products?.inStock) || 0,
+        lowStock: Number(data.products?.lowStock) || 0,
+        outOfStock: Number(data.products?.outOfStock) || 0
+      },
+      topProducts: (data.topProducts || []).map((product: any) => ({
+        id: product.id || '',
+        name: product.name || 'Unknown Product',
+        sales: Number(product.sales) || 0,
+        revenue: Number(product.revenue) || 0
+      })),
+      topCategories: (data.topCategories || []).map((category: any) => ({
+        name: category.name || 'Uncategorized',
+        sales: Number(category.sales) || 0,
+        revenue: Number(category.revenue) || 0
+      })),
+      monthlyData: (data.monthlyData || []).map((month: any) => ({
+        month: month.month || '',
+        revenue: Number(month.revenue) || 0,
+        orders: Number(month.orders) || 0,
+        customers: Number(month.customers) || 0
+      }))
+    };
   }
 
   private getMockAnalytics(): AnalyticsData {

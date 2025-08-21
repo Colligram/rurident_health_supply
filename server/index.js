@@ -950,7 +950,39 @@ app.delete('/api/categories/:id', async (req, res) => {
 // Get comprehensive analytics
 app.get('/api/analytics', async (req, res) => {
   try {
-    const orders = await Order.find();
+    const { timeRange = '30d' } = req.query;
+    
+    // Calculate date ranges
+    const now = new Date();
+    let startDate = new Date();
+    let previousStartDate = new Date();
+    
+    switch (timeRange) {
+      case '7d':
+        startDate.setDate(now.getDate() - 7);
+        previousStartDate.setDate(now.getDate() - 14);
+        break;
+      case '30d':
+        startDate.setDate(now.getDate() - 30);
+        previousStartDate.setDate(now.getDate() - 60);
+        break;
+      case '90d':
+        startDate.setDate(now.getDate() - 90);
+        previousStartDate.setDate(now.getDate() - 180);
+        break;
+      case '1y':
+        startDate.setFullYear(now.getFullYear() - 1);
+        previousStartDate.setFullYear(now.getFullYear() - 2);
+        break;
+      default:
+        startDate.setDate(now.getDate() - 30);
+        previousStartDate.setDate(now.getDate() - 60);
+    }
+
+    const orders = await Order.find({ createdAt: { $gte: startDate } });
+    const previousOrders = await Order.find({ 
+      createdAt: { $gte: previousStartDate, $lt: startDate } 
+    });
     const customers = await Customer.find();
     const products = await Product.find();
 
@@ -959,17 +991,22 @@ app.get('/api/analytics', async (req, res) => {
       (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
       0
     );
+    
+    const previousRevenue = previousOrders.reduce(
+      (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
+      0
+    );
+    
+    const revenueGrowth = previousRevenue > 0 ? 
+      ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0;
+    
     const completedOrders = orders.filter((o) => o.paymentStatus === 'completed');
     const monthlyRevenue = completedOrders
       .filter((o) => {
         const orderDate = new Date(o.createdAt);
-        const now = new Date();
         return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
       })
       .reduce((sum, order) => sum + order.total, 0);
-
-    // Calculate growth (mock calculation for now)
-    const revenueGrowth = 12.5; // This would be calculated based on previous month data
 
     // Order statistics
     const orderStats = {
