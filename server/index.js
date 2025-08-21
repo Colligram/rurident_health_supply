@@ -1017,7 +1017,6 @@ app.get('/api/analytics', async (req, res) => {
     };
 
     // Customer statistics
-    const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const newCustomers = customers.filter((c) => new Date(c.createdAt) >= thirtyDaysAgo).length;
 
