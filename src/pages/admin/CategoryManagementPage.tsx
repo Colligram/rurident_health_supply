@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { categoryService, Category, Subcategory } from '../../services/categoryService';
 import { FiPlus, FiTrash2, FiEdit, FiSave, FiX } from 'react-icons/fi';
+import { useCategories } from '../../context/CategoriesContext';
 
 export function CategoryManagementPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -12,6 +13,7 @@ export function CategoryManagementPage() {
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
   const [selectedCategoryForSub, setSelectedCategoryForSub] = useState<string>('');
+  const { refreshCategories } = useCategories();
 
   const loadCategories = async () => {
     setLoading(true);
@@ -42,6 +44,7 @@ export function CategoryManagementPage() {
       setName('');
       setDescription('');
       await loadCategories();
+      await refreshCategories();
       alert('Category added');
     } else {
       alert(res.error || 'Failed to add category');
@@ -53,6 +56,7 @@ export function CategoryManagementPage() {
     const res = await categoryService.deleteCategory(id);
     if (res.success) {
       await loadCategories();
+      await refreshCategories();
     } else {
       alert(res.error || 'Failed to delete category');
     }
@@ -82,6 +86,7 @@ export function CategoryManagementPage() {
       setNewSubcategoryName('');
       setSelectedCategoryForSub('');
       await loadCategories();
+      await refreshCategories();
       alert('Subcategory added successfully');
     } else {
       alert(res.error || 'Failed to add subcategory');
@@ -102,6 +107,7 @@ export function CategoryManagementPage() {
     
     if (res.success) {
       await loadCategories();
+      await refreshCategories();
       alert('Subcategory deleted successfully');
     } else {
       alert(res.error || 'Failed to delete subcategory');

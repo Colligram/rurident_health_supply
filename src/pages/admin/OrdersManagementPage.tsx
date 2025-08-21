@@ -24,10 +24,43 @@ export function OrdersManagementPage() {
   const [showModal, setShowModal] = useState(false);
   const [filter, setFilter] = useState<'all' | 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'>('all');
 
-  // Load orders from database
+  // Load orders from database with notifications
   useEffect(() => {
-    loadOrders();
-    const interval = setInterval(loadOrders, 10000); // Poll every 10 seconds
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+    let lastOrderCount = 0;
+    const checkAndNotify = async () => {
+      try {
+        const fetched = await orderService.getOrders();
+        setOrders(fetched);
+        if (fetched.length > lastOrderCount) {
+          // Notify only on increases
+          try {
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('New order received', { body: 'A new order has arrived.' });
+            }
+            const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const o = ctx.createOscillator();
+            const g = ctx.createGain();
+            o.type = 'sine';
+            o.frequency.value = 880;
+            o.connect(g);
+            g.connect(ctx.destination);
+            g.gain.setValueAtTime(0.001, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+            o.start();
+            o.stop(ctx.currentTime + 0.2);
+          } catch {}
+        }
+        lastOrderCount = fetched.length;
+      } catch (err) {
+        console.error('Error checking orders:', err);
+      }
+    };
+
+    checkAndNotify();
+    const interval = setInterval(checkAndNotify, 5000); // Poll every 5 seconds
     return () => clearInterval(interval);
   }, []);
 

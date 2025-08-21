@@ -395,6 +395,7 @@ export function ProductHeroSection() {
             </div>
           ))}
         </div>
+      </div>
 
         {/* Deals of the Day Section */}
         <div className="mt-16 mb-12">

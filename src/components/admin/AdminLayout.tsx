@@ -129,19 +129,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </h1>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center text-sm text-gray-600">
-                <span className="font-medium">{user?.name}</span>
-                <span className="ml-2 px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs font-medium">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="hidden xs:flex items-center text-sm text-gray-600 max-w-[40vw] truncate">
+                <span className="font-medium truncate">{user?.name}</span>
+                <span className="ml-2 px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs font-medium truncate">
                   {user?.role}
                 </span>
               </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                className="flex items-center px-2 sm:px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                title="Logout"
               >
-                <FiLogOut className="mr-2 h-4 w-4" />
-                Logout
+                <FiLogOut className="h-5 w-5 sm:mr-2" />
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
