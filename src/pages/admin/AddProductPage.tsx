@@ -21,15 +21,15 @@ interface ProductFormData {
 export function AddProductPage() {
   const navigate = useNavigate();
   const { addProduct } = useProducts();
-  const { categories: apiCategories, loading: loadingCategories } = useCategories();
+  const { categories: apiCategories, loading: loadingCategories, refreshCategories } = useCategories();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     category: '',
-    price: 0,
-    salePrice: 0,
+    price: NaN as any,
+    salePrice: undefined,
     description: '',
-    stock: 0,
+    stock: NaN as any,
     brand: '',
     features: [''],
     specifications: {},
@@ -161,12 +161,20 @@ export function AddProductPage() {
     
     if (isSubmitting) return; // Prevent double submission
     
+    // Validate numbers not NaN
+    if (Number.isNaN(formData.price as any) || Number.isNaN(formData.stock as any)) {
+      alert('Please enter valid values for price and stock.');
+      return;
+    }
+    
     // Filter out empty features and images
     const cleanedData = {
       ...formData,
+      price: Number.isNaN(formData.price as any) ? 0 : formData.price,
+      stock: Number.isNaN(formData.stock as any) ? 0 : formData.stock,
       features: formData.features.filter(f => f.trim()),
       images: formData.images.filter(img => img.trim()),
-      inStock: formData.stock > 0,
+      inStock: (Number.isNaN(formData.stock as any) ? 0 : formData.stock) > 0,
       rating: 0,
       reviewCount: 0
     };
@@ -254,6 +262,7 @@ export function AddProductPage() {
                       required
                       value={formData.category}
                       onChange={(e) => handleInputChange('category', e.target.value)}
+                      onFocus={() => refreshCategories()}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="">Select category</option>
@@ -288,8 +297,8 @@ export function AddProductPage() {
                       type="number"
                       required
                       min="0"
-                      value={formData.stock}
-                      onChange={(e) => handleInputChange('stock', parseInt(e.target.value) || 0)}
+                      value={Number.isNaN(formData.stock as any) ? '' : formData.stock}
+                      onChange={(e) => handleInputChange('stock', e.target.value === '' ? (NaN as any) : parseInt(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Enter stock quantity"
                     />
@@ -325,8 +334,8 @@ export function AddProductPage() {
                       required
                       min="0"
                       step="0.01"
-                      value={formData.price}
-                      onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
+                      value={Number.isNaN(formData.price as any) ? '' : formData.price}
+                      onChange={(e) => handleInputChange('price', e.target.value === '' ? (NaN as any) : parseFloat(e.target.value) || 0)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="0.00"
                     />
@@ -340,8 +349,8 @@ export function AddProductPage() {
                       type="number"
                       min="0"
                       step="0.01"
-                      value={formData.salePrice || ''}
-                      onChange={(e) => handleInputChange('salePrice', parseFloat(e.target.value) || undefined)}
+                      value={formData.salePrice ?? ''}
+                      onChange={(e) => handleInputChange('salePrice', e.target.value === '' ? undefined : (parseFloat(e.target.value) || 0))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="Optional sale price"
                     />
