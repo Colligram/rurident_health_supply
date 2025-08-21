@@ -2,7 +2,7 @@
 import CryptoJS from 'crypto-js';
 
 // Encryption key - in production, this should be from environment variables
-const ENCRYPTION_KEY = process.env.REACT_APP_ENCRYPTION_KEY || 'rurident-secure-key-2024';
+const ENCRYPTION_KEY = import.meta.env.VITE_ENCRYPTION_KEY || 'rurident-secure-key-2024';
 
 // Salt for password hashing
 const SALT = 'rurident-salt-2024';
