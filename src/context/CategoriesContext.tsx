@@ -19,15 +19,19 @@ export const CategoriesProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     setError(null);
     try {
+      console.log('🔄 CategoriesContext: Starting to fetch categories...');
       const result = await categoryService.getCategories();
+      console.log('📦 CategoriesContext: API response:', result);
       if (result.success && result.data) {
+        console.log('✅ CategoriesContext: Setting categories:', result.data.length, 'categories');
         setCategories(result.data);
       } else {
+        console.error('❌ CategoriesContext: Invalid response format:', result);
         setCategories([]);
         setError(result.error || 'Failed to fetch categories');
       }
     } catch (err) {
-      console.error('Error fetching categories:', err);
+      console.error('💥 CategoriesContext: Error fetching categories:', err);
       setCategories([]);
       setError('Failed to fetch categories');
     } finally {

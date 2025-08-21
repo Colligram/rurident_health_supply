@@ -66,16 +66,44 @@ class OrderService {
 
   async getOrders(): Promise<Order[]> {
     try {
+      console.log('🔄 OrderService: Starting to fetch orders from:', `${API_BASE_URL}/orders`);
+      
       const response = await fetch(`${API_BASE_URL}/orders`);
+      
+      console.log('📡 OrderService: Response status:', response.status, response.statusText);
       
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
       }
 
       const orders = await response.json();
-      return orders;
+      console.log('📦 OrderService: Raw API response:', orders);
+      
+      // Map API data to frontend Order shape
+      const mapped: Order[] = orders.map((order: any) => ({
+        id: order._id || order.id,
+        orderId: order.orderId,
+        orderNumber: order.orderNumber,
+        orderDate: order.orderDate,
+        customerInfo: order.customerInfo,
+        items: order.items,
+        subtotal: order.subtotal,
+        shipping: order.shipping,
+        tax: order.tax,
+        total: order.total,
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
+        status: order.status,
+        mpesaTransactionId: order.mpesaTransactionId,
+        notes: order.notes,
+        createdAt: order.createdAt ? new Date(order.createdAt) : undefined,
+        updatedAt: order.updatedAt ? new Date(order.updatedAt) : undefined,
+      }));
+      
+      console.log('✅ OrderService: Mapped orders:', mapped.length, 'orders');
+      return mapped;
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error('💥 OrderService: Error fetching orders:', error);
       throw error;
     }
   }
@@ -92,7 +120,29 @@ class OrderService {
       }
 
       const order = await response.json();
-      return order;
+      
+      // Map API data to frontend Order shape
+      const mapped: Order = {
+        id: order._id || order.id,
+        orderId: order.orderId,
+        orderNumber: order.orderNumber,
+        orderDate: order.orderDate,
+        customerInfo: order.customerInfo,
+        items: order.items,
+        subtotal: order.subtotal,
+        shipping: order.shipping,
+        tax: order.tax,
+        total: order.total,
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
+        status: order.status,
+        mpesaTransactionId: order.mpesaTransactionId,
+        notes: order.notes,
+        createdAt: order.createdAt ? new Date(order.createdAt) : undefined,
+        updatedAt: order.updatedAt ? new Date(order.updatedAt) : undefined,
+      };
+      
+      return mapped;
     } catch (error) {
       console.error('Error fetching order:', error);
       throw error;

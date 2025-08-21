@@ -20,6 +20,8 @@ class CategoryService {
 
   async getCategories(): Promise<{ success: boolean; data?: Category[]; error?: string }> {
     try {
+      console.log('🔄 CategoryService: Starting to fetch categories from:', `${this.baseURL}/categories`);
+      
       const response = await fetch(`${this.baseURL}/categories`, {
         method: 'GET',
         headers: {
@@ -27,11 +29,14 @@ class CategoryService {
         },
       });
 
+      console.log('📡 CategoryService: Response status:', response.status, response.statusText);
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: Failed to fetch categories`);
       }
 
       const data = await response.json();
+      console.log('📦 CategoryService: Raw API response:', data);
       
       if (!Array.isArray(data)) {
         throw new Error('Invalid data format received');
@@ -48,9 +53,10 @@ class CategoryService {
         updatedAt: category.updatedAt
       }));
       
+      console.log('✅ CategoryService: Mapped categories:', mappedData.length, 'categories');
       return { success: true, data: mappedData };
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error('💥 CategoryService: Error fetching categories:', error);
       return { success: false, error: 'Failed to fetch categories' };
     }
   }

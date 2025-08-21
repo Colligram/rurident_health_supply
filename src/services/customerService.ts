@@ -152,6 +152,8 @@ class CustomerService {
         return { success: true, data: this.mockCustomers };
       }
 
+      console.log('🔄 CustomerService: Starting to fetch customers from:', `${this.baseURL}/customers`);
+
       const response = await fetch(`${this.baseURL}/customers`, {
         method: 'GET',
         headers: {
@@ -160,11 +162,14 @@ class CustomerService {
         signal: AbortSignal.timeout(10000)
       });
 
+      console.log('📡 CustomerService: Response status:', response.status, response.statusText);
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: Failed to fetch customers`);
       }
 
       const data = await response.json();
+      console.log('📦 CustomerService: Raw API response:', data);
       
       if (!Array.isArray(data)) {
         throw new Error('Invalid data format for customers');
@@ -189,6 +194,7 @@ class CustomerService {
         tags: customer.tags || []
       }));
       
+      console.log('✅ CustomerService: Mapped customers:', mappedData.length, 'customers');
       this.useMockData = false;
       return { success: true, data: mappedData };
     } catch (error) {

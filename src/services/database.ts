@@ -32,6 +32,8 @@ class APIService {
 
   async getProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
     try {
+      console.log('🔄 DatabaseService: Starting to fetch products from:', `${this.baseURL}/products`);
+      
       // Create a more compatible timeout approach
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -46,11 +48,14 @@ class APIService {
 
       clearTimeout(timeoutId);
 
+      console.log('📡 DatabaseService: Response status:', response.status, response.statusText);
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: Failed to fetch products`);
       }
 
       const data = await response.json();
+      console.log('📦 DatabaseService: Raw API response:', data);
 
       if (!Array.isArray(data)) {
         throw new Error('Invalid data format received');
@@ -84,9 +89,10 @@ class APIService {
         updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined,
       }));
 
+      console.log('✅ DatabaseService: Mapped products:', mapped.length, 'products');
       return { success: true, data: mapped };
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('💥 DatabaseService: Error fetching products:', error);
       return { success: false, error: 'Failed to fetch products' };
     }
   }
