@@ -3,27 +3,8 @@ import react from '@vitejs/plugin-react';
 
 // Determine backend URL based on environment
 const getBackendUrl = () => {
-  // Check if we're in Replit
-  if (process.env.REPL_ID || process.env.REPL_SLUG) {
-    return `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
-  }
-  
-  // Check if we're in a similar hosting environment
-  if (process.env.HOSTNAME && process.env.HOSTNAME.includes('.repl.co')) {
-    return `https://${process.env.HOSTNAME}`;
-  }
-  
-  // Check if we're in a Vercel-like environment
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  
-  // Check if we're in a Netlify-like environment
-  if (process.env.NETLIFY_URL) {
-    return `https://${process.env.NETLIFY_URL}`;
-  }
-  
-  // For local development, use localhost:5000
+  // For local development, always use localhost:5000
+  // This fixes the getaddrinfo ENOTFOUND errors
   return 'http://localhost:5000';
 };
 
@@ -37,7 +18,8 @@ export default defineConfig({
     global: 'globalThis',
   },
   server: {
-    port: 5173, // Changed from 3000 to 5173 to match actual running port
+    port: 5173,
+    host: '0.0.0.0', // Allow external connections
     allowedHosts: true,
     proxy: {
       '/api': {
