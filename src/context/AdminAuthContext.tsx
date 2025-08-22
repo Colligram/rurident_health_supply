@@ -14,6 +14,7 @@ interface AdminAuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   changePassword: (currentPassword: string, newPassword: string) => Promise<boolean>;
+  updateCredentials: (currentPassword: string, newPassword?: string, email?: string, name?: string) => Promise<boolean>;
   isAuthenticated: boolean;
   isLoading: boolean;
   hasPermission: (permission: string) => boolean;
@@ -127,35 +128,61 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
+    return updateCredentials(currentPassword, newPassword);
+  };
+
+  const updateCredentials = async (currentPassword: string, newPassword?: string, email?: string, name?: string): Promise<boolean> => {
     if (!user) return false;
 
-    const currentHash = hashPassword(currentPassword);
-    const adminUser = adminUsers.find(u => u.id === user.id);
+    try {
+      const response = await fetch('/api/admin/credentials', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          email,
+          name
+        }),
+      });
 
-    if (adminUser && adminUser.passwordHash === currentHash) {
-      // Update password hash
-      adminUser.passwordHash = hashPassword(newPassword);
+      if (response.ok) {
+        const result = await response.json();
+        
+        // Update local user state with new information
+        if (result.admin) {
+          setUser(result.admin);
+          const encryptedUser = encryptData(JSON.stringify(result.admin));
+          localStorage.setItem('adminUser', encryptedUser);
+        }
+        
+        // Log successful credential update
+        auditLogger.log({
+          userId: user.id,
+          action: 'credentials_updated',
+          resource: 'auth',
+          details: { email: user.email, updatedFields: { newPassword: !!newPassword, email: !!email, name: !!name } }
+        });
+        
+        return true;
+      }
       
-      // Log password change
+      return false;
+    } catch (error) {
+      console.error('Error updating credentials:', error);
+      
+      // Log failed credential update
       auditLogger.log({
         userId: user.id,
-        action: 'password_changed',
+        action: 'credentials_update_failed',
         resource: 'auth',
-        details: { email: user.email }
+        details: { email: user.email, error: error instanceof Error ? error.message : 'Unknown error' }
       });
       
-      return true;
+      return false;
     }
-
-    // Log failed password change
-    auditLogger.log({
-      userId: user.id,
-      action: 'password_change_failed',
-      resource: 'auth',
-      details: { email: user.email, reason: 'invalid_current_password' }
-    });
-
-    return false;
   };
 
   const hasPermission = (permission: string): boolean => {
@@ -182,6 +209,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     changePassword,
+    updateCredentials,
     isAuthenticated: !!user,
     isLoading,
     hasPermission,

@@ -1351,6 +1351,180 @@ app.get('/api/analytics/monthly', async (req, res) => {
   }
 });
 
+// ADMIN MANAGEMENT
+
+// Admin Schema for storing admin credentials
+const adminSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true },
+  name: { type: String, required: true },
+  role: { type: String, enum: ['admin', 'staff'], required: true },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const Admin = mongoose.model('Admin', adminSchema);
+
+// Simple hash function for passwords (in production, use bcrypt)
+function hashPassword(password) {
+  const crypto = require('crypto');
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+// Get admin profile
+app.get('/api/admin/profile', async (req, res) => {
+  try {
+    // In a real app, you'd get the admin ID from the authenticated session
+    // For now, we'll return the first admin
+    const admin = await Admin.findOne({ role: 'admin' }).select('-passwordHash');
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+    res.json(admin);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching admin profile', error: error.message });
+  }
+});
+
+// Update admin credentials
+app.put('/api/admin/credentials', async (req, res) => {
+  try {
+    const { currentPassword, newPassword, email, name } = req.body;
+    
+    // Find the admin (in a real app, use the authenticated admin's ID)
+    const admin = await Admin.findOne({ role: 'admin' });
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+    
+    // Verify current password
+    const currentPasswordHash = hashPassword(currentPassword);
+    if (admin.passwordHash !== currentPasswordHash) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+    
+    // Update admin credentials
+    const updates = {
+      updatedAt: new Date()
+    };
+    
+    if (newPassword) {
+      updates.passwordHash = hashPassword(newPassword);
+    }
+    
+    if (email) {
+      updates.email = email;
+    }
+    
+    if (name) {
+      updates.name = name;
+    }
+    
+    const updatedAdmin = await Admin.findByIdAndUpdate(admin._id, updates, {
+      new: true,
+      runValidators: true
+    }).select('-passwordHash');
+    
+    res.json({ success: true, admin: updatedAdmin, message: 'Credentials updated successfully' });
+  } catch (error) {
+    console.error('Error updating admin credentials:', error);
+    res.status(500).json({ message: 'Error updating credentials', error: error.message });
+  }
+});
+
+// Initialize default admin if none exists
+async function initializeDefaultAdmin() {
+  try {
+    const adminCount = await Admin.countDocuments();
+    if (adminCount === 0) {
+      const defaultAdmin = new Admin({
+        email: 'admin@rurident.com',
+        passwordHash: hashPassword('secure123'),
+        name: 'Admin User',
+        role: 'admin'
+      });
+      
+      await defaultAdmin.save();
+      console.log('✅ Default admin user created');
+    }
+  } catch (error) {
+    console.error('Error initializing default admin:', error);
+  }
+}
+
+// Initialize default admin on server start
+initializeDefaultAdmin();
+
+// Settings Schema for storing application settings
+const settingsSchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true },
+  value: { type: mongoose.Schema.Types.Mixed, required: true },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+const Settings = mongoose.model('Settings', settingsSchema);
+
+// Get all settings
+app.get('/api/settings', async (req, res) => {
+  try {
+    const settings = await Settings.find();
+    const settingsObj = {};
+    settings.forEach(setting => {
+      settingsObj[setting.key] = setting.value;
+    });
+    
+    // Return default settings if none exist
+    const defaultSettings = {
+      storeName: 'Rurident Health Supplies',
+      storeDescription: 'Professional dental equipment and supplies',
+      contactEmail: 'info@rurident.com',
+      contactPhone: '+254-700-000-000',
+      address: 'Nairobi, Kenya',
+      currency: 'KES',
+      timezone: 'Africa/Nairobi',
+      emailNotifications: true,
+      smsNotifications: false,
+      orderNotifications: true,
+      lowStockAlerts: true,
+      mpesaEnabled: true,
+      mpesaShortcode: '174379',
+      mpesaPasskey: '',
+      cardPaymentsEnabled: false,
+      twoFactorAuth: false,
+      sessionTimeout: 30,
+      passwordExpiry: 90
+    };
+    
+    res.json({ ...defaultSettings, ...settingsObj });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching settings', error: error.message });
+  }
+});
+
+// Update settings
+app.put('/api/settings', async (req, res) => {
+  try {
+    const updates = req.body;
+    const updatePromises = [];
+    
+    for (const [key, value] of Object.entries(updates)) {
+      updatePromises.push(
+        Settings.findOneAndUpdate(
+          { key },
+          { key, value, updatedAt: new Date() },
+          { upsert: true, new: true }
+        )
+      );
+    }
+    
+    await Promise.all(updatePromises);
+    res.json({ success: true, message: 'Settings updated successfully' });
+  } catch (error) {
+    console.error('Error updating settings:', error);
+    res.status(500).json({ message: 'Error updating settings', error: error.message });
+  }
+});
+
 /* =========================
    SERVE REACT FRONTEND
    ========================= */
