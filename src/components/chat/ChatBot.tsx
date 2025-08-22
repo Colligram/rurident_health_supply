@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiSend, FiX, FiMessageCircle, FiPhone, FiMail, FiMapPin, FiClock, FiHelpCircle } from 'react-icons/fi';
 
 interface Message {
@@ -20,6 +20,25 @@ export function ChatBot() {
   ]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+
+  // Prevent body scroll when chat is open on mobile
+  useEffect(() => {
+    if (isOpen && window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [isOpen]);
 
   const quickQuestions = [
     'Product prices',
@@ -62,6 +81,14 @@ export function ChatBot() {
     setInputText(question);
     const syntheticEvent = { preventDefault: () => {} } as React.FormEvent;
     handleSendMessage(syntheticEvent);
+  };
+
+  const handleClose = () => {
+    // Reset body scroll styles when closing
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    setIsOpen(false);
   };
 
   const getBotResponse = (userInput: string): string => {
@@ -122,7 +149,7 @@ export function ChatBot() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 z-50 animate-bounce hover:animate-none group"
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 z-[9998] animate-bounce hover:animate-none group"
         title="Chat with Dental Assistant"
       >
         <FiMessageCircle className="text-2xl group-hover:scale-110 transition-transform duration-300" />
@@ -132,7 +159,13 @@ export function ChatBot() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-80 md:w-96 h-96 md:h-[500px] bg-white rounded-lg shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+    <div className="fixed bottom-6 right-6 w-80 md:w-96 h-96 md:h-[500px] bg-white rounded-lg shadow-2xl border border-gray-200 z-[9999] flex flex-col overflow-hidden">
+      {/* Backdrop overlay for mobile */}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-30 z-[-1] md:hidden"
+        onClick={handleClose}
+      />
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -148,7 +181,7 @@ export function ChatBot() {
           </div>
         </div>
         <button
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
           className="text-white hover:text-orange-200 p-2 hover:bg-white/10 rounded-full transition-all duration-200"
           title="Close chat"
         >

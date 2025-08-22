@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { HiChevronDown, HiX } from 'react-icons/hi';
 
@@ -17,6 +17,25 @@ interface MobileMenuProps {
 export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [isOpen]);
+  
   if (!isOpen) return null;
 
   const toggleExpanded = (itemName: string) => {
@@ -27,10 +46,17 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
     );
   };
 
+  const handleClose = () => {
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-[9999] lg:hidden">
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-2xl border-l border-gray-200">
+    <div className="fixed inset-0 z-[99999] lg:hidden">
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={handleClose} />
+      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-2xl border-l border-gray-200 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-orange-500 to-orange-600">
           <div className="flex items-center space-x-2">
@@ -43,7 +69,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 text-white hover:bg-orange-700 rounded-lg transition-colors"
           >
             <HiX className="w-5 h-5" />
@@ -75,7 +101,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                             <li key={subItem.name}>
                               <Link
                                 to={subItem.href}
-                                onClick={onClose}
+                                onClick={handleClose}
                                 className="block py-2 px-3 text-gray-700 hover:text-orange-600 hover:bg-white rounded-md transition-all duration-200 text-sm font-medium"
                               >
                                 {subItem.name}
@@ -89,7 +115,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
                 ) : (
                   <Link
                     to={item.href}
-                    onClick={onClose}
+                    onClick={handleClose}
                     className="block py-3 px-3 text-gray-900 hover:text-orange-600 hover:bg-orange-50 font-medium rounded-lg transition-colors"
                   >
                     {item.name}
@@ -104,7 +130,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
             <div className="space-y-2">
               <Link
                 to="/account"
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex items-center py-2 px-3 text-gray-900 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
               >
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +140,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
               </Link>
               <Link
                 to="/wishlist"
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex items-center py-2 px-3 text-gray-900 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
               >
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +150,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
               </Link>
               <Link
                 to="/cart"
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex items-center py-2 px-3 text-gray-900 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
               >
                 <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
