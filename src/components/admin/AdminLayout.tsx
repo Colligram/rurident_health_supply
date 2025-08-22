@@ -22,7 +22,7 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user, logout } = useAdminAuth();
+  const { user, logout, hasPermission } = useAdminAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,16 +31,21 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     navigate('/', { replace: true });
   };
 
-  const navigation = [
+  const allNavigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: FiHome },
     { name: 'Categories', href: '/admin/categories', icon: FiTag },
     { name: 'Products', href: '/admin/products', icon: FiPackage },
     { name: 'Lightning Deals', href: '/admin/lightning-deals', icon: FiZap },
     { name: 'Orders', href: '/admin/orders', icon: FiShoppingCart },
     { name: 'Customers', href: '/admin/customers', icon: FiUsers },
-    { name: 'Analytics', href: '/admin/analytics', icon: FiTrendingUp },
-    { name: 'Settings', href: '/admin/settings', icon: FiSettings },
+    { name: 'Analytics', href: '/admin/analytics', icon: FiTrendingUp, permission: 'view_analytics' },
+    { name: 'Settings', href: '/admin/settings', icon: FiSettings, permission: 'manage_settings' },
   ];
+
+  // Filter navigation based on user permissions
+  const navigation = allNavigation.filter(item => 
+    !item.permission || hasPermission(item.permission)
+  );
 
   const isCurrentPath = (href: string) => {
     return location.pathname === href || location.pathname.startsWith(href + '/');
