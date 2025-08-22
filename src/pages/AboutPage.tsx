@@ -58,55 +58,55 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* Who We Are Section */}
-      <div className="container-max py-16 md:py-24">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-3 bg-orange-100 text-orange-800 rounded-full px-6 py-3 mb-8">
-            <HiUserGroup className="w-5 h-5" />
-            <span className="font-medium">Who We Are</span>
+      {/* Who We Are Section - Mobile Optimized */}
+      <div className="container-max py-8 md:py-16 lg:py-24">
+        <div className="text-center mb-8 md:mb-16">
+          <div className="inline-flex items-center space-x-3 bg-orange-100 text-orange-800 rounded-full px-4 py-2 md:px-6 md:py-3 mb-4 md:mb-8">
+            <HiUserGroup className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="font-medium text-sm md:text-base">Who We Are</span>
           </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-8 leading-tight">
-            Dentists and dental technicians are not just professionals<br />
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold text-gray-900 mb-4 md:mb-8 leading-tight">
+            <span className="block sm:inline">Dentists and dental technicians are not just professionals</span><br className="hidden sm:block" />
             <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
               you are artists of confidence
             </span>
           </h2>
-          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-8">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto mb-4 md:mb-8">
             engineers of trust, and guardians of every smile.
           </p>
-          <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+          <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 md:mb-8">
             At Rurident, we exist for you.
           </div>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
             Not to simply sell instruments, materials, or devices — but to equip your hands with tools 
             that feel like extensions of your skill. Because in your work, every millimeter matters. 
             Every detail counts. Every patient remembers.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <div className="bg-white rounded-2xl shadow-xl p-8 border-l-4 border-orange-500 transform hover:scale-105 transition-all duration-300">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                  <HiHeart className="w-6 h-6 text-orange-600" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center">
+          <div className="space-y-4 md:space-y-6 lg:space-y-8">
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-4 md:p-6 lg:p-8 border-l-4 border-orange-500 transform hover:scale-105 transition-all duration-300">
+              <div className="flex items-center space-x-3 md:space-x-4 mb-3 md:mb-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                  <HiHeart className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">For Dentists</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900">For Dentists</h3>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-sm md:text-base text-gray-700 leading-relaxed">
                 You are the face patients remember. The calm voice when fear takes over. 
                 The healer who makes them believe in smiling again.
               </p>
             </div>
             
-            <div className="bg-white rounded-2xl shadow-xl p-8 border-l-4 border-red-500 transform hover:scale-105 transition-all duration-300">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <HiAcademicCap className="w-6 h-6 text-red-600" />
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl p-4 md:p-6 lg:p-8 border-l-4 border-red-500 transform hover:scale-105 transition-all duration-300">
+              <div className="flex items-center space-x-3 md:space-x-4 mb-3 md:mb-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <HiAcademicCap className="w-5 h-5 md:w-6 md:h-6 text-red-600" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900">For Dental Technicians</h3>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900">For Dental Technicians</h3>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-sm md:text-base text-gray-700 leading-relaxed">
                 You are the unsung sculptors. The silent perfectionists behind every crown, 
                 denture, and masterpiece that leaves the lab. Patients may never know your name, 
                 but they live every day with the precision of your craft.
@@ -114,18 +114,18 @@ export function AboutPage() {
             </div>
           </div>
           
-          <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl blur-2xl opacity-20"></div>
-            <div className="relative bg-white rounded-2xl shadow-2xl p-8 text-center">
-              <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HiShieldCheck className="w-10 h-10 text-white" />
+          <div className="relative mt-6 lg:mt-0">
+            <div className="absolute -inset-2 md:-inset-4 bg-gradient-to-r from-orange-400 to-red-400 rounded-xl md:rounded-2xl blur-xl md:blur-2xl opacity-20"></div>
+            <div className="relative bg-white rounded-xl md:rounded-2xl shadow-xl md:shadow-2xl p-4 md:p-6 lg:p-8 text-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <HiShieldCheck className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">We honor both.</h3>
-              <p className="text-lg text-gray-700 mb-6">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">We honor both.</h3>
+              <p className="text-base md:text-lg text-gray-700 mb-4 md:mb-6">
                 That's why Rurident exists — to make sure your tools match your talent.
               </p>
-              <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6">
-                <p className="text-orange-800 font-medium">
+              <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg md:rounded-xl p-4 md:p-6">
+                <p className="text-sm md:text-base text-orange-800 font-medium">
                   "Tools that never betray your hands, so your patients see only your skill, never your struggle."
                 </p>
               </div>
@@ -134,32 +134,32 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* Why We Exist Section */}
-      <div className="bg-gradient-to-r from-gray-900 to-black text-white py-16 md:py-24">
+      {/* Why We Exist Section - Mobile Optimized */}
+      <div className="bg-gradient-to-r from-gray-900 to-black text-white py-8 md:py-16 lg:py-24">
         <div className="container-max">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
-              <HiLightningBolt className="w-5 h-5 text-yellow-400" />
-              <span className="font-medium">Why We Exist</span>
+          <div className="text-center mb-8 md:mb-12 lg:mb-16">
+            <div className="inline-flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 md:px-6 md:py-3 mb-4 md:mb-8">
+              <HiLightningBolt className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
+              <span className="font-medium text-sm md:text-base">Why We Exist</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-8">
               Because every detail matters
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <div className="text-6xl mb-6">👨‍⚕️</div>
-              <h3 className="text-2xl font-bold mb-4 text-yellow-400">1. You are the face patients remember.</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 mb-8 md:mb-12 lg:mb-16">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 border border-white/20">
+              <div className="text-4xl md:text-5xl lg:text-6xl mb-3 md:mb-4 lg:mb-6">👨‍⚕️</div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 md:mb-4 text-yellow-400">1. You are the face patients remember.</h3>
+              <p className="text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed">
                 The calm voice when fear takes over. The healer who makes them believe in smiling again.
               </p>
             </div>
             
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <div className="text-6xl mb-6">🎨</div>
-              <h3 className="text-2xl font-bold mb-4 text-yellow-400">2. You are the unsung sculptors.</h3>
-              <p className="text-lg text-gray-300 leading-relaxed">
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 border border-white/20">
+              <div className="text-4xl md:text-5xl lg:text-6xl mb-3 md:mb-4 lg:mb-6">🎨</div>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 md:mb-4 text-yellow-400">2. You are the unsung sculptors.</h3>
+              <p className="text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed">
                 The silent perfectionists behind every crown, denture, and masterpiece that leaves the lab. 
                 Patients may never know your name, but they live every day with the precision of your craft.
               </p>
@@ -167,13 +167,13 @@ export function AboutPage() {
           </div>
           
           <div className="text-center">
-            <div className="inline-block bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-8 shadow-2xl">
-              <h3 className="text-3xl font-bold mb-4">We honor both.</h3>
-              <p className="text-xl mb-6">
+            <div className="inline-block bg-gradient-to-r from-orange-500 to-red-500 rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 shadow-xl md:shadow-2xl">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 md:mb-4">We honor both.</h3>
+              <p className="text-base sm:text-lg md:text-xl mb-3 md:mb-6">
                 That's why Rurident exists — to make sure your tools match your talent.
               </p>
-              <div className="bg-black/30 rounded-xl p-4">
-                <p className="text-lg font-medium text-yellow-200">
+              <div className="bg-black/30 rounded-lg md:rounded-xl p-3 md:p-4">
+                <p className="text-sm sm:text-base md:text-lg font-medium text-yellow-200">
                   "Your work isn't just about precision — it's about perfection."
                 </p>
               </div>
@@ -182,17 +182,17 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* Fast Delivery Section */}
-      <div className="container-max py-16 md:py-24">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-3 bg-blue-100 text-blue-800 rounded-full px-6 py-3 mb-8">
-            <FiTruck className="w-5 h-5" />
-            <span className="font-medium">Fast Delivery</span>
+      {/* Fast Delivery Section - Mobile Optimized */}
+      <div className="container-max py-8 md:py-16 lg:py-24">
+        <div className="text-center mb-8 md:mb-12 lg:mb-16">
+          <div className="inline-flex items-center space-x-3 bg-blue-100 text-blue-800 rounded-full px-4 py-2 md:px-6 md:py-3 mb-4 md:mb-8">
+            <FiTruck className="w-4 h-4 md:w-5 md:h-5" />
+            <span className="font-medium text-sm md:text-base">Fast Delivery</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 md:mb-8">
             Because Patients Don't Wait
           </h2>
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-12">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-4xl mx-auto mb-6 md:mb-8 lg:mb-12">
             We know what's at stake when you're waiting on supplies.
           </p>
         </div>

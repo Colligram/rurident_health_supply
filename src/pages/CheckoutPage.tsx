@@ -508,80 +508,85 @@ export const CheckoutPage: React.FC = () => {
                     </div>
                   )}
 
-                  <div className="space-y-6 mb-8">
-                    {/* M-Pesa Option - Enhanced Green Design */}
-                    <div 
-                      className={`border-3 rounded-xl p-6 cursor-pointer transition-all shadow-lg ${
-                        paymentMethod === 'mpesa' 
-                          ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-green-200' 
-                          : 'border-green-300 bg-green-50 hover:border-green-400 hover:shadow-green-100'
-                      }`}
-                      onClick={() => setPaymentMethod('mpesa')}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mr-4">
-                            <FiSmartphone className="w-6 h-6 text-white" />
+                  {/* Payment Methods - Mobile Optimized Layout */}
+                  <div className="space-y-4 md:space-y-6 mb-8">
+                    {/* Mobile: Horizontal Layout for Payment Methods */}
+                    <div className="grid grid-cols-1 md:grid-cols-1 gap-3 md:gap-6">
+                      {/* M-Pesa Option - Enhanced Green Design */}
+                      <div 
+                        className={`border-3 rounded-xl p-4 md:p-6 cursor-pointer transition-all shadow-lg ${
+                          paymentMethod === 'mpesa' 
+                            ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-green-200' 
+                            : 'border-green-300 bg-green-50 hover:border-green-400 hover:shadow-green-100'
+                        }`}
+                        onClick={() => setPaymentMethod('mpesa')}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-green-600 rounded-full flex items-center justify-center mr-3 md:mr-4">
+                              <FiSmartphone className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-green-800 text-base md:text-lg">M-Pesa</h3>
+                              <p className="text-xs md:text-sm text-green-700">Pay with mobile money - Safe & Secure</p>
+                              <p className="text-xs text-green-600 mt-1">✓ Instant payment confirmation</p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="font-bold text-green-800 text-lg">M-Pesa</h3>
-                            <p className="text-sm text-green-700">Pay with your mobile money - Safe & Secure</p>
-                            <p className="text-xs text-green-600 mt-1">✓ Instant payment confirmation</p>
+                          <div className={`w-5 h-5 md:w-6 md:h-6 rounded-full border-3 ${
+                            paymentMethod === 'mpesa' ? 'border-green-600 bg-green-600' : 'border-green-400'
+                          }`}>
+                            {paymentMethod === 'mpesa' && <FiCheck className="w-3 h-3 md:w-4 md:h-4 text-white m-0.5" />}
                           </div>
-                        </div>
-                        <div className={`w-6 h-6 rounded-full border-3 ${
-                          paymentMethod === 'mpesa' ? 'border-green-600 bg-green-600' : 'border-green-400'
-                        }`}>
-                          {paymentMethod === 'mpesa' && <FiCheck className="w-4 h-4 text-white m-0.5" />}
                         </div>
                       </div>
-                    </div>
 
-                    {/* Card Option - Coming Soon */}
-                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed bg-gray-50 relative overflow-hidden">
-                      <div className="absolute top-2 right-2">
-                        <FiX className="w-6 h-6 text-red-400" />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-                            <FiCreditCard className="w-6 h-6 text-gray-400" />
+                      {/* Mobile: Horizontal Layout for Coming Soon Options */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                        {/* Card Option - Coming Soon */}
+                        <div className="border-2 border-gray-200 rounded-xl p-3 md:p-6 opacity-60 cursor-not-allowed bg-gray-50 relative overflow-hidden">
+                          <div className="absolute top-1 right-1 md:top-2 md:right-2">
+                            <FiX className="w-4 h-4 md:w-6 md:h-6 text-red-400" />
                           </div>
-                          <div>
-                            <h3 className="font-bold text-gray-400 text-lg">
-                              <span className="line-through">Credit/Debit Card</span>
-                            </h3>
-                            <p className="text-sm text-gray-400">Visa, Mastercard</p>
-                            <p className="text-xs text-orange-500 mt-1 font-semibold">🚀 Coming Soon</p>
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                            <div className="flex items-center mb-2 sm:mb-0">
+                              <div className="w-8 h-8 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center mr-2 md:mr-4">
+                                <FiCreditCard className="w-4 h-4 md:w-6 md:h-6 text-gray-400" />
+                              </div>
+                              <div>
+                                <h3 className="font-bold text-gray-400 text-sm md:text-lg">
+                                  <span className="line-through">Card</span>
+                                </h3>
+                                <p className="text-xs md:text-sm text-gray-400">Visa, Mastercard</p>
+                              </div>
+                            </div>
+                            <span className="bg-orange-100 text-orange-600 px-2 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold">
+                              Coming Soon
+                            </span>
                           </div>
                         </div>
-                        <span className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-bold">
-                          Coming Soon
-                        </span>
-                      </div>
-                    </div>
 
-                    {/* Bank Transfer Option - Coming Soon */}
-                    <div className="border-2 border-gray-200 rounded-xl p-6 opacity-60 cursor-not-allowed bg-gray-50 relative overflow-hidden">
-                      <div className="absolute top-2 right-2">
-                        <FiX className="w-6 h-6 text-red-400" />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-                            <FaUniversity className="w-6 h-6 text-gray-400" />
+                        {/* Bank Transfer Option - Coming Soon */}
+                        <div className="border-2 border-gray-200 rounded-xl p-3 md:p-6 opacity-60 cursor-not-allowed bg-gray-50 relative overflow-hidden">
+                          <div className="absolute top-1 right-1 md:top-2 md:right-2">
+                            <FiX className="w-4 h-4 md:w-6 md:h-6 text-red-400" />
                           </div>
-                          <div>
-                            <h3 className="font-bold text-gray-400 text-lg">
-                              <span className="line-through">Bank Transfer</span>
-                            </h3>
-                            <p className="text-sm text-gray-400">Direct bank transfer</p>
-                            <p className="text-xs text-orange-500 mt-1 font-semibold">🚀 Coming Soon</p>
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                            <div className="flex items-center mb-2 sm:mb-0">
+                              <div className="w-8 h-8 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center mr-2 md:mr-4">
+                                <FaUniversity className="w-4 h-4 md:w-6 md:h-6 text-gray-400" />
+                              </div>
+                              <div>
+                                <h3 className="font-bold text-gray-400 text-sm md:text-lg">
+                                  <span className="line-through">Bank</span>
+                                </h3>
+                                <p className="text-xs md:text-sm text-gray-400">Direct transfer</p>
+                              </div>
+                            </div>
+                            <span className="bg-orange-100 text-orange-600 px-2 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold">
+                              Coming Soon
+                            </span>
                           </div>
                         </div>
-                        <span className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-bold">
-                          Coming Soon
-                        </span>
                       </div>
                     </div>
                   </div>
