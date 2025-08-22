@@ -2,6 +2,14 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+
+interface NavigationItem {
+  name: string;
+  href: string;
+  icon: any;
+  permission?: string;
+  staffRestricted?: boolean;
+}
 import { 
   FiHome, 
   FiPackage, 
@@ -13,7 +21,8 @@ import {
   FiX,
   FiTrendingUp,
   FiTag,
-  FiZap
+  FiZap,
+  FiUserPlus
 } from 'react-icons/fi';
 
 interface AdminLayoutProps {
@@ -32,20 +41,26 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   const allNavigation = [
-    { name: 'Dashboard', href: '/admin/dashboard', icon: FiHome },
-    { name: 'Categories', href: '/admin/categories', icon: FiTag },
-    { name: 'Products', href: '/admin/products', icon: FiPackage },
-    { name: 'Lightning Deals', href: '/admin/lightning-deals', icon: FiZap },
-    { name: 'Orders', href: '/admin/orders', icon: FiShoppingCart },
-    { name: 'Customers', href: '/admin/customers', icon: FiUsers },
-    { name: 'Analytics', href: '/admin/analytics', icon: FiTrendingUp, permission: 'view_analytics' },
-    { name: 'Settings', href: '/admin/settings', icon: FiSettings, permission: 'manage_settings' },
+    { name: 'Dashboard', href: '/sys/panel', icon: FiHome },
+    { name: 'Categories', href: '/sys/categories', icon: FiTag },
+    { name: 'Products', href: '/sys/catalog', icon: FiPackage },
+    { name: 'Lightning Deals', href: '/sys/deals', icon: FiZap },
+    { name: 'Orders', href: '/sys/orders', icon: FiShoppingCart },
+    { name: 'Customers', href: '/sys/users', icon: FiUsers, staffRestricted: true },
+    { name: 'Staff Management', href: '/sys/staff', icon: FiUserPlus, staffRestricted: true },
+    { name: 'Analytics', href: '/sys/metrics', icon: FiTrendingUp, permission: 'view_analytics', staffRestricted: true },
+    { name: 'Settings', href: '/sys/config', icon: FiSettings, permission: 'manage_settings', staffRestricted: true },
   ];
 
-  // Filter navigation based on user permissions
-  const navigation = allNavigation.filter(item => 
-    !item.permission || hasPermission(item.permission)
-  );
+  // Filter navigation based on user permissions and staff restrictions
+  const navigation = allNavigation.filter(item => {
+    // Check if staff user is trying to access restricted content
+    if (item.staffRestricted && user?.role === 'staff') {
+      return false;
+    }
+    // Check specific permissions
+    return !item.permission || hasPermission(item.permission);
+  });
 
   const isCurrentPath = (href: string) => {
     return location.pathname === href || location.pathname.startsWith(href + '/');
