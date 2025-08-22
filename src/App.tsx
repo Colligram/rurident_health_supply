@@ -131,7 +131,7 @@ function App() {
                     <Route 
                       path="/admin/analytics" 
                       element={
-                        <ProtectedRoute>
+                        <ProtectedRoute staffRestricted={true} requiredPermission="view_analytics">
                           <AnalyticsPage />
                         </ProtectedRoute>
                       } 
@@ -139,7 +139,7 @@ function App() {
                     <Route 
                       path="/admin/settings" 
                       element={
-                        <ProtectedRoute>
+                        <ProtectedRoute staffRestricted={true} requiredPermission="manage_settings">
                           <SettingsPage />
                         </ProtectedRoute>
                       } 
