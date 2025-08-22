@@ -10,14 +10,14 @@ const navigation = [
   { name: 'Home', href: '/' },
   { 
     name: 'Products', 
-    href: '/products',
+    href: '/p/browse',
     dropdown: [
-      { name: 'Clinical Tools', href: '/products/dental-clinic-tools' },
-      { name: 'Laboratory', href: '/products/dental-laboratory' },
-      { name: 'Materials', href: '/products/dental-materials' },
-      { name: 'Machines & Equipment', href: '/products/dental-machines' },
-      { name: 'Infection Control', href: '/products/infection-control' },
-      { name: 'Student Kits', href: '/products/student-kits' },
+      { name: 'Clinical Tools', href: '/p/browse/dental-clinic-tools' },
+      { name: 'Laboratory', href: '/p/browse/dental-laboratory' },
+      { name: 'Materials', href: '/p/browse/dental-materials' },
+      { name: 'Machines & Equipment', href: '/p/browse/dental-machines' },
+      { name: 'Infection Control', href: '/p/browse/infection-control' },
+      { name: 'Student Kits', href: '/p/browse/student-kits' },
     ]
   },
   { name: 'About', href: '/about' },
@@ -191,7 +191,7 @@ export function Header() {
 
             {/* Wishlist */}
             <Link
-              to="/wishlist"
+              to="/u/wishlist"
               className="p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out relative hover:bg-orange-50 rounded-lg"
             >
               <HiHeart className="mobile-icon-md" />
@@ -204,7 +204,7 @@ export function Header() {
 
             {/* Cart */}
             <Link
-              to="/cart"
+              to="/u/cart"
               className="p-2 text-gray-600 hover:text-orange-600 transition-all duration-300 ease-in-out relative hover:bg-orange-50 rounded-lg"
               data-cart-icon
             >

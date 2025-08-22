@@ -22,23 +22,7 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
-// Secure admin users with hashed passwords
-const adminUsers = [
-  {
-    id: '1',
-    email: 'admin@rurident.com',
-    passwordHash: hashPassword('secure123'),
-    name: 'Admin User',
-    role: 'admin' as const
-  },
-  {
-    id: '2',
-    email: 'staff@rurident.com',
-    passwordHash: hashPassword('staff123'),
-    name: 'Staff Member',
-    role: 'staff' as const
-  }
-];
+// Admin authentication now handled server-side
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -68,63 +52,72 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Too many login attempts. Please try again later.');
     }
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const passwordHash = hashPassword(password);
-    const adminUser = adminUsers.find(
-      u => u.email === email && u.passwordHash === passwordHash
-    );
+    try {
+      // Authenticate with server
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Record login attempt
-    const isBlocked = loginRateLimiter.recordAttempt(email);
-    if (isBlocked) {
+      // Record login attempt
+      const isBlocked = loginRateLimiter.recordAttempt(email);
+      if (isBlocked) {
+        auditLogger.log({
+          userId: 'unknown',
+          action: 'login_blocked',
+          resource: 'auth',
+          details: { email, reason: 'rate_limit' }
+        });
+        throw new Error('Too many login attempts. Please try again later.');
+      }
+
+      if (response.ok) {
+        const result = await response.json();
+        const adminUser = result.admin;
+        
+        const userWithoutPassword = {
+          id: adminUser._id,
+          email: adminUser.email,
+          name: adminUser.name,
+          role: adminUser.role
+        };
+        
+        setUser(userWithoutPassword);
+        
+        // Encrypt user data before storing
+        const encryptedUser = encryptData(JSON.stringify(userWithoutPassword));
+        localStorage.setItem('adminUser', encryptedUser);
+        
+        // Reset rate limiter on successful login
+        loginRateLimiter.reset(email);
+        
+        // Log successful login
+        auditLogger.log({
+          userId: adminUser._id,
+          action: 'login_success',
+          resource: 'auth',
+          details: { email, role: adminUser.role }
+        });
+        
+        return true;
+      }
+
+      // Log failed login
       auditLogger.log({
         userId: 'unknown',
-        action: 'login_blocked',
+        action: 'login_failed',
         resource: 'auth',
-        details: { email, reason: 'rate_limit' }
+        details: { email, reason: 'invalid_credentials' }
       });
-      throw new Error('Too many login attempts. Please try again later.');
+
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-
-    if (adminUser) {
-      const userWithoutPassword = {
-        id: adminUser.id,
-        email: adminUser.email,
-        name: adminUser.name,
-        role: adminUser.role
-      };
-      
-      setUser(userWithoutPassword);
-      
-      // Encrypt user data before storing
-      const encryptedUser = encryptData(JSON.stringify(userWithoutPassword));
-      localStorage.setItem('adminUser', encryptedUser);
-      
-      // Reset rate limiter on successful login
-      loginRateLimiter.reset(email);
-      
-      // Log successful login
-      auditLogger.log({
-        userId: adminUser.id,
-        action: 'login_success',
-        resource: 'auth',
-        details: { email, role: adminUser.role }
-      });
-      
-      return true;
-    }
-
-    // Log failed login
-    auditLogger.log({
-      userId: 'unknown',
-      action: 'login_failed',
-      resource: 'auth',
-      details: { email, reason: 'invalid_credentials' }
-    });
-
-    return false;
   };
 
   const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {

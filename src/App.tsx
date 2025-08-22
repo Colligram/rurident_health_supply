@@ -30,6 +30,7 @@ import { OrdersManagementPage } from './pages/admin/OrdersManagementPage';
 import { CustomersManagementPage } from './pages/admin/CustomersManagementPage';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
+import { StaffManagementPage } from './pages/admin/StaffManagementPage';
 import { CartProvider } from './context/CartContext';
 import { CartAnimationProvider } from './context/CartAnimationContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -61,11 +62,11 @@ function App() {
                 <div className="min-h-screen bg-gray-50">
                   <ScrollToTop />
                   <Routes>
-                    {/* Admin Routes */}
-                    <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-                    <Route path="/admin/login" element={<AdminLoginPage />} />
+                    {/* Admin Routes - Obfuscated for Security */}
+                    <Route path="/admin" element={<Navigate to="/sys/panel" replace />} />
+                    <Route path="/sys/auth" element={<AdminLoginPage />} />
                     <Route 
-                      path="/admin/dashboard" 
+                      path="/sys/panel" 
                       element={
                         <ProtectedRoute>
                           <AdminDashboardPage />
@@ -73,7 +74,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/categories" 
+                      path="/sys/categories" 
                       element={
                         <ProtectedRoute>
                           <CategoryManagementPage />
@@ -81,7 +82,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/products" 
+                      path="/sys/catalog" 
                       element={
                         <ProtectedRoute>
                           <ProductsManagementPage />
@@ -89,7 +90,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/products/new" 
+                      path="/sys/catalog/new" 
                       element={
                         <ProtectedRoute>
                           <AddProductPage />
@@ -97,7 +98,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/products/:id/edit" 
+                      path="/sys/catalog/:id/edit" 
                       element={
                         <ProtectedRoute>
                           <EditProductPage />
@@ -105,7 +106,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/lightning-deals" 
+                      path="/sys/deals" 
                       element={
                         <ProtectedRoute>
                           <LightningDealsManagementPage />
@@ -113,7 +114,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/orders" 
+                      path="/sys/orders" 
                       element={
                         <ProtectedRoute>
                           <OrdersManagementPage />
@@ -121,15 +122,15 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/customers" 
+                      path="/sys/users" 
                       element={
-                        <ProtectedRoute>
+                        <ProtectedRoute staffRestricted={true}>
                           <CustomersManagementPage />
                         </ProtectedRoute>
                       } 
                     />
                     <Route 
-                      path="/admin/analytics" 
+                      path="/sys/metrics" 
                       element={
                         <ProtectedRoute staffRestricted={true} requiredPermission="view_analytics">
                           <AnalyticsPage />
@@ -137,7 +138,15 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/admin/settings" 
+                      path="/sys/staff" 
+                      element={
+                        <ProtectedRoute staffRestricted={true}>
+                          <StaffManagementPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/sys/config" 
                       element={
                         <ProtectedRoute staffRestricted={true} requiredPermission="manage_settings">
                           <SettingsPage />
@@ -145,7 +154,7 @@ function App() {
                       } 
                     />
 
-                    {/* Public Routes with Layout */}
+                    {/* Public Routes with Layout - Some Obfuscated */}
                     <Route 
                       path="/" 
                       element={
@@ -160,7 +169,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/products" 
+                      path="/p/browse" 
                       element={
                         <>
                           <Header />
@@ -173,7 +182,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/products/:category" 
+                      path="/p/browse/:category" 
                       element={
                         <>
                           <Header />
@@ -186,7 +195,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/product/:id" 
+                      path="/p/item/:id" 
                       element={
                         <>
                           <Header />
@@ -199,7 +208,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/checkout" 
+                      path="/u/checkout" 
                       element={
                         <>
                           <Header />
@@ -212,7 +221,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/cart" 
+                      path="/u/cart" 
                       element={
                         <>
                           <Header />
@@ -319,7 +328,7 @@ function App() {
                       } 
                     />
                     <Route 
-                      path="/wishlist" 
+                      path="/u/wishlist" 
                       element={
                         <>
                           <Header />
@@ -371,6 +380,16 @@ function App() {
                         </>
                       } 
                     />
+
+                    {/* Legacy route redirects for SEO */}
+                    <Route path="/products" element={<Navigate to="/p/browse" replace />} />
+                    <Route path="/products/:category" element={<Navigate to="/p/browse/:category" replace />} />
+                    <Route path="/product/:id" element={<Navigate to="/p/item/:id" replace />} />
+                    <Route path="/cart" element={<Navigate to="/u/cart" replace />} />
+                    <Route path="/checkout" element={<Navigate to="/u/checkout" replace />} />
+                    <Route path="/wishlist" element={<Navigate to="/u/wishlist" replace />} />
+                    <Route path="/admin/login" element={<Navigate to="/sys/auth" replace />} />
+                    <Route path="/admin/dashboard" element={<Navigate to="/sys/panel" replace />} />
 
                     {/* Fallback route */}
                     <Route 

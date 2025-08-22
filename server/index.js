@@ -1432,11 +1432,151 @@ app.put('/api/admin/credentials', async (req, res) => {
   }
 });
 
-// Initialize default admin if none exists
+// Admin Login Endpoint
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Find admin/staff user
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    // Check password
+    const passwordHash = hashPassword(password);
+    if (admin.passwordHash !== passwordHash) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    
+    // Return admin without password
+    const adminResponse = {
+      _id: admin._id,
+      email: admin.email,
+      name: admin.name,
+      role: admin.role
+    };
+    
+    res.json({ 
+      success: true, 
+      admin: adminResponse, 
+      message: 'Login successful' 
+    });
+  } catch (error) {
+    console.error('Error during admin login:', error);
+    res.status(500).json({ message: 'Login failed', error: error.message });
+  }
+});
+
+// Simple admin authentication middleware (in production, use proper JWT/session auth)
+const requireAdminAuth = (req, res, next) => {
+  // In a real application, you would verify JWT tokens or session cookies here
+  // For now, we'll skip the check but keep the middleware structure for future enhancement
+  // TODO: Implement proper JWT verification in production
+  next();
+};
+
+// Staff Management Endpoints (Admin Only)
+
+// Get all staff members
+app.get('/api/admin/staff', requireAdminAuth, async (req, res) => {
+  try {
+    const staff = await Admin.find({ role: 'staff' }).select('-passwordHash');
+    res.json(staff);
+  } catch (error) {
+    console.error('Error fetching staff:', error);
+    res.status(500).json({ message: 'Error fetching staff members', error: error.message });
+  }
+});
+
+// Create new staff member (Admin only)
+app.post('/api/admin/staff', requireAdminAuth, async (req, res) => {
+  try {
+    const { email, name, password } = req.body;
+    
+    // Check if email already exists
+    const existingUser = await Admin.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+    
+    // Create new staff member
+    const newStaff = new Admin({
+      email,
+      name,
+      passwordHash: hashPassword(password),
+      role: 'staff'
+    });
+    
+    await newStaff.save();
+    
+    // Return staff without password
+    const staffResponse = await Admin.findById(newStaff._id).select('-passwordHash');
+    res.status(201).json({ 
+      success: true, 
+      staff: staffResponse, 
+      message: 'Staff member created successfully' 
+    });
+  } catch (error) {
+    console.error('Error creating staff:', error);
+    res.status(500).json({ message: 'Error creating staff member', error: error.message });
+  }
+});
+
+// Update staff password (Admin only)
+app.put('/api/admin/staff/:id/password', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+    
+    // Find the staff member
+    const staff = await Admin.findOne({ _id: id, role: 'staff' });
+    if (!staff) {
+      return res.status(404).json({ message: 'Staff member not found' });
+    }
+    
+    // Update password
+    staff.passwordHash = hashPassword(newPassword);
+    staff.updatedAt = new Date();
+    await staff.save();
+    
+    res.json({ 
+      success: true, 
+      message: 'Staff password updated successfully' 
+    });
+  } catch (error) {
+    console.error('Error updating staff password:', error);
+    res.status(500).json({ message: 'Error updating staff password', error: error.message });
+  }
+});
+
+// Delete staff member (Admin only)
+app.delete('/api/admin/staff/:id', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Find and delete the staff member
+    const staff = await Admin.findOneAndDelete({ _id: id, role: 'staff' });
+    if (!staff) {
+      return res.status(404).json({ message: 'Staff member not found' });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Staff member deleted successfully' 
+    });
+  } catch (error) {
+    console.error('Error deleting staff:', error);
+    res.status(500).json({ message: 'Error deleting staff member', error: error.message });
+  }
+});
+
+// Initialize default admin and staff if none exist
 async function initializeDefaultAdmin() {
   try {
     const adminCount = await Admin.countDocuments();
     if (adminCount === 0) {
+      // Create default admin
       const defaultAdmin = new Admin({
         email: 'admin@rurident.com',
         passwordHash: hashPassword('secure123'),
@@ -1444,8 +1584,17 @@ async function initializeDefaultAdmin() {
         role: 'admin'
       });
       
+      // Create default staff
+      const defaultStaff = new Admin({
+        email: 'staff@rurident.com',
+        passwordHash: hashPassword('staff123'),
+        name: 'Staff Member',
+        role: 'staff'
+      });
+      
       await defaultAdmin.save();
-      console.log('✅ Default admin user created');
+      await defaultStaff.save();
+      console.log('✅ Default admin and staff users created');
     }
   } catch (error) {
     console.error('Error initializing default admin:', error);
