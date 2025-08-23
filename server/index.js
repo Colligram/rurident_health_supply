@@ -2294,6 +2294,61 @@ app.delete('/api/admin/reviews/:reviewId', async (req, res) => {
   }
 });
 
+// Create fake review (admin only)
+app.post('/api/admin/fake-review', async (req, res) => {
+  try {
+    const { productId, userName, rating, comment, isVerifiedBuyer, soldCount } = req.body;
+    
+    // Validate required fields
+    if (!productId || !userName || !rating || !comment) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Check if product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Create fake review
+    const fakeReview = new Review({
+      productId,
+      userId: 'fake-user-' + Date.now(), // Generate fake user ID
+      userName,
+      rating,
+      comment,
+      isVerifiedBuyer: isVerifiedBuyer || false,
+      status: 'approved', // Auto-approve fake reviews
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      helpfulVotes: Math.floor(Math.random() * 10), // Random helpful votes
+      notHelpfulVotes: Math.floor(Math.random() * 3) // Random not helpful votes
+    });
+
+    await fakeReview.save();
+
+    // Update product with fake sold count if provided
+    if (soldCount && soldCount > 0) {
+      // Add fake sold count to product (you might want to add a field for this)
+      await Product.findByIdAndUpdate(productId, {
+        $inc: { soldCount: soldCount }
+      });
+    }
+
+    // Update product rating
+    await updateProductRating(productId);
+
+    res.json({
+      success: true,
+      message: 'Fake review created successfully',
+      review: fakeReview
+    });
+  } catch (error) {
+    console.error('Error creating fake review:', error);
+    res.status(500).json({ message: 'Error creating fake review', error: error.message });
+  }
+});
+
 // Helper function to update product rating
 async function updateProductRating(productId) {
   try {
