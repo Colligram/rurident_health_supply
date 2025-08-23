@@ -44,12 +44,17 @@
     /* Prevent category sections from interfering with mobile menu */
     .category-section {
       position: relative;
-      z-index: 10;
+      z-index: 1;
     }
 
     /* Ensure header stays above category sections but below mobile menu */
     header {
       z-index: 40;
+    }
+
+    /* Hide category sections when mobile menu is open */
+    body.mobile-menu-open .category-section {
+      visibility: hidden;
     }
 
     /* Fix for overlapping content */
@@ -207,6 +212,40 @@
     font-size: 0.9rem;
     padding: 0.75rem 1.5rem;
     min-width: 120px;
+  }
+
+  /* Universal admin button styling enhancements */
+  .admin-layout button,
+  .admin-layout .btn,
+  .admin-layout [role="button"] {
+    box-sizing: border-box !important;
+    min-height: 44px !important;
+    padding: 0.75rem 1.25rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease-in-out !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    min-width: fit-content !important;
+  }
+
+  /* Ensure all admin buttons have proper focus states */
+  .admin-layout button:focus,
+  .admin-layout .btn:focus,
+  .admin-layout [role="button"]:focus {
+    outline: 2px solid theme('colors.blue.500') !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Small admin buttons */
+  .admin-layout .btn-sm {
+    min-height: 36px !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.8rem !important;
   }
 
   .btn-glow {

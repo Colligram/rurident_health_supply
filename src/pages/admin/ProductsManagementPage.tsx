@@ -261,7 +261,7 @@ export function ProductsManagementPage() {
                     <td className="px-6 py-4 text-sm font-medium">
                       <div className="flex items-center space-x-3">
                         <Link
-                          to={`/product/${product.id}`}
+                          to={`/p/item/${product.id}`}
                           className="text-gray-400 hover:text-gray-600"
                           title="View Product"
                         >

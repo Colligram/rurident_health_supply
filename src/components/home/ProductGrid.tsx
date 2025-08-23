@@ -439,12 +439,10 @@ export function ProductGrid() {
                   
                   {/* Stock Status */}
                   <div className="mb-6">
-                    {(selectedProduct.stock || 10) > 0 ? (
+                    {selectedProduct.inStock && (selectedProduct.stock > 0 || selectedProduct.stock === undefined) ? (
                       <div className="flex items-center text-sm">
                         <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                        <span className="text-green-600 font-medium">
-                          {(selectedProduct.stock || 10) > 5 ? 'In Stock' : `Only ${selectedProduct.stock || Math.floor(Math.random() * 5) + 1} left`}
-                        </span>
+                        <span className="text-green-600 font-medium">In Stock</span>
                       </div>
                     ) : (
                       <div className="flex items-center text-sm">
@@ -458,15 +456,15 @@ export function ProductGrid() {
                   <div className="flex space-x-3">
                     <button 
                       onClick={(e) => handleAddToCart(selectedProduct, e)}
-                      disabled={!(selectedProduct.stock || 10)}
+                      disabled={!selectedProduct.inStock}
                       className={`flex-1 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
-                        (selectedProduct.stock || 10) > 0
+                        selectedProduct.inStock
                           ? 'bg-orange-500 text-white hover:bg-orange-600'
                           : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                       }`}
                     >
                       <FiShoppingCart className="w-4 h-4" />
-                      <span>{(selectedProduct.stock || 10) > 0 ? 'Add to Cart' : 'Out of Stock'}</span>
+                      <span>{selectedProduct.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
                     </button>
                     <button 
                       onClick={(e) => handleWishlistToggle(selectedProduct, e)}
@@ -483,7 +481,7 @@ export function ProductGrid() {
                   {/* View Full Details Link */}
                   <div className="mt-4 text-center">
                     <Link
-                      to={`/product/${selectedProduct.id}`}
+                      to={`/p/item/${selectedProduct.id}`}
                       className="text-orange-600 hover:text-orange-700 font-medium text-sm"
                       onClick={closeModal}
                     >

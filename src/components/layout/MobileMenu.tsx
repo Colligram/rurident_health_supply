@@ -24,6 +24,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
       document.body.style.top = '0';
+      document.body.classList.add('mobile-menu-open');
       // Also prevent scroll on the html element
       document.documentElement.style.overflow = 'hidden';
     } else {
@@ -31,6 +32,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
       document.body.style.position = '';
       document.body.style.width = '';
       document.body.style.top = '';
+      document.body.classList.remove('mobile-menu-open');
       document.documentElement.style.overflow = '';
     }
 
@@ -39,6 +41,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
       document.body.style.position = '';
       document.body.style.width = '';
       document.body.style.top = '';
+      document.body.classList.remove('mobile-menu-open');
       document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
