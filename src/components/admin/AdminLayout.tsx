@@ -22,7 +22,8 @@ import {
   FiTrendingUp,
   FiTag,
   FiZap,
-  FiUserPlus
+  FiUserPlus,
+  FiStar
 } from 'react-icons/fi';
 
 interface AdminLayoutProps {
@@ -46,6 +47,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { name: 'Products', href: '/sys/catalog', icon: FiPackage },
     { name: 'Lightning Deals', href: '/sys/deals', icon: FiZap },
     { name: 'Orders', href: '/sys/orders', icon: FiShoppingCart },
+    { name: 'Reviews', href: '/sys/reviews', icon: FiStar },
     { name: 'Customers', href: '/sys/users', icon: FiUsers, staffRestricted: true },
     { name: 'Staff Management', href: '/sys/staff', icon: FiUserPlus, staffRestricted: true },
     { name: 'Analytics', href: '/sys/metrics', icon: FiTrendingUp, permission: 'view_analytics', staffRestricted: true },

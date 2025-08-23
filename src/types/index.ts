@@ -23,11 +23,56 @@ export interface Product {
 
 export interface Review {
   id: string;
+  productId: string;
   userId: string;
   userName: string;
+  userEmail: string;
   rating: number;
+  title?: string;
   comment: string;
-  date: Date;
+  photos?: string[];
+  isVerifiedBuyer: boolean;
+  orderId?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'hidden';
+  moderatedBy?: string;
+  moderatedAt?: Date;
+  moderationNotes?: string;
+  adminResponse?: {
+    content: string;
+    respondedBy: string;
+    respondedAt: Date;
+  };
+  helpfulVotes: number;
+  notHelpfulVotes: number;
+  isPinned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ReviewStats {
+  averageRating: number;
+  totalReviews: number;
+  distribution: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
+  };
+}
+
+export interface ReviewPagination {
+  currentPage: number;
+  totalPages: number;
+  totalReviews: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface ReviewResponse {
+  reviews: Review[];
+  stats: ReviewStats;
+  pagination: ReviewPagination;
 }
 
 export interface Category {

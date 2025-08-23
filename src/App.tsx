@@ -31,6 +31,7 @@ import { CustomersManagementPage } from './pages/admin/CustomersManagementPage';
 import { AnalyticsPage } from './pages/admin/AnalyticsPage';
 import { SettingsPage } from './pages/admin/SettingsPage';
 import { StaffManagementPage } from './pages/admin/StaffManagementPage';
+import { ReviewManagementPage } from './pages/admin/ReviewManagementPage';
 import { CartProvider } from './context/CartContext';
 import { CartAnimationProvider } from './context/CartAnimationContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -142,6 +143,14 @@ function App() {
                       element={
                         <ProtectedRoute staffRestricted={true}>
                           <StaffManagementPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/sys/reviews" 
+                      element={
+                        <ProtectedRoute staffRestricted={true}>
+                          <ReviewManagementPage />
                         </ProtectedRoute>
                       } 
                     />

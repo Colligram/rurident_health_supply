@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { AdminLayout } from '../../components/admin/AdminLayout';
-import { FiPackage, FiUsers, FiShoppingCart, FiTrendingUp, FiPlus, FiEdit, FiTrash2 } from 'react-icons/fi';
+import { FiPackage, FiUsers, FiShoppingCart, FiTrendingUp, FiPlus, FiEdit, FiTrash2, FiStar } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
 import { orderService, Order } from '../../services/orderService';
 import { customerService, Customer } from '../../services/customerService';
@@ -126,6 +126,13 @@ export function AdminDashboardPage() {
       href: '/sys/orders',
       icon: FiShoppingCart,
       color: 'bg-purple-500'
+    },
+    {
+      name: 'Review Management',
+      description: 'Moderate customer reviews',
+      href: '/sys/reviews',
+      icon: FiStar,
+      color: 'bg-yellow-500'
     }
   ];
 
