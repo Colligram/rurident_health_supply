@@ -454,4 +454,4 @@ const ReviewManagementPage: React.FC = () => {
   );
 };
 
-export default ReviewManagementPage;
+export { ReviewManagementPage };
