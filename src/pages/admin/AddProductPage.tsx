@@ -4,13 +4,13 @@ import { AdminLayout } from '../../components/admin/AdminLayout';
 import { FiArrowLeft, FiUpload, FiX } from 'react-icons/fi';
 import { useProducts } from '../../context/ProductsContext';
 import { useCategories } from '../../context/CategoriesContext';
-import { ProductAutocomplete } from '../../components/admin/ProductAutocomplete';
-import { AddProductMappingModal } from '../../components/admin/AddProductMappingModal';
+// import { ProductAutocomplete } from '../../components/admin/ProductAutocomplete';
+// import { AddProductMappingModal } from '../../components/admin/AddProductMappingModal';
 
 interface ProductFormData {
   name: string;
   category: string;
-  subcategory: string;
+  // subcategory: string;
   price: number;
   salePrice?: number;
   description: string;
@@ -29,7 +29,7 @@ export function AddProductPage() {
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     category: '',
-    subcategory: '',
+    // subcategory: '',
     price: NaN as any,
     salePrice: undefined,
     description: '',
@@ -42,8 +42,8 @@ export function AddProductPage() {
 
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
-  const [showMappingModal, setShowMappingModal] = useState(false);
-  const [pendingProductName, setPendingProductName] = useState('');
+  // const [showMappingModal, setShowMappingModal] = useState(false);
+  // const [pendingProductName, setPendingProductName] = useState('');
 
   // Build category options from API categories
   const categoryOptions = (apiCategories || []).map(c => c.name);
@@ -116,29 +116,29 @@ export function AddProductPage() {
     }));
   };
 
-  const handleShowMappingModal = (productName: string) => {
-    setPendingProductName(productName);
-    setShowMappingModal(true);
-  };
+  // const handleShowMappingModal = (productName: string) => {
+  //   setPendingProductName(productName);
+  //   setShowMappingModal(true);
+  // };
 
-  const handleMappingModalClose = () => {
-    setShowMappingModal(false);
-    setPendingProductName('');
-  };
+  // const handleMappingModalClose = () => {
+  //   setShowMappingModal(false);
+  //   setPendingProductName('');
+  // };
 
-  const handleMappingSuccess = (mapping: { productName: string; subcategory: string; category?: string }) => {
-    // Update form with the new mapping
-    setFormData(prev => ({
-      ...prev,
-      name: mapping.productName,
-      subcategory: mapping.subcategory,
-      category: mapping.category || prev.category
-    }));
-  };
+  // const handleMappingSuccess = (mapping: { productName: string; subcategory: string; category?: string }) => {
+  //   // Update form with the new mapping
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     name: mapping.productName,
+  //     subcategory: mapping.subcategory,
+  //     category: mapping.category || prev.category
+  //   }));
+  // };
 
-  const handleSubcategoryChange = (subcategory: string) => {
-    setFormData(prev => ({ ...prev, subcategory }));
-  };
+  // const handleSubcategoryChange = (subcategory: string) => {
+  //   setFormData(prev => ({ ...prev, subcategory }));
+  // };
 
   const handleFileUpload = (index: number, file: File) => {
     // Check file size (limit to 5MB)
@@ -206,9 +206,9 @@ export function AddProductPage() {
       images: formData.images.filter(img => img.trim()),
       inStock: (Number.isNaN(formData.stock as any) ? 0 : formData.stock) > 0,
       rating: 0,
-      reviewCount: 0,
+      reviewCount: 0
       // Include subcategory in product data
-      subcategory: formData.subcategory || undefined
+      // subcategory: formData.subcategory || undefined
     };
 
     // Check if we have any images that might be too large
@@ -276,29 +276,13 @@ export function AddProductPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Product Name *
                     </label>
-                    <ProductAutocomplete
-                      value={formData.name}
-                      onChange={(value) => handleInputChange('name', value)}
-                      onSubcategoryChange={handleSubcategoryChange}
-                      onShowAddModal={handleShowMappingModal}
-                      placeholder="Enter product name..."
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Start typing to see suggestions. Click the "+" button to add new product mappings.
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Subcategory
-                    </label>
                     <input
                       type="text"
-                      value={formData.subcategory}
-                      onChange={(e) => handleInputChange('subcategory', e.target.value)}
+                      required
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                      placeholder="Auto-filled from product mapping"
-                      readOnly
+                      placeholder="Enter product name"
                     />
                   </div>
 
@@ -585,12 +569,12 @@ export function AddProductPage() {
       </div>
 
       {/* Add Product Mapping Modal */}
-      <AddProductMappingModal
+      {/* <AddProductMappingModal
         isOpen={showMappingModal}
         onClose={handleMappingModalClose}
         onSuccess={handleMappingSuccess}
         initialProductName={pendingProductName}
-      />
+      /> */}
     </AdminLayout>
   );
 }
