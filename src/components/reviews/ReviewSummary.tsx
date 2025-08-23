@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaLightbulb, FaSmile, FaFrown, FaNeutral } from 'react-icons/fa';
+import { FaLightbulb, FaSmile, FaFrown, FaMeh } from 'react-icons/fa';
 import { ReviewStats } from '../../types';
 
 interface ReviewSummaryProps {
@@ -13,7 +13,7 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({ stats, className = '' }) 
       return {
         sentiment: 'neutral',
         summary: 'No reviews yet. Be the first to share your experience!',
-        icon: FaNeutral,
+        icon: FaMeh,
         color: 'text-gray-500'
       };
     }
@@ -44,7 +44,7 @@ const ReviewSummary: React.FC<ReviewSummaryProps> = ({ stats, className = '' }) 
       return {
         sentiment: 'mixed',
         summary: `Mixed reviews with ${positivePercentage.toFixed(0)}% positive and ${negativePercentage.toFixed(0)}% negative feedback. Consider reading individual reviews for more details.`,
-        icon: FaNeutral,
+        icon: FaMeh,
         color: 'text-yellow-600'
       };
     } else if (averageRating >= 3.0) {
