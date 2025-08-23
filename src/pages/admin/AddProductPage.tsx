@@ -227,7 +227,7 @@ export function AddProductPage() {
       // Add to products context which will call the API
       await addProduct(cleanedData);
       alert('Product added successfully!');
-      navigate('/admin/products');
+      navigate('/sys/catalog');
     } catch (error: any) {
       console.error('Error adding product:', error);
       
@@ -253,7 +253,7 @@ export function AddProductPage() {
         {/* Header with back button */}
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/admin/products')}
+            onClick={() => navigate('/sys/catalog')}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <FiArrowLeft className="w-5 h-5" />
@@ -572,7 +572,7 @@ export function AddProductPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => navigate('/admin/products')}
+                    onClick={() => navigate('/sys/catalog')}
                     className="btn-secondary w-full"
                   >
                     Cancel

@@ -1041,11 +1041,31 @@ app.get('/api/categories/:id', async (req, res) => {
 app.post('/api/categories', async (req, res) => {
   try {
     const categoryData = req.body;
+    
+    // Check if category with same name already exists
+    const existingCategory = await Category.findOne({ name: categoryData.name });
+    if (existingCategory) {
+      return res.status(409).json({ 
+        message: 'Category with this name already exists', 
+        error: 'DUPLICATE_CATEGORY',
+        existingCategory: existingCategory
+      });
+    }
+    
     const category = new Category(categoryData);
     const savedCategory = await category.save();
     res.status(201).json({ id: savedCategory._id, success: true, message: 'Category created successfully' });
   } catch (error) {
     console.error('Error creating category:', error);
+    
+    // Handle MongoDB duplicate key error specifically
+    if (error.code === 11000) {
+      return res.status(409).json({ 
+        message: 'Category with this name already exists', 
+        error: 'DUPLICATE_CATEGORY'
+      });
+    }
+    
     res.status(500).json({ message: 'Error creating category', error: error.message });
   }
 });

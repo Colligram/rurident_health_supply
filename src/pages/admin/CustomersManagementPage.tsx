@@ -231,7 +231,7 @@ export function CustomersManagementPage() {
         {/* Header */}
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/admin/dashboard')}
+            onClick={() => navigate('/sys/panel')}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <FiArrowLeft className="w-5 h-5" />

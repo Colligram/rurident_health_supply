@@ -15,7 +15,7 @@ export function AdminLoginPage() {
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    return <Navigate to="/admin/dashboard" replace />;
+    return <Navigate to="/sys/panel" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
