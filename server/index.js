@@ -55,6 +55,7 @@ const productSchema = new mongoose.Schema({
   images: { type: [String], default: [] },
 
   category: { type: String, required: true },
+  subcategory: { type: String }, // Optional subcategory
 
   // inventory
   inStock: { type: Boolean, default: true },
@@ -170,6 +171,22 @@ const categorySchema = new mongoose.Schema({
 });
 
 const Category = mongoose.model('Category', categorySchema);
+
+// Product Mapping Schema - for mapping product names to subcategories
+const productMappingSchema = new mongoose.Schema({
+  productName: { type: String, required: true, unique: true },
+  subcategory: { type: String, required: true },
+  category: { type: String }, // Optional main category
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+productMappingSchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+const ProductMapping = mongoose.model('ProductMapping', productMappingSchema);
 
 /* =========================
    DB CONNECTION + SEEDING
@@ -381,6 +398,24 @@ async function seedInitialData() {
 
       await Category.insertMany(sampleCategories);
       console.log('✅ Sample categories added to database');
+    }
+
+    // Seed product mappings if none exist
+    const mappingCount = await ProductMapping.countDocuments();
+    if (mappingCount === 0) {
+      const sampleMappings = [
+        { productName: 'Dental Scaler', subcategory: 'Scalers', category: 'Clinical Machines & Equipment' },
+        { productName: 'Periodontal Probe', subcategory: 'Clinical Orthodontics', category: 'Clinical Machines & Equipment' },
+        { productName: 'Crown Material', subcategory: 'Crown and Bridge', category: 'Dental Laboratory' },
+        { productName: 'Dental Gloves', subcategory: 'Gloves', category: 'Consumables' },
+        { productName: 'Student Kit Basic', subcategory: 'Basic Kits', category: 'Student Kits' },
+        { productName: 'Electric Dental Chair', subcategory: 'Electric Chairs', category: 'Dental Chairs' },
+        { productName: 'Handpiece High Speed', subcategory: 'Handpieces', category: 'Clinical Machines & Equipment' },
+        { productName: 'Surgical Forceps', subcategory: 'Surgical Tools', category: 'Clinical Machines & Equipment' }
+      ];
+
+      await ProductMapping.insertMany(sampleMappings);
+      console.log('✅ Sample product mappings added to database');
     }
   } catch (error) {
     console.log('Warning: Could not seed initial data:', error.message);
@@ -870,6 +905,110 @@ app.get('/api/customers/stats', async (req, res) => {
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching customer stats', error: error.message });
+  }
+});
+
+// PRODUCT MAPPINGS
+
+// Get all product mappings
+app.get('/api/product-mappings', async (req, res) => {
+  try {
+    const mappings = await ProductMapping.find().sort({ productName: 1 });
+    res.json(mappings);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching product mappings', error: error.message });
+  }
+});
+
+// Search product mappings
+app.get('/api/product-mappings/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
+    const searchRegex = new RegExp(q, 'i');
+    const mappings = await ProductMapping.find({
+      productName: searchRegex
+    }).sort({ productName: 1 }).limit(10);
+    
+    res.json(mappings);
+  } catch (error) {
+    res.status(500).json({ message: 'Error searching product mappings', error: error.message });
+  }
+});
+
+// Create new product mapping
+app.post('/api/product-mappings', async (req, res) => {
+  try {
+    const { productName, subcategory, category } = req.body;
+    
+    if (!productName || !subcategory) {
+      return res.status(400).json({ message: 'Product name and subcategory are required' });
+    }
+
+    // Check if mapping already exists
+    const existingMapping = await ProductMapping.findOne({ productName: { $regex: new RegExp(`^${productName}$`, 'i') } });
+    if (existingMapping) {
+      return res.status(400).json({ message: 'Product mapping already exists' });
+    }
+
+    const mapping = new ProductMapping({
+      productName: productName.trim(),
+      subcategory: subcategory.trim(),
+      category: category?.trim()
+    });
+
+    const savedMapping = await mapping.save();
+    res.status(201).json({ 
+      success: true, 
+      mapping: savedMapping, 
+      message: 'Product mapping created successfully' 
+    });
+  } catch (error) {
+    console.error('Error creating product mapping:', error);
+    res.status(500).json({ message: 'Error creating product mapping', error: error.message });
+  }
+});
+
+// Update product mapping
+app.put('/api/product-mappings/:id', async (req, res) => {
+  try {
+    const { productName, subcategory, category } = req.body;
+    const updates = { updatedAt: new Date() };
+
+    if (productName) updates.productName = productName.trim();
+    if (subcategory) updates.subcategory = subcategory.trim();
+    if (category) updates.category = category.trim();
+
+    const mapping = await ProductMapping.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!mapping) {
+      return res.status(404).json({ message: 'Product mapping not found' });
+    }
+
+    res.json({ success: true, mapping });
+  } catch (error) {
+    console.error('Error updating product mapping:', error);
+    res.status(500).json({ message: 'Error updating product mapping', error: error.message });
+  }
+});
+
+// Delete product mapping
+app.delete('/api/product-mappings/:id', async (req, res) => {
+  try {
+    const mapping = await ProductMapping.findByIdAndDelete(req.params.id);
+    if (!mapping) {
+      return res.status(404).json({ message: 'Product mapping not found' });
+    }
+    res.json({ success: true, message: 'Product mapping deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting product mapping:', error);
+    res.status(500).json({ message: 'Error deleting product mapping', error: error.message });
   }
 });
 
