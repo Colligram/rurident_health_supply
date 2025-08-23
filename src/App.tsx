@@ -393,7 +393,19 @@ function App() {
                     {/* Legacy route redirects for SEO */}
                     <Route path="/products" element={<Navigate to="/p/browse" replace />} />
                     <Route path="/products/:category" element={<Navigate to="/p/browse/:category" replace />} />
-                    <Route path="/product/:id" element={<Navigate to="/p/item/:id" replace />} />
+                    <Route 
+                      path="/product/:id" 
+                      element={
+                        <>
+                          <Header />
+                          <main className="flex-1 pt-20">
+                            <ProductDetailPage />
+                          </main>
+                          <Footer />
+                          <ChatBot />
+                        </>
+                      } 
+                    />
                     <Route path="/cart" element={<Navigate to="/u/cart" replace />} />
                     <Route path="/checkout" element={<Navigate to="/u/checkout" replace />} />
                     <Route path="/wishlist" element={<Navigate to="/u/wishlist" replace />} />

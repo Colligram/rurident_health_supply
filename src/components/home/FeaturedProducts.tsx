@@ -38,7 +38,7 @@ export function FeaturedProducts() {
   const handleQuickView = (product: any, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    navigate(`/product/${product.id}`);
+    navigate(`/p/item/${product.id}`);
   };
 
   // Show more products for better product discovery
@@ -126,7 +126,7 @@ export function FeaturedProducts() {
               </button>
 
               {/* Product Image Container */}
-              <Link to={`/product/${product.id}`} className="block relative">
+              <Link to={`/p/item/${product.id}`} className="block relative">
                 <div className="relative overflow-hidden bg-gray-50 aspect-square w-full h-64 flex items-center justify-center">
                   <img
                     src={product.images?.[0] || 'https://via.placeholder.com/400x400?text=No+Image'}
@@ -165,7 +165,7 @@ export function FeaturedProducts() {
                 </div>
 
                 {/* Product Name */}
-                <Link to={`/product/${product.id}`}>
+                <Link to={`/p/item/${product.id}`}>
                   <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-orange-600 transition-colors duration-200 line-clamp-2 leading-tight">
                     {product.name}
                   </h3>
@@ -221,36 +221,34 @@ export function FeaturedProducts() {
                   </div>
                 </div>
 
-                {/* Stock Status */}
-                <div className="mb-4">
-                  {(product.stock || 10) > 0 ? (
-                    <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                      <span className="text-green-600 font-medium">
-                        {(product.stock || 10) > 5 ? 'In Stock' : `Only ${product.stock || Math.floor(Math.random() * 5) + 1} left`}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
-                      <span className="text-red-600 font-medium">Out of Stock</span>
-                    </div>
-                  )}
-                </div>
+                                  {/* Stock Status */}
+                  <div className="mb-4">
+                    {product.inStock && (product.stock > 0 || product.stock === undefined) ? (
+                      <div className="flex items-center text-sm">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                        <span className="text-green-600 font-medium">In Stock</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center text-sm">
+                        <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                        <span className="text-red-600 font-medium">Out of Stock</span>
+                      </div>
+                    )}
+                  </div>
 
                 {/* Add to Cart Button */}
                 <button
                   onClick={(e) => handleAddToCart(product, e)}
-                  disabled={!(product.stock || 10)}
+                  disabled={!product.inStock}
                   className={`w-full py-3 px-4 rounded-xl font-bold transition-all duration-200 ${
-                    (product.stock || 10) > 0
+                    product.inStock
                       ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                       : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                   }`}
                 >
                   <div className="flex items-center justify-center space-x-2">
                     <FiShoppingCart className="w-4 h-4" />
-                    <span>{(product.stock || 10) > 0 ? 'Add to Cart' : 'Out of Stock'}</span>
+                    <span>{product.inStock ? 'Add to Cart' : 'Out of Stock'}</span>
                   </div>
                 </button>
               </div>
@@ -300,7 +298,7 @@ export function FeaturedProducts() {
                     {formatPrice(product.salePrice || product.price)}
                   </div>
                   <Link
-                    to={`/product/${product.id}`}
+                    to={`/p/item/${product.id}`}
                     className="inline-block bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors duration-200"
                   >
                     View Details

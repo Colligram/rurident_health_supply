@@ -356,7 +356,7 @@ export function ProductsPage() {
 
                     <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 text-sm leading-tight">
                       <Link
-                        to={`/product/${product.id}`}
+                        to={`/p/item/${product.id}`}
                         className="hover:text-primary-600 transition-colors"
                       >
                         {product.name || 'Product Name Unavailable'}
@@ -400,9 +400,9 @@ export function ProductsPage() {
 
                     {/* Stock Status */}
                     <div className="mb-2">
-                      {product.stock && product.stock > 0 ? (
+                      {product.inStock && (product.stock > 0 || product.stock === undefined) ? (
                         <span className="text-xs text-green-600 font-medium">
-                          {product.stock} in stock
+                          In stock
                         </span>
                       ) : (
                         <span className="text-xs text-red-600 font-medium">
