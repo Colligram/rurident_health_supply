@@ -109,21 +109,21 @@ export function AdminDashboardPage() {
     {
       name: 'Add Product',
       description: 'Add a new product to inventory',
-      href: '/admin/products/new',
+      href: '/sys/catalog/new',
       icon: FiPlus,
       color: 'bg-green-500'
     },
     {
       name: 'Manage Products',
       description: 'Edit existing products',
-      href: '/admin/products',
+      href: '/sys/catalog',
       icon: FiEdit,
       color: 'bg-blue-500'
     },
     {
       name: 'View Orders',
       description: 'Manage customer orders',
-      href: '/admin/orders',
+      href: '/sys/orders',
       icon: FiShoppingCart,
       color: 'bg-purple-500'
     }

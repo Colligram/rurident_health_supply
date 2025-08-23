@@ -81,7 +81,7 @@ export function ProductsManagementPage() {
                 Delete ({selectedProducts.length})
               </button>
             )}
-            <Link to="/admin/products/new" className="btn-primary">
+            <Link to="/sys/catalog/new" className="btn-primary">
               <FiPlus className="w-4 h-4 mr-2" />
               Add Product
             </Link>
@@ -300,7 +300,7 @@ export function ProductsManagementPage() {
                   }
                 </p>
                 {!searchTerm && selectedCategory === 'all' && (
-                  <Link to="/admin/products/new" className="btn-primary">
+                  <Link to="/sys/catalog/new" className="btn-primary">
                     <FiPlus className="w-4 h-4 mr-2" />
                     Add Product
                   </Link>
@@ -365,7 +365,7 @@ export function ProductsManagementPage() {
                   {/* Actions */}
                   <div className="flex space-x-1">
                     <Link
-                      to={`/admin/products/${product.id}/edit`}
+                      to={`/sys/catalog/${product.id}/edit`}
                       className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 p-2 rounded-lg transition-colors flex items-center justify-center"
                     >
                       <FiEdit className="w-3 h-3 md:w-4 md:h-4" />
@@ -393,7 +393,7 @@ export function ProductsManagementPage() {
                   }
                 </p>
                 {!searchTerm && selectedCategory === 'all' && (
-                  <Link to="/admin/products/new" className="btn-primary">
+                  <Link to="/sys/catalog/new" className="btn-primary">
                     <FiPlus className="w-4 h-4 mr-2" />
                     Add Product
                   </Link>

@@ -133,7 +133,7 @@ export function EditProductPage() {
     
     // Simulate success
     alert('Product updated successfully!');
-    navigate('/admin/products');
+            navigate('/sys/catalog');
   };
 
   const handleDelete = () => {
@@ -141,7 +141,7 @@ export function EditProductPage() {
       // In a real app, this would be an API call
       console.log('Deleting product:', id);
       alert('Product deleted successfully!');
-      navigate('/admin/products');
+      navigate('/sys/catalog');
     }
   };
 
@@ -152,7 +152,7 @@ export function EditProductPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate('/admin/products')}
+              onClick={() => navigate('/sys/catalog')}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <FiArrowLeft className="w-5 h-5" />
@@ -432,7 +432,7 @@ export function EditProductPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => navigate('/admin/products')}
+                    onClick={() => navigate('/sys/catalog')}
                     className="btn-secondary w-full"
                   >
                     Cancel

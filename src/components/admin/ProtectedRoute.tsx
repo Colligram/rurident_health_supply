@@ -20,7 +20,7 @@ export function ProtectedRoute({ children, requiredPermission, staffRestricted =
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/sys/auth" replace />;
   }
 
   // Check if staff is trying to access restricted content
