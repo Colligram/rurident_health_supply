@@ -149,11 +149,14 @@ export function StaffManagementPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Staff Management</h1>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Staff Management</h1>
+            <p className="text-gray-600 mt-1">Manage your staff members and permissions</p>
+          </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 flex items-center space-x-2"
+            className="btn-admin-primary flex items-center justify-center space-x-2"
           >
             <FiPlus className="w-4 h-4" />
             <span>Add Staff Member</span>
@@ -162,61 +165,67 @@ export function StaffManagementPage() {
 
         {/* Staff List */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Staff Member
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {staff.map((member) => (
-                <tr key={member._id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{member.name}</div>
-                    <div className="text-sm text-gray-500">Staff Member</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {member.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(member.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => {
-                        setSelectedStaff(member);
-                        setShowPasswordModal(true);
-                      }}
-                      className="text-blue-600 hover:text-blue-900 inline-flex items-center space-x-1"
-                      title="Change Password"
-                    >
-                      <FiKey className="w-4 h-4" />
-                      <span>Change Password</span>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteStaff(member)}
-                      className="text-red-600 hover:text-red-900 inline-flex items-center space-x-1"
-                      title="Delete Staff"
-                    >
-                      <FiTrash2 className="w-4 h-4" />
-                      <span>Delete</span>
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Staff Member
+                  </th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="hidden sm:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {staff.map((member) => (
+                  <tr key={member._id}>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{member.name}</div>
+                      <div className="text-sm text-gray-500">Staff Member</div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <div className="truncate max-w-xs sm:max-w-none">{member.email}</div>
+                    </td>
+                    <td className="hidden sm:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(member.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedStaff(member);
+                            setShowPasswordModal(true);
+                          }}
+                          className="btn-admin-secondary inline-flex items-center justify-center space-x-1 text-xs sm:text-sm"
+                          title="Change Password"
+                        >
+                          <FiKey className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="hidden sm:inline">Change Password</span>
+                          <span className="sm:hidden">Password</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteStaff(member)}
+                          className="btn-admin-danger inline-flex items-center justify-center space-x-1 text-xs sm:text-sm"
+                          title="Delete Staff"
+                        >
+                          <FiTrash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                          <span className="hidden sm:inline">Delete</span>
+                          <span className="sm:hidden">Remove</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {staff.length === 0 && (
             <div className="text-center py-8 text-gray-500">
@@ -227,148 +236,152 @@ export function StaffManagementPage() {
 
         {/* Create Staff Modal */}
         {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">Create New Staff Member</h2>
-              <form onSubmit={handleCreateStaff} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
-                  </label>
-                  <div className="relative">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-4">Create New Staff Member</h2>
+                <form onSubmit={handleCreateStaff} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name
+                    </label>
                     <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="input-field"
                       required
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="input-field"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        className="input-field pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button
+                      type="submit"
+                      className="btn-admin-success flex-1"
+                    >
+                      Create Staff Member
+                    </button>
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => {
+                        setShowCreateModal(false);
+                        setFormData({ name: '', email: '', password: '' });
+                      }}
+                      className="btn-admin-secondary flex-1"
                     >
-                      {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      Cancel
                     </button>
                   </div>
-                </div>
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-primary-600 text-white py-2 rounded-md hover:bg-primary-700"
-                  >
-                    Create Staff Member
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowCreateModal(false);
-                      setFormData({ name: '', email: '', password: '' });
-                    }}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         )}
 
         {/* Change Password Modal */}
         {showPasswordModal && selectedStaff && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md">
-              <h2 className="text-xl font-bold mb-4">
-                Change Password for {selectedStaff.name}
-              </h2>
-              <form onSubmit={handleChangePassword} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    New Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={passwordData.newPassword}
-                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      required
-                    />
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <h2 className="text-xl font-bold mb-4">
+                  Change Password for {selectedStaff.name}
+                </h2>
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                        className="input-field pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Confirm New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                        className="input-field pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        {showConfirmPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button
+                      type="submit"
+                      className="btn-admin-success flex-1"
+                    >
+                      Update Password
+                    </button>
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      onClick={() => {
+                        setShowPasswordModal(false);
+                        setPasswordData({ newPassword: '', confirmPassword: '' });
+                        setSelectedStaff(null);
+                      }}
+                      className="btn-admin-secondary flex-1"
                     >
-                      {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                      Cancel
                     </button>
                   </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm New Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      value={passwordData.confirmPassword}
-                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    >
-                      {showConfirmPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-primary-600 text-white py-2 rounded-md hover:bg-primary-700"
-                  >
-                    Update Password
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowPasswordModal(false);
-                      setPasswordData({ newPassword: '', confirmPassword: '' });
-                      setSelectedStaff(null);
-                    }}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-400"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         )}

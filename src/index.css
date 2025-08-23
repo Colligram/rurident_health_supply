@@ -32,6 +32,32 @@
       font-size: 16px; /* Base font size for mobile */
     }
 
+    /* Fixed z-index layering for mobile */
+    .mobile-menu-overlay {
+      z-index: 999999 !important;
+    }
+
+    .mobile-menu-panel {
+      z-index: 9999999 !important;
+    }
+
+    /* Prevent category sections from interfering with mobile menu */
+    .category-section {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Ensure header stays above category sections but below mobile menu */
+    header {
+      z-index: 40;
+    }
+
+    /* Fix for overlapping content */
+    .content-below-header {
+      padding-top: 0;
+      margin-top: 0;
+    }
+
     /* Increase icon sizes globally on mobile */
     .icon-sm {
       width: 1.25rem !important;
@@ -84,6 +110,16 @@
     .mobile-spacing-lg {
       padding: 1.5rem !important;
     }
+
+    /* Enhanced admin table responsiveness */
+    .admin-table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .admin-table-actions {
+      min-width: 120px;
+    }
   }
 
   /* Tablet specific adjustments */
@@ -103,9 +139,12 @@
   .btn-primary {
     @apply bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105;
     box-shadow: 0 10px 25px -5px rgba(249, 115, 22, 0.4), 0 8px 10px -6px rgba(249, 115, 22, 0.1);
-    /* Mobile enhancements */
+    /* Enhanced mobile and admin optimizations */
     min-height: 48px;
     font-size: 1rem;
+    box-sizing: border-box;
+    padding: 0.75rem 1.5rem;
+    min-width: fit-content;
   }
 
   .btn-primary:hover {
@@ -114,15 +153,60 @@
 
   .btn-secondary {
     @apply bg-gradient-to-r from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 text-primary-600 font-medium py-3 px-6 rounded-lg border-2 border-primary-500 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+    /* Enhanced admin optimizations */
     min-height: 48px;
     font-size: 1rem;
+    box-sizing: border-box;
+    padding: 0.75rem 1.5rem;
+    min-width: fit-content;
   }
 
   .btn-accent {
     @apply bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1;
     box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.4), 0 8px 10px -6px rgba(245, 158, 11, 0.1);
+    /* Enhanced admin optimizations */
     min-height: 48px;
     font-size: 1rem;
+    box-sizing: border-box;
+    padding: 0.75rem 1.5rem;
+    min-width: fit-content;
+  }
+
+  /* New admin-specific button classes */
+  .btn-admin-primary {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+    box-sizing: border-box;
+    min-height: 48px;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    min-width: 120px;
+  }
+
+  .btn-admin-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 font-medium py-3 px-6 rounded-lg border border-gray-300 hover:border-gray-400 transition-all duration-300 shadow-sm hover:shadow-md;
+    box-sizing: border-box;
+    min-height: 48px;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    min-width: 120px;
+  }
+
+  .btn-admin-danger {
+    @apply bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+    box-sizing: border-box;
+    min-height: 48px;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    min-width: 120px;
+  }
+
+  .btn-admin-success {
+    @apply bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+    box-sizing: border-box;
+    min-height: 48px;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.5rem;
+    min-width: 120px;
   }
 
   .btn-glow {
@@ -796,3 +880,92 @@
   background: linear-gradient(45deg, #8b5cf6, #ec4899, #000000, #3b82f6);
   background-size: 200% 200%;
 }
+
+  /* Global z-index management */
+  .header-fixed {
+    z-index: 40;
+  }
+
+  .mobile-menu {
+    z-index: 999999;
+  }
+
+  .modal-overlay {
+    z-index: 50;
+  }
+
+  .dropdown-menu {
+    z-index: 60;
+  }
+
+  /* Content spacing fixes */
+  .page-content {
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  /* Prevent horizontal scroll on mobile */
+  @media (max-width: 767px) {
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    * {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Fix for wide elements */
+    .overflow-fix {
+      overflow-x: hidden;
+      word-wrap: break-word;
+    }
+
+    /* Enhanced mobile table styling */
+    .mobile-table {
+      font-size: 0.875rem;
+    }
+
+    .mobile-table td {
+      padding: 0.5rem;
+      vertical-align: top;
+    }
+
+    .mobile-table .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .mobile-table .action-buttons button {
+      font-size: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      min-height: 36px;
+    }
+  }
+
+  /* Enhanced form styling for better mobile experience */
+  .form-container {
+    padding: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .form-container {
+      padding: 1.5rem;
+    }
+  }
+
+  /* Better modal styling for mobile */
+  .modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .modal-content {
+      margin: 0;
+      max-height: 85vh;
+    }
+  }

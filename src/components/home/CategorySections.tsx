@@ -91,53 +91,53 @@ export function CategorySections() {
   ];
 
   return (
-    <div className="bg-white py-12">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="bg-white py-8 sm:py-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             Shop by Category
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
             Explore our comprehensive range of dental equipment and supplies organized by specialty
           </p>
         </div>
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Category Grid - Enhanced mobile responsiveness */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {categories.map((category) => (
             <div
               key={category.id}
-              className="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+              className="group bg-white rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl sm:hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 sm:hover:-translate-y-2"
             >
               {/* Category Header */}
-              <div className={`bg-gradient-to-r ${category.bgColor} p-6 text-white relative overflow-hidden`}>
-                <div className="absolute top-0 right-0 text-6xl opacity-20 transform rotate-12 translate-x-4 -translate-y-2">
+              <div className={`bg-gradient-to-r ${category.bgColor} p-4 sm:p-6 text-white relative overflow-hidden`}>
+                <div className="absolute top-0 right-0 text-4xl sm:text-6xl opacity-20 transform rotate-12 translate-x-2 sm:translate-x-4 -translate-y-1 sm:-translate-y-2">
                   {category.icon}
                 </div>
                 <div className="relative z-10">
-                  <div className="text-3xl mb-3">{category.icon}</div>
-                  <h3 className="text-2xl font-bold mb-2">{category.title}</h3>
-                  <p className="text-sm opacity-90">{category.description}</p>
+                  <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">{category.icon}</div>
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">{category.title}</h3>
+                  <p className="text-xs sm:text-sm opacity-90 leading-relaxed">{category.description}</p>
                 </div>
               </div>
 
               {/* Subsections */}
-              <div className="p-6">
-                <div className="space-y-3 mb-6">
+              <div className="p-4 sm:p-6">
+                <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                   {category.subsections.map((subsection, index) => (
                     <Link
                       key={index}
                       to={subsection.path}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors group/item"
+                      className="flex items-center justify-between p-2 sm:p-3 rounded-lg hover:bg-gray-50 transition-colors group/item"
                     >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-lg">{subsection.icon}</span>
-                        <span className="font-medium text-gray-900 group-hover/item:text-orange-600 transition-colors">
+                      <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                        <span className="text-base sm:text-lg flex-shrink-0">{subsection.icon}</span>
+                        <span className="font-medium text-gray-900 group-hover/item:text-orange-600 transition-colors text-sm sm:text-base truncate">
                           {subsection.name}
                         </span>
                       </div>
-                      <FiArrowRight className="w-4 h-4 text-gray-400 group-hover/item:text-orange-600 group-hover/item:translate-x-1 transition-all" />
+                      <FiArrowRight className="w-4 h-4 text-gray-400 group-hover/item:text-orange-600 group-hover/item:translate-x-1 transition-all flex-shrink-0" />
                     </Link>
                   ))}
                 </div>
@@ -145,7 +145,7 @@ export function CategorySections() {
                 {/* View All Button */}
                 <Link
                   to={`/products?category=${category.id}`}
-                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-orange-500 hover:to-orange-600 text-gray-700 hover:text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 group/button"
+                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-orange-500 hover:to-orange-600 text-gray-700 hover:text-white py-2.5 sm:py-3 px-4 rounded-lg font-medium transition-all duration-300 group/button text-sm sm:text-base"
                 >
                   <span>View All {category.title}</span>
                   <FiArrowRight className="w-4 h-4 group-hover/button:translate-x-1 transition-transform" />
@@ -156,25 +156,25 @@ export function CategorySections() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-2xl p-8 border border-orange-200">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        <div className="text-center mt-12 sm:mt-16">
+          <div className="bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl sm:rounded-2xl p-6 sm:p-8 border border-orange-200">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               Can't Find What You're Looking For?
             </h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto text-sm sm:text-base">
               Our extensive catalog includes thousands of dental products. Browse our complete collection or contact our experts for personalized recommendations.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link
                 to="/products"
-                className="inline-flex items-center justify-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-medium transition-colors"
+                className="inline-flex items-center justify-center space-x-2 bg-orange-600 hover:bg-orange-700 text-white py-3 px-6 rounded-lg font-medium transition-colors text-sm sm:text-base"
               >
                 <span>Browse All Products</span>
                 <FiArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center space-x-2 border border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white py-3 px-6 rounded-lg font-medium transition-colors"
+                className="inline-flex items-center justify-center space-x-2 border border-orange-600 text-orange-600 hover:bg-orange-600 hover:text-white py-3 px-6 rounded-lg font-medium transition-colors text-sm sm:text-base"
               >
                 <span>Contact Our Experts</span>
                 <FiTool className="w-4 h-4" />

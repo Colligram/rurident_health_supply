@@ -23,16 +23,23 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
+      document.body.style.top = '0';
+      // Also prevent scroll on the html element
+      document.documentElement.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
+      document.body.style.top = '';
+      document.documentElement.style.overflow = '';
     }
 
     return () => {
       document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.width = '';
+      document.body.style.top = '';
+      document.documentElement.style.overflow = '';
     };
   }, [isOpen]);
   
@@ -50,13 +57,25 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
     document.body.style.overflow = '';
     document.body.style.position = '';
     document.body.style.width = '';
+    document.body.style.top = '';
+    document.documentElement.style.overflow = '';
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] lg:hidden">
-      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onClick={handleClose} />
-      <div className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-2xl border-l border-gray-200 overflow-hidden">
+    <div className="fixed inset-0 z-[999999] lg:hidden">
+      {/* Enhanced backdrop with higher opacity */}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm" 
+        onClick={handleClose} 
+        style={{ zIndex: 999999 }}
+      />
+      
+      {/* Menu panel with enhanced positioning */}
+      <div 
+        className="fixed top-0 right-0 w-full max-w-sm h-full bg-white shadow-2xl border-l border-gray-200 overflow-hidden"
+        style={{ zIndex: 9999999 }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-orange-500 to-orange-600">
           <div className="flex items-center space-x-2">
@@ -77,7 +96,7 @@ export function MobileMenu({ isOpen, onClose, navigation }: MobileMenuProps) {
         </div>
         
         {/* Navigation */}
-        <nav className="p-4 flex-1 overflow-y-auto">
+        <nav className="p-4 flex-1 overflow-y-auto h-full">
           <ul className="space-y-2">
             {navigation.map((item) => (
               <li key={item.name}>

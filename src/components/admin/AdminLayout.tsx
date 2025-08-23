@@ -76,7 +76,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <h2 className="text-lg font-semibold text-gray-900">Rurident Admin</h2>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="rounded-md p-2 text-gray-400 hover:text-gray-500"
+              className="rounded-md p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
             >
               <FiX className="h-6 w-6" />
             </button>
@@ -140,7 +140,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden rounded-md p-2 text-gray-400 hover:text-gray-500"
+                className="lg:hidden rounded-md p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
               >
                 <FiMenu className="h-6 w-6" />
               </button>
@@ -158,7 +158,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center px-2 sm:px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                className="btn-admin-secondary flex items-center px-2 sm:px-3 py-2 text-sm transition-colors duration-200"
                 title="Logout"
               >
                 <FiLogOut className="h-5 w-5 sm:mr-2" />
