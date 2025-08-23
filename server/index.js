@@ -188,6 +188,64 @@ productMappingSchema.pre('save', function (next) {
 
 const ProductMapping = mongoose.model('ProductMapping', productMappingSchema);
 
+// Review Schema - Comprehensive product review system
+const reviewSchema = new mongoose.Schema({
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  userId: { type: String, required: true }, // Customer ID or email
+  userName: { type: String, required: true },
+  userEmail: { type: String, required: true },
+  
+  // Review content
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  title: { type: String, maxlength: 100 },
+  comment: { type: String, required: true, maxlength: 2000 },
+  
+  // Media
+  photos: [{ type: String }], // Array of base64 or URL strings
+  
+  // Verification
+  isVerifiedBuyer: { type: Boolean, default: false },
+  orderId: { type: String }, // Reference to the order that purchased this product
+  
+  // Moderation
+  status: { 
+    type: String, 
+    enum: ['pending', 'approved', 'rejected', 'hidden'], 
+    default: 'pending' 
+  },
+  moderatedBy: { type: String }, // Admin who moderated
+  moderatedAt: { type: Date },
+  moderationNotes: { type: String },
+  
+  // Admin response
+  adminResponse: {
+    content: { type: String },
+    respondedBy: { type: String },
+    respondedAt: { type: Date }
+  },
+  
+  // Engagement
+  helpfulVotes: { type: Number, default: 0 },
+  notHelpfulVotes: { type: Number, default: 0 },
+  isPinned: { type: Boolean, default: false },
+  
+  // Metadata
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
+});
+
+reviewSchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  next();
+});
+
+// Index for efficient queries
+reviewSchema.index({ productId: 1, status: 1 });
+reviewSchema.index({ userId: 1, productId: 1 });
+reviewSchema.index({ createdAt: -1 });
+
+const Review = mongoose.model('Review', reviewSchema);
+
 /* =========================
    DB CONNECTION + SEEDING
    ========================= */
@@ -1832,6 +1890,439 @@ app.put('/api/settings', async (req, res) => {
     res.status(500).json({ message: 'Error updating settings', error: error.message });
   }
 });
+
+/* =========================
+   REVIEW SYSTEM API ENDPOINTS
+   ========================= */
+
+// Get all reviews for a product (public endpoint)
+app.get('/api/reviews/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { sort = 'newest', page = 1, limit = 10 } = req.query;
+    
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Build sort object
+    let sortObj = {};
+    switch (sort) {
+      case 'newest':
+        sortObj = { createdAt: -1 };
+        break;
+      case 'oldest':
+        sortObj = { createdAt: 1 };
+        break;
+      case 'highest':
+        sortObj = { rating: -1, createdAt: -1 };
+        break;
+      case 'lowest':
+        sortObj = { rating: 1, createdAt: -1 };
+        break;
+      case 'helpful':
+        sortObj = { helpfulVotes: -1, createdAt: -1 };
+        break;
+      default:
+        sortObj = { createdAt: -1 };
+    }
+    
+    // Get approved reviews only for public display
+    const reviews = await Review.find({ 
+      productId, 
+      status: 'approved' 
+    })
+    .sort(sortObj)
+    .skip(skip)
+    .limit(parseInt(limit));
+    
+    // Get total count for pagination
+    const totalReviews = await Review.countDocuments({ 
+      productId, 
+      status: 'approved' 
+    });
+    
+    // Get review statistics
+    const reviewStats = await Review.aggregate([
+      { $match: { productId: mongoose.Types.ObjectId(productId), status: 'approved' } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          totalReviews: { $sum: 1 },
+          ratingDistribution: {
+            $push: '$rating'
+          }
+        }
+      }
+    ]);
+    
+    // Calculate rating distribution
+    const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    if (reviewStats.length > 0) {
+      reviewStats[0].ratingDistribution.forEach(rating => {
+        distribution[rating]++;
+      });
+    }
+    
+    const stats = reviewStats.length > 0 ? {
+      averageRating: Math.round(reviewStats[0].averageRating * 10) / 10,
+      totalReviews: reviewStats[0].totalReviews,
+      distribution
+    } : {
+      averageRating: 0,
+      totalReviews: 0,
+      distribution
+    };
+    
+    res.json({
+      reviews,
+      stats,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalReviews / parseInt(limit)),
+        totalReviews,
+        hasNextPage: skip + reviews.length < totalReviews,
+        hasPrevPage: parseInt(page) > 1
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ message: 'Error fetching reviews', error: error.message });
+  }
+});
+
+// Submit a new review (customer endpoint)
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { productId, userId, userName, userEmail, rating, title, comment, photos, orderId } = req.body;
+    
+    // Validate required fields
+    if (!productId || !userId || !userName || !userEmail || !rating || !comment) {
+      return res.status(400).json({ 
+        message: 'Missing required fields: productId, userId, userName, userEmail, rating, comment' 
+      });
+    }
+    
+    // Validate rating
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+    }
+    
+    // Check if product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    
+    // Check if user already reviewed this product
+    const existingReview = await Review.findOne({ 
+      productId, 
+      userId,
+      status: { $ne: 'rejected' } // Allow resubmission if previous was rejected
+    });
+    
+    if (existingReview) {
+      return res.status(409).json({ 
+        message: 'You have already reviewed this product',
+        existingReviewId: existingReview._id
+      });
+    }
+    
+    // Verify purchase if orderId is provided
+    let isVerifiedBuyer = false;
+    if (orderId) {
+      const order = await Order.findOne({ 
+        orderId,
+        'customerInfo.email': userEmail,
+        'items.id': productId
+      });
+      isVerifiedBuyer = !!order;
+    }
+    
+    // Create new review
+    const review = new Review({
+      productId,
+      userId,
+      userName,
+      userEmail,
+      rating,
+      title,
+      comment,
+      photos: photos || [],
+      orderId,
+      isVerifiedBuyer,
+      status: 'pending' // Requires admin approval
+    });
+    
+    await review.save();
+    
+    res.status(201).json({ 
+      success: true, 
+      message: 'Review submitted successfully and pending approval',
+      reviewId: review._id
+    });
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    res.status(500).json({ message: 'Error submitting review', error: error.message });
+  }
+});
+
+// Vote on review helpfulness (public endpoint)
+app.post('/api/reviews/:reviewId/vote', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { vote } = req.body; // 'helpful' or 'notHelpful'
+    
+    if (!['helpful', 'notHelpful'].includes(vote)) {
+      return res.status(400).json({ message: 'Invalid vote type' });
+    }
+    
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    
+    if (vote === 'helpful') {
+      review.helpfulVotes += 1;
+    } else {
+      review.notHelpfulVotes += 1;
+    }
+    
+    await review.save();
+    
+    res.json({ 
+      success: true, 
+      helpfulVotes: review.helpfulVotes,
+      notHelpfulVotes: review.notHelpfulVotes
+    });
+  } catch (error) {
+    console.error('Error voting on review:', error);
+    res.status(500).json({ message: 'Error voting on review', error: error.message });
+  }
+});
+
+// ADMIN REVIEW MANAGEMENT ENDPOINTS
+
+// Get all reviews for admin (with filtering and pagination)
+app.get('/api/admin/reviews', async (req, res) => {
+  try {
+    const { 
+      status, 
+      productId, 
+      sort = 'newest', 
+      page = 1, 
+      limit = 20,
+      search 
+    } = req.query;
+    
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Build filter object
+    const filter = {};
+    if (status) filter.status = status;
+    if (productId) filter.productId = productId;
+    if (search) {
+      filter.$or = [
+        { userName: { $regex: search, $options: 'i' } },
+        { comment: { $regex: search, $options: 'i' } },
+        { title: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    // Build sort object
+    let sortObj = {};
+    switch (sort) {
+      case 'newest':
+        sortObj = { createdAt: -1 };
+        break;
+      case 'oldest':
+        sortObj = { createdAt: 1 };
+        break;
+      case 'highest':
+        sortObj = { rating: -1, createdAt: -1 };
+        break;
+      case 'lowest':
+        sortObj = { rating: 1, createdAt: -1 };
+        break;
+      case 'pending':
+        sortObj = { status: 1, createdAt: -1 };
+        break;
+      default:
+        sortObj = { createdAt: -1 };
+    }
+    
+    const reviews = await Review.find(filter)
+      .populate('productId', 'name image')
+      .sort(sortObj)
+      .skip(skip)
+      .limit(parseInt(limit));
+    
+    const totalReviews = await Review.countDocuments(filter);
+    
+    res.json({
+      reviews,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalReviews / parseInt(limit)),
+        totalReviews,
+        hasNextPage: skip + reviews.length < totalReviews,
+        hasPrevPage: parseInt(page) > 1
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching admin reviews:', error);
+    res.status(500).json({ message: 'Error fetching reviews', error: error.message });
+  }
+});
+
+// Moderate a review (approve/reject/hide)
+app.put('/api/admin/reviews/:reviewId/moderate', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { status, moderationNotes, moderatedBy } = req.body;
+    
+    if (!['pending', 'approved', 'rejected', 'hidden'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' });
+    }
+    
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    
+    review.status = status;
+    review.moderatedBy = moderatedBy;
+    review.moderatedAt = new Date();
+    review.moderationNotes = moderationNotes;
+    
+    await review.save();
+    
+    // Update product rating if review is approved/rejected
+    if (status === 'approved' || status === 'rejected') {
+      await updateProductRating(review.productId);
+    }
+    
+    res.json({ 
+      success: true, 
+      message: `Review ${status} successfully`,
+      review
+    });
+  } catch (error) {
+    console.error('Error moderating review:', error);
+    res.status(500).json({ message: 'Error moderating review', error: error.message });
+  }
+});
+
+// Add admin response to a review
+app.post('/api/admin/reviews/:reviewId/respond', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { content, respondedBy } = req.body;
+    
+    if (!content || !respondedBy) {
+      return res.status(400).json({ message: 'Content and respondedBy are required' });
+    }
+    
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    
+    review.adminResponse = {
+      content,
+      respondedBy,
+      respondedAt: new Date()
+    };
+    
+    await review.save();
+    
+    res.json({ 
+      success: true, 
+      message: 'Admin response added successfully',
+      adminResponse: review.adminResponse
+    });
+  } catch (error) {
+    console.error('Error adding admin response:', error);
+    res.status(500).json({ message: 'Error adding admin response', error: error.message });
+  }
+});
+
+// Pin/unpin a review
+app.put('/api/admin/reviews/:reviewId/pin', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { isPinned } = req.body;
+    
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    
+    review.isPinned = isPinned;
+    await review.save();
+    
+    res.json({ 
+      success: true, 
+      message: `Review ${isPinned ? 'pinned' : 'unpinned'} successfully`,
+      isPinned: review.isPinned
+    });
+  } catch (error) {
+    console.error('Error pinning review:', error);
+    res.status(500).json({ message: 'Error pinning review', error: error.message });
+  }
+});
+
+// Delete a review (admin only)
+app.delete('/api/admin/reviews/:reviewId', async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    
+    const review = await Review.findByIdAndDelete(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    
+    // Update product rating
+    await updateProductRating(review.productId);
+    
+    res.json({ 
+      success: true, 
+      message: 'Review deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    res.status(500).json({ message: 'Error deleting review', error: error.message });
+  }
+});
+
+// Helper function to update product rating
+async function updateProductRating(productId) {
+  try {
+    const reviewStats = await Review.aggregate([
+      { $match: { productId: mongoose.Types.ObjectId(productId), status: 'approved' } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          reviewCount: { $sum: 1 }
+        }
+      }
+    ]);
+    
+    if (reviewStats.length > 0) {
+      await Product.findByIdAndUpdate(productId, {
+        rating: Math.round(reviewStats[0].averageRating * 10) / 10,
+        reviewCount: reviewStats[0].reviewCount
+      });
+    } else {
+      await Product.findByIdAndUpdate(productId, {
+        rating: 0,
+        reviewCount: 0
+      });
+    }
+  } catch (error) {
+    console.error('Error updating product rating:', error);
+  }
+}
 
 /* =========================
    SERVE REACT FRONTEND
