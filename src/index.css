@@ -1008,3 +1008,28 @@
       max-height: 85vh;
     }
   }
+
+  /* Scroll Overlay Animations */
+  .scroll-overlay-section {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Smooth scroll behavior for overlay sections */
+  .scroll-overlay-container {
+    scroll-behavior: smooth;
+  }
+
+  /* Enhanced parallax effect */
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-overlay-section {
+      will-change: transform;
+    }
+  }
+
+  /* Disable parallax for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-overlay-section {
+      transform: none !important;
+      transition: none !important;
+    }
+  }

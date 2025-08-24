@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaFilter, FaEye, FaEyeSlash, FaCheck, FaTimes, FaReply, FaThumbtack } from 'react-icons/fa';
+import { FaSearch, FaFilter, FaEye, FaEyeSlash, FaCheck, FaTimes, FaReply, FaThumbtack, FaPlus } from 'react-icons/fa';
 import { Review, Product } from '../../types';
 import { reviewService } from '../../services/reviewService';
 import ReviewCard from '../../components/reviews/ReviewCard';
@@ -72,6 +72,148 @@ const AdminResponseModal: React.FC<AdminResponseModalProps> = ({
   );
 };
 
+interface CreateFakeReviewModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (reviewData: any) => void;
+}
+
+const CreateFakeReviewModal: React.FC<CreateFakeReviewModalProps> = ({
+  isOpen,
+  onClose,
+  onSubmit
+}) => {
+  const [formData, setFormData] = useState({
+    productId: '',
+    userName: '',
+    rating: 5,
+    comment: '',
+    isVerifiedBuyer: true,
+    soldCount: 0
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.productId && formData.userName && formData.comment.trim()) {
+      onSubmit(formData);
+      setFormData({
+        productId: '',
+        userName: '',
+        rating: 5,
+        comment: '',
+        isVerifiedBuyer: true,
+        soldCount: 0
+      });
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+        <h3 className="text-lg font-semibold mb-4">Create Fake Review</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Create promotional reviews and sales numbers for marketing purposes
+        </p>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Product ID *</label>
+              <input
+                type="text"
+                value={formData.productId}
+                onChange={(e) => setFormData(prev => ({ ...prev, productId: e.target.value }))}
+                placeholder="Enter product ID..."
+                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Customer Name *</label>
+              <input
+                type="text"
+                value={formData.userName}
+                onChange={(e) => setFormData(prev => ({ ...prev, userName: e.target.value }))}
+                placeholder="Enter customer name..."
+                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Rating *</label>
+              <select
+                value={formData.rating}
+                onChange={(e) => setFormData(prev => ({ ...prev, rating: parseInt(e.target.value) }))}
+                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {[5, 4, 3, 2, 1].map(rating => (
+                  <option key={rating} value={rating}>{rating} Star{rating !== 1 ? 's' : ''}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Review Text *</label>
+              <textarea
+                value={formData.comment}
+                onChange={(e) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
+                placeholder="Write the review content..."
+                rows={4}
+                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Fake Sold Count</label>
+              <input
+                type="number"
+                value={formData.soldCount}
+                onChange={(e) => setFormData(prev => ({ ...prev, soldCount: parseInt(e.target.value) || 0 }))}
+                placeholder="Enter number of fake sales..."
+                min="0"
+                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="verified-buyer"
+                checked={formData.isVerifiedBuyer}
+                onChange={(e) => setFormData(prev => ({ ...prev, isVerifiedBuyer: e.target.checked }))}
+                className="mr-2"
+              />
+              <label htmlFor="verified-buyer" className="text-sm text-gray-700">Mark as Verified Buyer</label>
+            </div>
+          </div>
+          
+          <div className="flex gap-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Create Fake Review
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const ReviewManagementPage: React.FC = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -95,6 +237,9 @@ const ReviewManagementPage: React.FC = () => {
     isOpen: false,
     reviewId: '',
     userName: ''
+  });
+  const [fakeReviewModal, setFakeReviewModal] = useState({
+    isOpen: false
   });
 
   const statusOptions = [
@@ -219,11 +364,46 @@ const ReviewManagementPage: React.FC = () => {
     }
   };
 
+  const handleCreateFakeReview = async (reviewData: any) => {
+    try {
+      // Create fake review via API
+      const response = await fetch('/api/admin/fake-review', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(reviewData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create fake review');
+      }
+
+      // Refresh reviews list
+      fetchReviews(pagination.currentPage);
+      
+      alert('Fake review created successfully!');
+    } catch (error) {
+      console.error('Error creating fake review:', error);
+      alert('Failed to create fake review. Please try again.');
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Review Management</h1>
-        <p className="text-gray-600">Manage and moderate customer reviews across all products</p>
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Review Management</h1>
+          <p className="text-gray-600">Manage and moderate customer reviews across all products</p>
+        </div>
+        <button
+          onClick={() => setFakeReviewModal({ isOpen: true })}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+        >
+          <FaPlus className="w-4 h-4" />
+          Create Fake Review
+        </button>
       </div>
 
       {/* Filters */}
@@ -449,6 +629,13 @@ const ReviewManagementPage: React.FC = () => {
         onSubmit={handleSubmitResponse}
         reviewId={responseModal.reviewId}
         userName={responseModal.userName}
+      />
+
+      {/* Fake Review Modal */}
+      <CreateFakeReviewModal
+        isOpen={fakeReviewModal.isOpen}
+        onClose={() => setFakeReviewModal({ isOpen: false })}
+        onSubmit={handleCreateFakeReview}
       />
     </div>
   );

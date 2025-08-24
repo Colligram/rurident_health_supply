@@ -152,9 +152,9 @@ export function SwipingFeatures() {
                 <button
                   key={index}
                   onClick={() => handleDotClick(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                     index === currentIndex
-                      ? 'bg-white scale-125'
+                      ? 'bg-white scale-110'
                       : 'bg-white/30 hover:bg-white/50'
                   }`}
                 />
@@ -177,14 +177,14 @@ export function SwipingFeatures() {
 
         {/* Mobile Dots Indicator - Smaller and Better Positioned */}
         {isMobile && (
-          <div className="flex justify-center space-x-2 mb-8">
+          <div className="flex justify-center space-x-1.5 mb-8">
             {features.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleDotClick(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? 'bg-white scale-125'
+                    ? 'bg-white scale-110'
                     : 'bg-white/40'
                 }`}
               />

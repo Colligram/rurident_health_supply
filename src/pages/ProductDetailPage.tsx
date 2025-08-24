@@ -193,6 +193,11 @@ export function ProductDetailPage() {
                 <span className="text-sm text-gray-600">
                   ({product.reviewCount || 0} reviews)
                 </span>
+                {product.soldCount && product.soldCount > 0 && (
+                  <span className="text-sm text-green-600 font-medium">
+                    • {product.soldCount} sold
+                  </span>
+                )}
               </div>
               <button
                 onClick={handleShare}
@@ -229,11 +234,6 @@ export function ProductDetailPage() {
             <span className={`text-sm font-medium ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
               {product.inStock ? 'In Stock' : 'Out of Stock'}
             </span>
-            {product.inStock && product.stock > 0 && (
-              <span className="text-sm text-gray-600">
-                ({product.stock} available)
-              </span>
-            )}
           </div>
 
           {/* Quantity Selector */}
