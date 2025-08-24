@@ -72,13 +72,13 @@ const AdminResponseModal: React.FC<AdminResponseModalProps> = ({
   );
 };
 
-interface CreateFakeReviewModalProps {
+interface CreateCustomReviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (reviewData: any) => void;
 }
 
-const CreateFakeReviewModal: React.FC<CreateFakeReviewModalProps> = ({
+const CreateCustomReviewModal: React.FC<CreateCustomReviewModalProps> = ({
   isOpen,
   onClose,
   onSubmit
@@ -91,65 +91,76 @@ const CreateFakeReviewModal: React.FC<CreateFakeReviewModalProps> = ({
     isVerifiedBuyer: true,
     soldCount: 0
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.productId && formData.userName && formData.comment.trim()) {
-      onSubmit(formData);
-      setFormData({
-        productId: '',
-        userName: '',
-        rating: 5,
-        comment: '',
-        isVerifiedBuyer: true,
-        soldCount: 0
-      });
-      onClose();
+      setIsSubmitting(true);
+      try {
+        await onSubmit(formData);
+        setFormData({
+          productId: '',
+          userName: '',
+          rating: 5,
+          comment: '',
+          isVerifiedBuyer: true,
+          soldCount: 0
+        });
+        onClose();
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
-        <h3 className="text-lg font-semibold mb-4">Create Fake Review</h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Create promotional reviews and sales numbers for marketing purposes
-        </p>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4 shadow-2xl animate-slideUp">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FaPlus className="text-white text-2xl" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">Create Custom Review</h3>
+          <p className="text-sm text-gray-600">
+            Create promotional reviews and sales numbers for marketing purposes
+          </p>
+        </div>
         
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product ID *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Product ID *</label>
               <input
                 type="text"
                 value={formData.productId}
                 onChange={(e) => setFormData(prev => ({ ...prev, productId: e.target.value }))}
                 placeholder="Enter product ID..."
-                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border-2 border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Customer Name *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Customer Name *</label>
               <input
                 type="text"
                 value={formData.userName}
                 onChange={(e) => setFormData(prev => ({ ...prev, userName: e.target.value }))}
                 placeholder="Enter customer name..."
-                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border-2 border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Rating *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Rating *</label>
               <select
                 value={formData.rating}
                 onChange={(e) => setFormData(prev => ({ ...prev, rating: parseInt(e.target.value) }))}
-                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border-2 border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               >
                 {[5, 4, 3, 2, 1].map(rating => (
                   <option key={rating} value={rating}>{rating} Star{rating !== 1 ? 's' : ''}</option>
@@ -158,26 +169,26 @@ const CreateFakeReviewModal: React.FC<CreateFakeReviewModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Review Text *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Review Text *</label>
               <textarea
                 value={formData.comment}
                 onChange={(e) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
                 placeholder="Write the review content..."
                 rows={4}
-                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border-2 border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Fake Sold Count</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-3">Custom Sold Count</label>
               <input
                 type="number"
                 value={formData.soldCount}
                 onChange={(e) => setFormData(prev => ({ ...prev, soldCount: parseInt(e.target.value) || 0 }))}
-                placeholder="Enter number of fake sales..."
+                placeholder="Enter number of custom sales..."
                 min="0"
-                className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border-2 border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               />
             </div>
 
@@ -197,15 +208,23 @@ const CreateFakeReviewModal: React.FC<CreateFakeReviewModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 hover:border-gray-400 transform transition-all duration-200 font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              disabled={isSubmitting}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-md hover:from-blue-700 hover:to-purple-700 transform transition-all duration-200 hover:scale-105 shadow-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              Create Fake Review
+              {isSubmitting ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Creating...
+                </div>
+              ) : (
+                'Create Custom Review'
+              )}
             </button>
           </div>
         </form>
@@ -238,7 +257,7 @@ const ReviewManagementPage: React.FC = () => {
     reviewId: '',
     userName: ''
   });
-  const [fakeReviewModal, setFakeReviewModal] = useState({
+  const [customReviewModal, setCustomReviewModal] = useState({
     isOpen: false
   });
 
@@ -364,9 +383,9 @@ const ReviewManagementPage: React.FC = () => {
     }
   };
 
-  const handleCreateFakeReview = async (reviewData: any) => {
+  const handleCreateCustomReview = async (reviewData: any) => {
     try {
-      // Create fake review via API
+      // Create custom review via API
       const response = await fetch('/api/admin/fake-review', {
         method: 'POST',
         headers: {
@@ -377,37 +396,41 @@ const ReviewManagementPage: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create fake review');
+        throw new Error('Failed to create custom review');
       }
 
       // Refresh reviews list
       fetchReviews(pagination.currentPage);
       
-      alert('Fake review created successfully!');
+      alert('Custom review created successfully!');
     } catch (error) {
-      console.error('Error creating fake review:', error);
-      alert('Failed to create fake review. Please try again.');
+      console.error('Error creating custom review:', error);
+      alert('Failed to create custom review. Please try again.');
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Review Management</h1>
-          <p className="text-gray-600">Manage and moderate customer reviews across all products</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">Review Management</h1>
+          <p className="text-gray-600 text-lg">Manage and moderate customer reviews across all products</p>
         </div>
         <button
-          onClick={() => setFakeReviewModal({ isOpen: true })}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          onClick={() => setCustomReviewModal({ isOpen: true })}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 flex items-center gap-2 shadow-lg transform transition-all duration-200 hover:scale-105"
         >
           <FaPlus className="w-4 h-4" />
-          Create Fake Review
+          Create Custom Review
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-lg backdrop-blur-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <FaFilter className="text-blue-500" />
+          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Search */}
           <div>
@@ -477,27 +500,55 @@ const ReviewManagementPage: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="text-2xl font-bold text-gray-900">{pagination.totalReviews}</div>
-          <div className="text-sm text-gray-600">Total Reviews</div>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="text-2xl font-bold text-yellow-600">
-            {reviews.filter(r => r.status === 'pending').length}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-bold text-gray-900">{pagination.totalReviews}</div>
+              <div className="text-sm text-gray-600 font-medium">Total Reviews</div>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+              <FaEye className="text-blue-600 text-xl" />
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Pending Review</div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="text-2xl font-bold text-green-600">
-            {reviews.filter(r => r.status === 'approved').length}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-bold text-yellow-600">
+                {reviews.filter(r => r.status === 'pending').length}
+              </div>
+              <div className="text-sm text-gray-600 font-medium">Pending Review</div>
+            </div>
+            <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+              <FaEyeSlash className="text-yellow-600 text-xl" />
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Approved</div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="text-2xl font-bold text-red-600">
-            {reviews.filter(r => r.status === 'rejected').length}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-bold text-green-600">
+                {reviews.filter(r => r.status === 'approved').length}
+              </div>
+              <div className="text-sm text-gray-600 font-medium">Approved</div>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+              <FaCheck className="text-green-600 text-xl" />
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Rejected</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-3xl font-bold text-red-600">
+                {reviews.filter(r => r.status === 'rejected').length}
+              </div>
+              <div className="text-sm text-gray-600 font-medium">Rejected</div>
+            </div>
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+              <FaTimes className="text-red-600 text-xl" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -528,9 +579,9 @@ const ReviewManagementPage: React.FC = () => {
           <p className="text-gray-600">Try adjusting your filters to see more results.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {reviews.map((review) => (
-            <div key={review.id} className="bg-white border border-gray-200 rounded-lg">
+            <div key={review.id} className="bg-white border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-[1.02]">
               {/* Review Header */}
               <div className="p-4 border-b border-gray-100 bg-gray-50">
                 <div className="flex items-center justify-between">
@@ -631,11 +682,11 @@ const ReviewManagementPage: React.FC = () => {
         userName={responseModal.userName}
       />
 
-      {/* Fake Review Modal */}
-      <CreateFakeReviewModal
-        isOpen={fakeReviewModal.isOpen}
-        onClose={() => setFakeReviewModal({ isOpen: false })}
-        onSubmit={handleCreateFakeReview}
+      {/* Custom Review Modal */}
+      <CreateCustomReviewModal
+        isOpen={customReviewModal.isOpen}
+        onClose={() => setCustomReviewModal({ isOpen: false })}
+        onSubmit={handleCreateCustomReview}
       />
     </div>
   );
