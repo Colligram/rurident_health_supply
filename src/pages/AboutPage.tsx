@@ -45,7 +45,7 @@ export function AboutPage() {
       </div>
 
       {/* Hero Section with Parallax Background */}
-      <div className="hero-section relative overflow-hidden min-h-screen flex items-center">
+      <div className="hero-section relative overflow-hidden min-h-[70vh] flex items-center">
         {/* Parallax Background Layers */}
         <div className="hero-parallax-bg absolute inset-0 bg-gradient-to-r from-orange-500 via-red-500 to-pink-600">
           <div className="absolute inset-0 bg-black/20"></div>
@@ -85,6 +85,16 @@ export function AboutPage() {
                 <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-orange-600 transition-all duration-300 transform hover:scale-105">
                   View Our Tools
                 </button>
+              </div>
+              
+              {/* Scroll Hint */}
+              <div className="scroll-hint scroll-animate mt-12 flex flex-col items-center">
+                <p className="text-white/80 text-sm mb-3">Scroll down to learn more</p>
+                <div className="scroll-arrow animate-bounce">
+                  <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
