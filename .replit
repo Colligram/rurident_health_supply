@@ -1,12 +1,12 @@
-modules = ["nodejs-20", "web"]
-run = "npm run dev:full"
+modules = ["nodejs-20", "web", "bash"]
+run = "npm run dev"
 
 [nix]
 channel = "stable-25_05"
 packages = ["run"]
 
 [deployment]
-run = ["sh", "-c", "cd server && npm install && npm start & npm run dev"]
+run = ["sh", "-c", "npm run dev"]
 
 [web]
   port = 3000
@@ -32,7 +32,6 @@ externalPort = 3003
 [[ports]]
 localPort = 5173
 externalPort = 5173
-exposeLocalhost = true
 
 [[ports]]
 localPort = 5174
