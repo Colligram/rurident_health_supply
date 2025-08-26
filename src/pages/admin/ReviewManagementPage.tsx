@@ -162,8 +162,8 @@ const CreateCustomReviewModal: React.FC<CreateCustomReviewModalProps> = ({
                 onChange={(e) => setFormData(prev => ({ ...prev, rating: parseInt(e.target.value) }))}
                 className="w-full border-2 border-gray-300 rounded-lg p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               >
-                {[5, 4, 3, 2, 1].map((rating, index) => (
-                  <option key={`rating-${rating}-${index}`} value={rating}>{rating} Star{rating !== 1 ? 's' : ''}</option>
+                {[5, 4, 3, 2, 1].map(rating => (
+                  <option key={rating} value={rating}>{rating} Star{rating !== 1 ? 's' : ''}</option>
                 ))}
               </select>
             </div>
@@ -455,8 +455,8 @@ const ReviewManagementPage: React.FC = () => {
               onChange={(e) => handleFilterChange('status', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {statusOptions.map((option, index) => (
-                <option key={`status-${option.value}-${index}`} value={option.value}>
+              {statusOptions.map(option => (
+                <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
@@ -473,7 +473,7 @@ const ReviewManagementPage: React.FC = () => {
             >
               <option key="" value="">All Products</option>
               {products.map(product => (
-                <option key={product.id || product._id} value={product.id || product._id}>
+                <option key={product.id} value={product.id}>
                   {product.name}
                 </option>
               ))}
@@ -488,8 +488,8 @@ const ReviewManagementPage: React.FC = () => {
               onChange={(e) => handleFilterChange('sort', e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {sortOptions.map((option, index) => (
-                <option key={`sort-${option.value}-${index}`} value={option.value}>
+              {sortOptions.map(option => (
+                <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
