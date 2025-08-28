@@ -16,7 +16,7 @@ export const ScrollOverlaySection: React.FC<ScrollOverlaySectionProps> = ({
   className = '',
   bgColor = 'bg-white',
   zIndex = 1,
-  minHeight = 'min-h-screen',
+  minHeight = 'min-h-[100dvh]',
   id,
   enableParallax = false,
   offsetY = 0

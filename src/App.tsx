@@ -182,7 +182,7 @@ function App() {
                       element={
                         <>
                           <Header />
-                          <main className="flex-1 pt-20">
+                          <main className="flex-1 pt-16">
                             <ProductsPage />
                           </main>
                           <Footer />
@@ -195,7 +195,7 @@ function App() {
                       element={
                         <>
                           <Header />
-                          <main className="flex-1 pt-20">
+                          <main className="flex-1 pt-16">
                             <ProductsPage />
                           </main>
                           <Footer />
@@ -247,7 +247,7 @@ function App() {
                       element={
                         <>
                           <Header />
-                          <main className="flex-1 pt-20">
+                          <main className="flex-1 pt-16">
                             <ContactPage />
                           </main>
                           <Footer />
@@ -260,7 +260,7 @@ function App() {
                       element={
                         <>
                           <Header />
-                          <main className="flex-1 pt-20">
+                          <main className="flex-1 pt-16">
                             <AboutPage />
                           </main>
                           <Footer />

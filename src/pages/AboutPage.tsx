@@ -36,7 +36,7 @@ export function AboutPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-orange-50/30 to-white pt-20 scroll-container">
+    <div className="min-h-screen bg-gradient-to-b from-white via-orange-50/30 to-white pt-8 scroll-container">
       {/* SEO Meta Information */}
       <div style={{ display: 'none' }}>
         <h1>Rurident Health Supplies - More Than Tools. A Legacy in Every Smile.</h1>
