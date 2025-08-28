@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiSearch, FiMapPin, FiShield, FiTruck, FiHeadphones, FiChevronDown } from 'react-icons/fi';
+import { FiSearch, FiMapPin, FiShield, FiTruck, FiHeadphones } from 'react-icons/fi';
 
 export function SearchBanner() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,29 +14,19 @@ export function SearchBanner() {
     }
   };
 
-  const scrollToNextSection = () => {
-    const nextSection = document.getElementById('deals-section');
-    if (nextSection) {
-      nextSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
     <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
       {/* Mobile-First Search Section */}
       <div className="py-4 md:py-6 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col space-y-4">
-            {/* Hero Title - Updated with Animation */}
-            <div className="text-center md:text-left animate-fade-in-scale">
-              <div className="text-2xl md:text-4xl lg:text-5xl font-black mb-2 leading-tight">
-                <span className="text-white">Your Online Destination for</span>
-                <br />
-                <span className="text-orange-200">high quality Dental equipment</span>
-                <br />
-                <span className="text-white">(all in one place)</span>
+            {/* Logo/Brand - Mobile Compact */}
+            <div className="text-center md:text-left">
+              <div className="text-xl md:text-2xl font-bold mb-1">
+                <span className="text-white">Rurident</span>
+                <span className="text-orange-200"> Health Supplies</span>
               </div>
-              <p className="text-orange-100 text-base md:text-lg font-medium">Your trusted partner in dental healthcare</p>
+              <p className="text-orange-100 text-sm">Your trusted partner in dental healthcare</p>
             </div>
             
             {/* Enhanced Search Bar - Mobile Optimized */}
@@ -98,20 +88,6 @@ export function SearchBanner() {
               <span>24/7 Support: +254 700 000 000</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Scroll Down Arrow */}
-      <div className="relative">
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 z-20">
-          <button
-            onClick={scrollToNextSection}
-            className="group flex flex-col items-center animate-bounce hover:animate-none cursor-pointer bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
-            aria-label="Scroll down to learn more"
-          >
-            <span className="text-orange-600 text-xs font-medium mb-1 whitespace-nowrap">Scroll down to learn more</span>
-            <FiChevronDown className="w-5 h-5 text-orange-600 group-hover:transform group-hover:translate-y-1 transition-transform duration-200" />
-          </button>
         </div>
       </div>
     </div>
