@@ -1,8 +1,109 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { HiUserGroup, HiStar, HiTruck, HiShieldCheck, HiAcademicCap, HiGlobe, HiCheckCircle, HiCurrencyDollar, HiHeart, HiLightningBolt, HiChatAlt2 } from 'react-icons/hi';
-import { FiArrowRight, FiClock, FiTruck, FiMessageCircle } from 'react-icons/fi';
+import { FiArrowRight, FiClock, FiTruck, FiMessageCircle, FiChevronLeft, FiChevronRight, FiShoppingCart, FiEye, FiX } from 'react-icons/fi';
 
 export function AboutPage() {
+  const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
+  const [currentDealIndex, setCurrentDealIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isWhyChooseVisible, setIsWhyChooseVisible] = useState(false);
+  const featureScrollRef = useRef<HTMLDivElement>(null);
+  const dealScrollRef = useRef<HTMLDivElement>(null);
+  const featureAutoScrollRef = useRef<NodeJS.Timeout | null>(null);
+  const dealAutoScrollRef = useRef<NodeJS.Timeout | null>(null);
+  const whyChooseSectionRef = useRef<HTMLDivElement>(null);
+
+  // Why Choose Rurident features
+  const features = [
+    {
+      id: 1,
+      title: 'Premium Quality',
+      description: 'All our products meet international standards',
+      icon: HiStar,
+      gradient: 'from-purple-500 to-pink-500'
+    },
+    {
+      id: 2,
+      title: 'Fast Delivery',
+      description: 'Countrywide delivery within 24-48 hours',
+      icon: HiTruck,
+      gradient: 'from-blue-500 to-purple-500'
+    },
+    {
+      id: 3,
+      title: 'Genuine Products',
+      description: '100% authentic dental equipment',
+      icon: HiShieldCheck,
+      gradient: 'from-green-500 to-blue-500'
+    },
+    {
+      id: 4,
+      title: 'Expert Support',
+      description: 'Professional technical assistance',
+      icon: HiAcademicCap,
+      gradient: 'from-orange-500 to-red-500'
+    },
+    {
+      id: 5,
+      title: 'Best Prices',
+      description: 'Competitive pricing guaranteed',
+      icon: HiHeart,
+      gradient: 'from-pink-500 to-red-500'
+    },
+    {
+      id: 6,
+      title: 'Lightning Deals',
+      description: 'Exclusive offers and discounts',
+      icon: HiLightningBolt,
+      gradient: 'from-yellow-500 to-orange-500'
+    }
+  ];
+
+  // Lightning deals data
+  const lightningDeals = [
+    {
+      id: 1,
+      name: 'Professional Dental Handpiece Set',
+      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop&crop=center',
+      price: 'KES 45,000',
+      originalPrice: 'KES 65,000',
+      sold: '156 sold',
+      badge: 'Local',
+      rating: 4.8,
+      reviews: 89
+    },
+    {
+      id: 2,
+      name: 'Digital X-Ray Sensor Kit',
+      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=400&fit=crop&crop=center',
+      price: 'KES 125,000',
+      originalPrice: 'KES 180,000',
+      sold: '2.1K+ sold',
+      badge: 'Best Seller',
+      rating: 4.9,
+      reviews: 234
+    },
+    {
+      id: 3,
+      name: 'Orthodontic Bracket Kit',
+      image: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=400&h=400&fit=crop&crop=center',
+      price: 'KES 8,500',
+      originalPrice: 'KES 12,000',
+      sold: '3.2K+ sold',
+      badge: 'Hot',
+      rating: 4.7,
+      reviews: 567
+    }
+  ];
+
+  const scrollToNextSection = useCallback(() => {
+    const nextSection = document.querySelector('.why-choose-section, .delivery-section');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
   useEffect(() => {
     // JavaScript fallback for browsers that don't support @scroll-timeline
     const handleScroll = () => {
@@ -35,6 +136,69 @@ export function AboutPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Intersection observer for Why Choose section
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsWhyChooseVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (whyChooseSectionRef.current) {
+      observer.observe(whyChooseSectionRef.current);
+    }
+
+    return () => {
+      if (whyChooseSectionRef.current) {
+        observer.unobserve(whyChooseSectionRef.current);
+      }
+    };
+  }, []);
+
+  // Auto-scroll for features on mobile
+  useEffect(() => {
+    if (isMobile && isWhyChooseVisible) {
+      const startAutoScroll = () => {
+        featureAutoScrollRef.current = setInterval(() => {
+          setCurrentFeatureIndex(prev => {
+            const nextIndex = (prev + 1) % features.length;
+            if (featureScrollRef.current) {
+              const cardWidth = 256; // w-64
+              const gap = 24; // gap-6
+              featureScrollRef.current.scrollTo({
+                left: nextIndex * (cardWidth + gap),
+                behavior: 'smooth'
+              });
+            }
+            return nextIndex;
+          });
+        }, 2000);
+      };
+
+      startAutoScroll();
+
+      return () => {
+        if (featureAutoScrollRef.current) {
+          clearInterval(featureAutoScrollRef.current);
+        }
+      };
+    }
+  }, [isMobile, isWhyChooseVisible, features.length]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-orange-50/30 to-white pt-8 scroll-container">
       {/* SEO Meta Information */}
@@ -64,14 +228,12 @@ export function AboutPage() {
                 </div>
               </div>
               
-              <h1 className="hero-title scroll-animate text-4xl sm:text-5xl lg:text-7xl font-bold mb-8">
-                <span className="bg-gradient-to-r from-white via-yellow-200 to-white bg-clip-text text-transparent">
-                  More Than Tools.
-                </span>
+              <h1 className="hero-title scroll-animate animate-fade-in-scale text-2xl md:text-4xl lg:text-5xl font-black mb-8">
+                <span className="text-white">Your Online Destination for</span>
                 <br />
-                <span className="text-white">
-                  A Legacy in Every Smile.
-                </span>
+                <span className="bg-gradient-to-r from-yellow-200 via-orange-200 to-yellow-200 bg-clip-text text-transparent">high quality Dental equipment</span>
+                <br />
+                <span className="text-white">(all in one place)</span>
               </h1>
               
               <p className="hero-subtitle scroll-animate text-xl sm:text-2xl text-orange-100 max-w-4xl mx-auto mb-8">
@@ -89,14 +251,181 @@ export function AboutPage() {
               
               {/* Scroll Hint */}
               <div className="scroll-hint scroll-animate mt-12 flex flex-col items-center">
-                <p className="text-white/80 text-sm mb-3">Scroll down to learn more</p>
-                <div className="scroll-arrow animate-bounce">
-                  <svg className="w-6 h-6 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button
+                  onClick={scrollToNextSection}
+                  className="group flex flex-col items-center animate-bounce hover:animate-none cursor-pointer bg-white/10 backdrop-blur-sm rounded-full p-4 shadow-lg hover:bg-white/20 transition-all duration-300 hover:scale-110"
+                  aria-label="Scroll down to learn more"
+                >
+                  <span className="text-white/90 text-sm font-medium mb-2 whitespace-nowrap">Scroll down to learn more</span>
+                  <svg className="w-6 h-6 text-white/90 group-hover:transform group-hover:translate-y-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Why Choose Rurident Section */}
+      <div ref={whyChooseSectionRef} className="why-choose-section bg-gradient-to-r from-purple-900 via-pink-900 to-black py-16 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 transform rotate-12 scale-150"></div>
+        </div>
+
+        <div className="container-max relative z-10">
+          <div className={`text-center mb-12 transition-all duration-1000 ${isWhyChooseVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+              Why Choose <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Rurident</span>
+            </h2>
+            <p className="text-lg md:text-xl text-purple-200 max-w-3xl mx-auto">
+              Experience excellence in dental healthcare with our premium products and exceptional service
+            </p>
+          </div>
+
+          {/* Mobile Dots Indicator */}
+          {isMobile && (
+            <div className="flex justify-center space-x-1.5 mb-8">
+              {features.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                    index === currentFeatureIndex
+                      ? 'bg-white scale-110'
+                      : 'bg-white/40'
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Features Container */}
+          <div 
+            ref={featureScrollRef}
+            className={`flex gap-6 overflow-x-auto scrollbar-hide pb-4 ${
+              isMobile ? 'snap-x snap-mandatory' : ''
+            }`}
+            style={{ scrollSnapType: isMobile ? 'x mandatory' : 'none' }}
+          >
+            {features.map((feature, index) => (
+              <div
+                key={feature.id}
+                className={`flex-shrink-0 ${isMobile ? 'w-64' : 'w-80'} bg-white/10 backdrop-blur-sm rounded-2xl ${isMobile ? 'p-4' : 'p-6 md:p-8'} border border-white/20 transition-all duration-500 transform hover:scale-105 hover:bg-white/20 ${
+                  index === currentFeatureIndex ? 'scale-105 bg-white/20' : ''
+                } ${isMobile ? 'snap-start' : ''} ${isWhyChooseVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                style={{ 
+                  scrollSnapAlign: isMobile ? 'start' : 'none',
+                  transitionDelay: `${index * 100}ms`
+                }}
+              >
+                <div className={`${isMobile ? 'w-12 h-12 mb-4' : 'w-16 h-16 mb-6'} bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto transform transition-transform duration-300 hover:rotate-12`}>
+                  <feature.icon className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'} text-white`} />
+                </div>
+                
+                <h3 className={`${isMobile ? 'text-lg mb-2' : 'text-xl md:text-2xl mb-4'} font-bold text-white text-center`}>
+                  {feature.title}
+                </h3>
+                
+                <p className={`text-purple-200 text-center leading-relaxed ${isMobile ? 'text-xs' : 'text-sm md:text-base'}`}>
+                  {feature.description}
+                </p>
+
+                {/* Animated Border */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${feature.gradient} opacity-0 hover:opacity-20 transition-opacity duration-300 -z-10`}></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-12">
+            <Link 
+              to="/products"
+              className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-purple-500/25"
+            >
+              Explore Our Products
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Lightning Deals Section */}
+      <div className="lightning-deals-section bg-white border-b border-gray-100 py-8 md:py-12">
+        <div className="container-max">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Lightning Deals</h2>
+            <Link to="/products" className="text-orange-600 hover:text-orange-700 font-medium flex items-center space-x-1">
+              <span>View all</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </div>
+          
+          <div 
+            ref={dealScrollRef}
+            className={`flex ${isMobile ? 'gap-4' : 'gap-3 md:gap-4'} overflow-x-auto scrollbar-hide pb-4 ${
+              isMobile ? 'scroll-smooth px-1' : ''
+            }`}
+          >
+            {lightningDeals.map((deal, index) => (
+              <div 
+                key={deal.id} 
+                className={`flex-shrink-0 ${isMobile ? 'w-48' : 'w-56'} bg-white rounded-lg border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105`}
+              >
+                <div className="relative">
+                  <img 
+                    src={deal.image} 
+                    alt={deal.name}
+                    className="w-full h-32 md:h-40 object-cover rounded-t-lg"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://via.placeholder.com/400x400?text=Dental+Product';
+                    }}
+                  />
+                  {deal.badge && (
+                    <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                      {deal.badge}
+                    </div>
+                  )}
+                  <div className="absolute bottom-2 right-2 flex space-x-1">
+                    <button className="w-7 h-7 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-all duration-200 hover:scale-110">
+                      <FiEye className="w-3 h-3 text-gray-600" />
+                    </button>
+                    <button className="w-7 h-7 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 transition-all duration-200 hover:scale-110">
+                      <HiHeart className="w-3 h-3 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="p-3">
+                  <h3 className={`font-medium text-gray-900 ${isMobile ? 'text-sm' : 'text-xs md:text-sm'} mb-2 line-clamp-2`}>
+                    {deal.name}
+                  </h3>
+                  
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="flex items-center space-x-1">
+                      <HiStar className="w-3 h-3 text-yellow-400 fill-current" />
+                      <span className="text-xs text-gray-600">{deal.rating}</span>
+                    </div>
+                    <span className="text-xs text-gray-400">({deal.reviews})</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex flex-col">
+                      <span className="text-sm md:text-base font-bold text-orange-600">{deal.price}</span>
+                      <span className="text-xs text-gray-400 line-through">{deal.originalPrice}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500">{deal.sold}</span>
+                    <button className="w-7 h-7 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-all duration-200 hover:scale-110 shadow-md">
+                      <FiShoppingCart className="w-3 h-3 text-white" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -754,6 +1083,22 @@ export function AboutPage() {
         .animation-delay-400 {
           animation-delay: 0.4s;
           animation-fill-mode: both;
+        }
+
+        /* Custom animations for hero section */
+        @keyframes fadeInScale {
+          0% {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        .animate-fade-in-scale {
+          animation: fadeInScale 1s ease-out forwards;
         }
       `}</style>
     </div>
