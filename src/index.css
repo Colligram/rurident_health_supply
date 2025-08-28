@@ -46,6 +46,37 @@
 
   /* Enhanced mobile-specific improvements */
   @media (max-width: 767px) {
+    /* Fix viewport height issues on mobile desktop mode */
+    .min-h-screen,
+    .min-h-\[100vh\],
+    .min-h-\[100dvh\] {
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+    }
+
+    /* Ensure content doesn't get cut off on mobile desktop mode */
+    .scroll-overlay-container {
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      position: relative !important;
+    }
+
+    .scroll-overlay-section {
+      overflow: visible !important;
+      min-height: auto !important;
+      position: relative !important;
+    }
+
+    /* Ensure all sections are visible on mobile desktop mode */
+    #hero-section,
+    #deals-section,
+    #products-section,
+    #features-section {
+      position: relative !important;
+      z-index: auto !important;
+      min-height: auto !important;
+    }
+
     /* Ensure touch targets are at least 44px */
     button, .btn, a[role="button"] {
       min-height: 48px;
@@ -152,6 +183,32 @@
 
     .admin-table-actions {
       min-width: 120px;
+    }
+  }
+
+  /* Mobile devices in desktop mode - typical tablet/mobile with desktop viewport */
+  @media (min-width: 768px) and (max-width: 1024px) and (pointer: coarse) {
+    /* Fix viewport issues for mobile devices simulating desktop */
+    .scroll-overlay-container {
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+    }
+
+    .scroll-overlay-section {
+      position: relative !important;
+      min-height: auto !important;
+      overflow: visible !important;
+    }
+
+    /* Ensure all homepage sections display */
+    #hero-section,
+    #deals-section,
+    #products-section,
+    #features-section {
+      position: relative !important;
+      z-index: auto !important;
+      min-height: auto !important;
+      display: block !important;
     }
   }
 

@@ -79,7 +79,7 @@ export function ProductsPage() {
   // Show loading state
   if (loading) {
     return (
-      <main className="min-h-screen bg-gray-50 py-8 pt-32">
+      <main className="min-h-screen bg-gray-50 py-8 pt-8">
         <div className="container-max">
           <div className="flex justify-center items-center h-64">
             <div className="text-center">
@@ -207,7 +207,7 @@ export function ProductsPage() {
   }, [filteredProducts, sortBy]);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32 products-page-container">
+    <div className="min-h-screen bg-gray-50 pt-8 products-page-container">
       {/* Wave Gradient Background */}
       <div className="wave-gradient-bg"></div>
       
