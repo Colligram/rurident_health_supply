@@ -54,8 +54,8 @@ export function HomeLayout() {
         className="pt-8 pb-8"
       >
         {/* Main Content with Sidebar */}
-        <div className="container-max py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="container-max py-4 md:py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
             {/* Left Sidebar - Categories */}
             <div className="lg:col-span-1">
               <CategorySidebar />
@@ -63,7 +63,7 @@ export function HomeLayout() {
             
             {/* Right Content - Products */}
             <div className="lg:col-span-3">
-              <div className="featured-products-section bg-white rounded-xl shadow-lg border border-gray-100 p-6">
+              <div className="featured-products-section bg-white rounded-xl shadow-lg border border-gray-100 p-4 md:p-6">
                 {/* Animated gradient background */}
                 <div className="featured-products-gradient"></div>
                 
