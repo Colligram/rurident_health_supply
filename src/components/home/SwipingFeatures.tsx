@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight, FiStar, FiTruck, FiShield, FiAward, FiHeart, FiZap } from 'react-icons/fi';
 
 const features = [
@@ -50,10 +49,8 @@ const features = [
 export function SwipingFeatures() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
-  const sectionRef = useRef<HTMLDivElement>(null);
 
   // Check if device is mobile
   useEffect(() => {
@@ -66,28 +63,6 @@ export function SwipingFeatures() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Intersection observer for scroll-triggered animations
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
-
   // Auto-scroll functionality for mobile
   useEffect(() => {
     if (isMobile) {
@@ -96,10 +71,8 @@ export function SwipingFeatures() {
           setCurrentIndex(prev => {
             const nextIndex = (prev + 1) % features.length;
             if (scrollContainerRef.current) {
-              const cardWidth = isMobile ? 256 : 320; // Mobile: 256px (w-64), Desktop: 320px (w-80)
-              const gap = 24; // 6 * 4 = 24px gap
               scrollContainerRef.current.scrollTo({
-                left: nextIndex * (cardWidth + gap),
+                left: nextIndex * 320, // 300px card width + 20px gap
                 behavior: 'smooth'
               });
             }
@@ -120,18 +93,14 @@ export function SwipingFeatures() {
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      const cardWidth = isMobile ? 256 : 320;
-      const gap = 24;
-      scrollContainerRef.current.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
     }
     setCurrentIndex(prev => Math.max(0, prev - 1));
   };
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      const cardWidth = isMobile ? 256 : 320;
-      const gap = 24;
-      scrollContainerRef.current.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
     }
     setCurrentIndex(prev => Math.min(features.length - 1, prev + 1));
   };
@@ -139,24 +108,22 @@ export function SwipingFeatures() {
   const handleDotClick = (index: number) => {
     setCurrentIndex(index);
     if (scrollContainerRef.current) {
-      const cardWidth = isMobile ? 256 : 320;
-      const gap = 24;
       scrollContainerRef.current.scrollTo({
-        left: index * (cardWidth + gap),
+        left: index * 320,
         behavior: 'smooth'
       });
     }
   };
 
   return (
-    <div ref={sectionRef} className="bg-gradient-to-r from-purple-900 via-pink-900 to-black py-16 relative overflow-hidden">
+    <div className="bg-gradient-to-r from-purple-900 via-pink-900 to-black py-16 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 transform rotate-12 scale-150"></div>
       </div>
 
       <div className="container-max relative z-10">
-        <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
             Why Choose <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Rurident</span>
           </h2>
@@ -236,23 +203,20 @@ export function SwipingFeatures() {
           {features.map((feature, index) => (
             <div
               key={feature.id}
-              className={`flex-shrink-0 ${isMobile ? 'w-64' : 'w-80'} bg-white/10 backdrop-blur-sm rounded-2xl ${isMobile ? 'p-4' : 'p-6 md:p-8'} border border-white/20 transition-all duration-500 transform hover:scale-105 hover:bg-white/20 ${
+              className={`flex-shrink-0 w-80 md:w-80 bg-white/10 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/20 transition-all duration-500 transform hover:scale-105 hover:bg-white/20 ${
                 index === currentIndex ? 'scale-105 bg-white/20' : ''
-              } ${isMobile ? 'snap-start' : ''} ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-              style={{ 
-                scrollSnapAlign: isMobile ? 'start' : 'none',
-                transitionDelay: `${index * 100}ms`
-              }}
+              } ${isMobile ? 'snap-start' : ''}`}
+              style={{ scrollSnapAlign: isMobile ? 'start' : 'none' }}
             >
-              <div className={`${isMobile ? 'w-12 h-12 mb-4' : 'w-16 h-16 mb-6'} bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center mx-auto transform transition-transform duration-300 hover:rotate-12`}>
-                <feature.icon className={`${isMobile ? 'w-6 h-6' : 'w-8 h-8'} text-white`} />
+              <div className={`w-16 h-16 bg-gradient-to-r ${feature.gradient} rounded-2xl flex items-center justify-center mb-6 mx-auto transform transition-transform duration-300 hover:rotate-12`}>
+                <feature.icon className="w-8 h-8 text-white" />
               </div>
               
-              <h3 className={`${isMobile ? 'text-lg mb-2' : 'text-xl md:text-2xl mb-4'} font-bold text-white text-center`}>
+              <h3 className="text-xl md:text-2xl font-bold text-white text-center mb-4">
                 {feature.title}
               </h3>
               
-              <p className={`text-purple-200 text-center leading-relaxed ${isMobile ? 'text-xs' : 'text-sm md:text-base'}`}>
+              <p className="text-purple-200 text-center leading-relaxed text-sm md:text-base">
                 {feature.description}
               </p>
 
@@ -264,12 +228,9 @@ export function SwipingFeatures() {
 
         {/* Call to Action */}
         <div className="text-center mt-12">
-          <Link 
-            to="/products"
-            className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-purple-500/25"
-          >
+          <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 md:px-8 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-purple-500/25">
             Explore Our Products
-          </Link>
+          </button>
         </div>
       </div>
     </div>

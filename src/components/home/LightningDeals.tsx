@@ -105,8 +105,8 @@ export function LightningDeals() {
           setCurrentIndex(prev => {
             const nextIndex = (prev + 1) % lightningDeals.length;
             if (scrollContainerRef.current) {
-              const cardWidth = 192; // w-48 = 192px
-              const gap = 16; // gap-4 = 16px
+              const cardWidth = 180; // Approximate card width on mobile
+              const gap = 12; // Gap between cards
               const scrollPosition = nextIndex * (cardWidth + gap);
               
               scrollContainerRef.current.scrollTo({
@@ -224,8 +224,8 @@ export function LightningDeals() {
           
           <div 
             ref={scrollContainerRef}
-            className={`flex ${isMobile ? 'gap-4' : 'gap-3 md:gap-4'} overflow-x-auto scrollbar-hide pb-4 ${
-              isMobile ? 'scroll-smooth px-1' : ''
+            className={`flex gap-3 md:gap-4 overflow-x-auto scrollbar-hide pb-4 ${
+              isMobile ? 'scroll-smooth' : ''
             }`}
             onTouchStart={handleUserInteraction}
             onMouseDown={handleUserInteraction}
@@ -235,7 +235,7 @@ export function LightningDeals() {
               return (
                 <div 
                   key={deal.id} 
-                  className={`flex-shrink-0 ${isMobile ? 'w-48' : 'w-56'} bg-white rounded-lg border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 ${
+                  className={`flex-shrink-0 w-44 md:w-56 bg-white rounded-lg border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 ${
                     isMobile && index === currentIndex ? 'ring-2 ring-orange-300 shadow-orange-200' : ''
                   }`}
                 >
@@ -285,7 +285,7 @@ export function LightningDeals() {
                   </div>
                   
                   <div className="p-3">
-                    <h3 className={`font-medium text-gray-900 ${isMobile ? 'text-sm' : 'text-xs md:text-sm'} mb-2 line-clamp-2`}>
+                    <h3 className="font-medium text-gray-900 text-xs md:text-sm mb-2 line-clamp-2">
                       {deal.name}
                     </h3>
                     
