@@ -1,36 +1,28 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Determine backend URL based on environment
-const getBackendUrl = () => {
-  // For local development, always use localhost:5000
-  // This fixes the getaddrinfo ENOTFOUND errors
-  return 'http://localhost:5000';
-};
-
-const backendUrl = getBackendUrl();
+// Load backend URL from environment variables
+const backendUrl = process.env.VITE_BACKEND_URL || 'http://localhost:5000';
 console.log('🔧 Vite config - Backend URL:', backendUrl);
 
 export default defineConfig({
   plugins: [react()],
   define: {
-    'process.env': {},
     global: 'globalThis',
   },
   server: {
     port: 5173,
-    host: '0.0.0.0', // Allow external connections
-    allowedHosts: true,
+    host: '0.0.0.0',
     proxy: {
       '/api': {
         target: backendUrl,
         changeOrigin: true,
         secure: false,
-        configure: (proxy, options) => {
-          proxy.on('error', (err, req, res) => {
+        configure: (proxy) => {
+          proxy.on('error', (err) => {
             console.log('🔴 Proxy error:', err.message);
           });
-          proxy.on('proxyReq', (proxyReq, req, res) => {
+          proxy.on('proxyReq', (proxyReq, req) => {
             console.log('🔄 Proxying:', req.method, req.url, '→', backendUrl);
           });
         },
