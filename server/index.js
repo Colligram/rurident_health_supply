@@ -1,10 +1,6 @@
 // index.js
-// Express + MongoDB API server that ALSO serves the built React frontend from ../dist
-// Changes made:
-// 1) Serve React build (static + catch-all).
-// 2) Added /api/products POST/PUT/DELETE to match frontend calls.
-// 3) Moved Mongoose model definitions ABOVE seeding/connection so seeding works.
-// 4) Added /api/placeholder/:w/:h for seeded image URLs.
+// Express + MongoDB API server that ALSO serves the built React frontend from a dist folder
+// (Improved: flexible dist detection, optional seeding on real DB, robust DB fallback to memory)
 
 const express = require('express');
 const cors = require('cors');
@@ -12,22 +8,28 @@ const mongoose = require('mongoose');
 const PDFDocument = require('pdfkit');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+/* =========================
+   MIDDLEWARE
+   ========================= */
 app.use(cors());
 app.use(express.json({ limit: '50mb' })); // Increased limit to handle base64 image uploads
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-// Security headers
+
+// Security headers (minimal)
 app.use((req, res, next) => {
   res.setHeader('Referrer-Policy', 'no-referrer');
   next();
 });
 
-// MongoDB connection with fallback to in-memory database
+/* =========================
+   DB CONFIG
+   ========================= */
 const MONGODB_URI =
   process.env.MONGODB_URI ||
   process.env.MONGO_URL ||
@@ -82,7 +84,7 @@ productSchema.pre('save', function (next) {
   if (!this.image && this.images && this.images.length > 0) {
     this.image = this.images[0];
   }
-  if (typeof this.inStock === 'undefined' && typeof this.stock === 'number') {
+  if ((typeof this.inStock === 'undefined' || this.inStock === null) && typeof this.stock === 'number') {
     this.inStock = this.stock > 0;
   }
   next();
@@ -169,7 +171,6 @@ const categorySchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-
 const Category = mongoose.model('Category', categorySchema);
 
 // Product Mapping Schema - for mapping product names to subcategories
@@ -180,106 +181,63 @@ const productMappingSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-
 productMappingSchema.pre('save', function (next) {
   this.updatedAt = new Date();
   next();
 });
-
 const ProductMapping = mongoose.model('ProductMapping', productMappingSchema);
 
-// Review Schema - Comprehensive product review system
+// Review Schema
 const reviewSchema = new mongoose.Schema({
   productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
   userId: { type: String, required: true }, // Customer ID or email
   userName: { type: String, required: true },
   userEmail: { type: String, required: true },
-  
-  // Review content
+
   rating: { type: Number, required: true, min: 1, max: 5 },
   title: { type: String, maxlength: 100 },
   comment: { type: String, required: true, maxlength: 2000 },
-  
-  // Media
+
   photos: [{ type: String }], // Array of base64 or URL strings
-  
-  // Verification
+
   isVerifiedBuyer: { type: Boolean, default: false },
-  orderId: { type: String }, // Reference to the order that purchased this product
-  
-  // Moderation
+  orderId: { type: String },
+
   status: { 
     type: String, 
     enum: ['pending', 'approved', 'rejected', 'hidden'], 
     default: 'pending' 
   },
-  moderatedBy: { type: String }, // Admin who moderated
+  moderatedBy: { type: String },
   moderatedAt: { type: Date },
   moderationNotes: { type: String },
-  
-  // Admin response
+
   adminResponse: {
     content: { type: String },
     respondedBy: { type: String },
     respondedAt: { type: Date }
   },
-  
-  // Engagement
+
   helpfulVotes: { type: Number, default: 0 },
   notHelpfulVotes: { type: Number, default: 0 },
   isPinned: { type: Boolean, default: false },
-  
-  // Metadata
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-
 reviewSchema.pre('save', function (next) {
   this.updatedAt = new Date();
   next();
 });
-
-// Index for efficient queries
 reviewSchema.index({ productId: 1, status: 1 });
 reviewSchema.index({ userId: 1, productId: 1 });
 reviewSchema.index({ createdAt: -1 });
-
 const Review = mongoose.model('Review', reviewSchema);
 
 /* =========================
    DB CONNECTION + SEEDING
    ========================= */
 
-async function connectToDatabase() {
-  try {
-    // Try to connect to the specified MongoDB URI first
-    await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000 // 5 second timeout
-    });
-    console.log('✅ Connected to MongoDB successfully');
-  } catch (error) {
-    console.log('❌ Failed to connect to MongoDB:', error.message);
-    console.log('🔄 Starting in-memory MongoDB server for development...');
-
-    try {
-      const mongod = await MongoMemoryServer.create();
-      const uri = mongod.getUri();
-
-      await mongoose.connect(uri, {});
-      console.log('✅ Connected to in-memory MongoDB successfully');
-      console.log('📝 Note: Using in-memory database - data will not persist between restarts');
-      console.log('📝 To use persistent database, set MONGODB_URI environment variable');
-
-      // Seed some initial data for development
-      await seedInitialData();
-    } catch (memoryError) {
-      console.error('❌ Failed to start in-memory MongoDB:', memoryError.message);
-      console.log('🔄 Server will continue without database connection...');
-    }
-  }
-}
-
-// Seed initial data for development
 async function seedInitialData() {
   try {
     const productCount = await Product.countDocuments();
@@ -480,7 +438,38 @@ async function seedInitialData() {
   }
 }
 
-// Initialize database connection
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000
+    });
+    console.log('✅ Connected to MongoDB successfully');
+
+    // Optionally seed on real DB when explicitly enabled (set SEED_ON_START=true)
+    if (process.env.SEED_ON_START === 'true') {
+      console.log('Seeding initial data (SEED_ON_START=true)...');
+      await seedInitialData();
+    }
+  } catch (error) {
+    console.log('❌ Failed to connect to MongoDB:', error.message);
+    console.log('🔄 Starting in-memory MongoDB server for development...');
+
+    try {
+      const mongod = await MongoMemoryServer.create();
+      const uri = mongod.getUri();
+      await mongoose.connect(uri, {});
+      console.log('✅ Connected to in-memory MongoDB successfully');
+      console.log('📝 Note: Using in-memory database - data will not persist between restarts');
+
+      // Always seed in-memory DB so dev environment is functional
+      await seedInitialData();
+    } catch (memoryError) {
+      console.error('❌ Failed to start in-memory MongoDB:', memoryError.message);
+      console.log('🔄 Server will continue without database connection...');
+    }
+  }
+}
+
 connectToDatabase();
 
 const db = mongoose.connection;
@@ -515,7 +504,9 @@ app.get('/api/placeholder/:w/:h', (req, res) => {
   res.send(svg);
 });
 
-// PRODUCTS
+/* -------------------------
+   PRODUCTS
+   ------------------------- */
 
 // Get all products
 app.get('/api/products', async (req, res) => {
@@ -531,16 +522,14 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/products/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product', error: error.message });
   }
 });
 
-// Create product (ADDED)
+// Create product
 app.post('/api/products', async (req, res) => {
   try {
     const data = { ...req.body };
@@ -553,7 +542,6 @@ app.post('/api/products', async (req, res) => {
       data.images = [data.image];
     }
 
-    // Derive inStock from stock if provided
     if (typeof data.stock === 'number') {
       data.inStock = data.stock > 0;
     }
@@ -567,7 +555,7 @@ app.post('/api/products', async (req, res) => {
   }
 });
 
-// Update product (ADDED)
+// Update product
 app.put('/api/products/:id', async (req, res) => {
   try {
     const updates = { ...req.body, updatedAt: new Date() };
@@ -584,9 +572,7 @@ app.put('/api/products/:id', async (req, res) => {
       runValidators: true
     });
 
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
     res.json({ success: true, product });
   } catch (error) {
@@ -595,13 +581,11 @@ app.put('/api/products/:id', async (req, res) => {
   }
 });
 
-// Delete product (ADDED)
+// Delete product
 app.delete('/api/products/:id', async (req, res) => {
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);
-    if (!deleted) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!deleted) return res.status(404).json({ message: 'Product not found' });
     res.json({ success: true, message: 'Product deleted successfully' });
   } catch (error) {
     console.error('Error deleting product:', error);
@@ -609,14 +593,15 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// ORDERS
+/* -------------------------
+   ORDERS
+   ------------------------- */
 
 // Create order
 app.post('/api/orders', async (req, res) => {
   try {
     const orderData = req.body;
 
-    // Validate required fields
     const requiredFields = [
       'orderId',
       'orderNumber',
@@ -635,14 +620,12 @@ app.post('/api/orders', async (req, res) => {
       }
     }
 
-    // Create or update customer record
     const customerInfo = orderData.customerInfo;
     const customerName = `${customerInfo.firstName} ${customerInfo.lastName}`;
 
     let customer = await Customer.findOne({ email: customerInfo.email });
 
     if (customer) {
-      // Update existing customer
       customer.totalOrders += 1;
       customer.totalSpent += orderData.total;
       customer.lastOrderDate = new Date();
@@ -655,7 +638,6 @@ app.post('/api/orders', async (req, res) => {
 
       await customer.save();
     } else {
-      // Create new customer
       customer = new Customer({
         name: customerName,
         email: customerInfo.email,
@@ -702,9 +684,7 @@ app.get('/api/orders', async (req, res) => {
 app.get('/api/orders/:id', async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching order', error: error.message });
@@ -725,9 +705,7 @@ app.put('/api/orders/:id', async (req, res) => {
       runValidators: true
     });
 
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
+    if (!order) return res.status(404).json({ message: 'Order not found' });
 
     res.json({ success: true, order });
   } catch (error) {
@@ -739,9 +717,7 @@ app.put('/api/orders/:id', async (req, res) => {
 app.delete('/api/orders/:id', async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
+    if (!order) return res.status(404).json({ message: 'Order not found' });
     res.json({ success: true, message: 'Order deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting order', error: error.message });
@@ -752,37 +728,27 @@ app.delete('/api/orders/:id', async (req, res) => {
 app.get('/api/orders/:id/receipt', async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
+    if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    // Check if payment is confirmed
     if (order.paymentStatus !== 'completed') {
       return res.status(400).json({ message: 'Receipt only available after payment confirmation' });
     }
 
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
 
-    // Set response headers for PDF download
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename=receipt-${order.orderNumber}.pdf`);
 
-    // Pipe PDF to response
     doc.pipe(res);
 
-    // Add content to PDF
     doc.fontSize(24).text('RURIDENT HEALTH SUPPLIES', { align: 'center' }).moveDown().fontSize(18).text('RECEIPT', { align: 'center' }).moveDown(2);
 
-    // Order details
     doc.fontSize(12).text(`Order Number: ${order.orderNumber}`).text(`Date: ${order.orderDate}`).moveDown();
 
-    // Customer information
     doc.fontSize(14).text('CUSTOMER INFORMATION', { underline: true }).moveDown().fontSize(12).text(`${order.customerInfo.firstName} ${order.customerInfo.lastName}`).text(`Email: ${order.customerInfo.email}`).text(`Phone: ${order.customerInfo.phone}`).text(`Address: ${order.customerInfo.address}`).text(`${order.customerInfo.city}, ${order.customerInfo.county}`).moveDown();
 
-    // Items table
     doc.fontSize(14).text('ITEMS', { underline: true }).moveDown();
 
-    // Table headers
     const tableTop = doc.y;
     const itemCol = 50;
     const qtyCol = 200;
@@ -791,7 +757,6 @@ app.get('/api/orders/:id/receipt', async (req, res) => {
 
     doc.fontSize(10).text('Item', itemCol, tableTop).text('Qty', qtyCol, tableTop).text('Price', priceCol, tableTop).text('Total', totalCol, tableTop).moveDown();
 
-    // Table rows
     let currentY = doc.y;
     order.items.forEach((item) => {
       if (currentY > 700) {
@@ -799,23 +764,20 @@ app.get('/api/orders/:id/receipt', async (req, res) => {
         currentY = 50;
       }
 
-      doc.fontSize(10).text(item.name, itemCol, currentY).text(item.quantity.toString(), qtyCol, currentY).text(`$${item.price.toFixed(2)}`, priceCol, currentY).text(`$${item.totalPrice.toFixed(2)}`, totalCol, currentY);
+      doc.fontSize(10).text(item.name, itemCol, currentY).text(String(item.quantity), qtyCol, currentY).text(`$${Number(item.price).toFixed(2)}`, priceCol, currentY).text(`$${Number(item.totalPrice).toFixed(2)}`, totalCol, currentY);
 
       currentY += 20;
     });
 
     doc.moveDown(2);
 
-    // Summary
     doc.fontSize(14).text('SUMMARY', { underline: true }).moveDown().fontSize(12);
 
     const summaryY = doc.y;
     doc.text('Subtotal:', 300, summaryY).text(`$${order.subtotal.toFixed(2)}`, 400, summaryY).text('Shipping:', 300, summaryY + 20).text(`$${order.shipping.toFixed(2)}`, 400, summaryY + 20).text('Tax (16% VAT):', 300, summaryY + 40).text(`$${order.tax.toFixed(2)}`, 400, summaryY + 40).moveDown().fontSize(14).text('TOTAL:', 300, doc.y).text(`$${order.total.toFixed(2)}`, 400, doc.y).moveDown(2);
 
-    // Payment and status info
     doc.fontSize(10).text(`Payment Method: ${order.paymentMethod.toUpperCase()}`).text(`Payment Status: ${order.paymentStatus}`).text(`Order Status: ${order.status}`).moveDown().text('Thank you for your purchase!', { align: 'center' });
 
-    // Finalize PDF
     doc.end();
   } catch (error) {
     console.error('Error generating receipt:', error);
@@ -823,7 +785,9 @@ app.get('/api/orders/:id/receipt', async (req, res) => {
   }
 });
 
-// CUSTOMERS
+/* -------------------------
+   CUSTOMERS
+   ------------------------- */
 
 // Get all customers
 app.get('/api/customers', async (req, res) => {
@@ -839,9 +803,7 @@ app.get('/api/customers', async (req, res) => {
 app.get('/api/customers/:id', async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id);
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
-    }
+    if (!customer) return res.status(404).json({ message: 'Customer not found' });
     res.json(customer);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching customer', error: error.message });
@@ -853,7 +815,6 @@ app.post('/api/customers', async (req, res) => {
   try {
     const customerData = req.body;
 
-    // Check if customer with same email already exists
     const existingCustomer = await Customer.findOne({ email: customerData.email });
     if (existingCustomer) {
       return res.status(400).json({ message: 'Customer with this email already exists' });
@@ -883,9 +844,7 @@ app.put('/api/customers/:id', async (req, res) => {
       runValidators: true
     });
 
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
-    }
+    if (!customer) return res.status(404).json({ message: 'Customer not found' });
 
     res.json({ success: true, customer });
   } catch (error) {
@@ -897,9 +856,7 @@ app.put('/api/customers/:id', async (req, res) => {
 app.delete('/api/customers/:id', async (req, res) => {
   try {
     const customer = await Customer.findByIdAndDelete(req.params.id);
-    if (!customer) {
-      return res.status(404).json({ message: 'Customer not found' });
-    }
+    if (!customer) return res.status(404).json({ message: 'Customer not found' });
     res.json({ success: true, message: 'Customer deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting customer', error: error.message });
@@ -910,11 +867,9 @@ app.delete('/api/customers/:id', async (req, res) => {
 app.get('/api/customers/search', async (req, res) => {
   try {
     const { q } = req.query;
-    if (!q) {
-      return res.status(400).json({ message: 'Search query is required' });
-    }
+    if (!q) return res.status(400).json({ message: 'Search query is required' });
 
-    const searchRegex = new RegExp(q, 'i');
+    const searchRegex = new RegExp(String(q), 'i');
     const customers = await Customer.find({
       $or: [
         { name: searchRegex },
@@ -944,8 +899,8 @@ app.get('/api/customers/stats', async (req, res) => {
     const regular = customers.filter((c) => c.totalSpent >= 100000 && c.totalSpent < 500000).length;
     const newCustomers = customers.filter((c) => c.totalSpent < 100000).length;
 
-    const totalRevenue = customers.reduce((sum, c) => sum + c.totalSpent, 0);
-    const totalOrders = customers.reduce((sum, c) => sum + c.totalOrders, 0);
+    const totalRevenue = customers.reduce((sum, c) => sum + (c.totalSpent || 0), 0);
+    const totalOrders = customers.reduce((sum, c) => sum + (c.totalOrders || 0), 0);
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
     const stats = {
@@ -966,9 +921,12 @@ app.get('/api/customers/stats', async (req, res) => {
   }
 });
 
-// PRODUCT MAPPINGS
+/* -------------------------
+   PRODUCT MAPPINGS
+   ------------------------- */
 
-// Get all product mappings
+// ... (product-mappings endpoints: GET, POST, PUT, DELETE) - keep same logic as before
+
 app.get('/api/product-mappings', async (req, res) => {
   try {
     const mappings = await ProductMapping.find().sort({ productName: 1 });
@@ -978,59 +936,41 @@ app.get('/api/product-mappings', async (req, res) => {
   }
 });
 
-// Search product mappings
 app.get('/api/product-mappings/search', async (req, res) => {
   try {
     const { q } = req.query;
-    if (!q) {
-      return res.status(400).json({ message: 'Search query is required' });
-    }
-
-    const searchRegex = new RegExp(q, 'i');
-    const mappings = await ProductMapping.find({
-      productName: searchRegex
-    }).sort({ productName: 1 }).limit(10);
-    
+    if (!q) return res.status(400).json({ message: 'Search query is required' });
+    const searchRegex = new RegExp(String(q), 'i');
+    const mappings = await ProductMapping.find({ productName: searchRegex }).sort({ productName: 1 }).limit(10);
     res.json(mappings);
   } catch (error) {
     res.status(500).json({ message: 'Error searching product mappings', error: error.message });
   }
 });
 
-// Create new product mapping
 app.post('/api/product-mappings', async (req, res) => {
   try {
     const { productName, subcategory, category } = req.body;
-    
     if (!productName || !subcategory) {
       return res.status(400).json({ message: 'Product name and subcategory are required' });
     }
-
-    // Check if mapping already exists
     const existingMapping = await ProductMapping.findOne({ productName: { $regex: new RegExp(`^${productName}$`, 'i') } });
     if (existingMapping) {
       return res.status(400).json({ message: 'Product mapping already exists' });
     }
-
     const mapping = new ProductMapping({
       productName: productName.trim(),
       subcategory: subcategory.trim(),
       category: category?.trim()
     });
-
     const savedMapping = await mapping.save();
-    res.status(201).json({ 
-      success: true, 
-      mapping: savedMapping, 
-      message: 'Product mapping created successfully' 
-    });
+    res.status(201).json({ success: true, mapping: savedMapping, message: 'Product mapping created successfully' });
   } catch (error) {
     console.error('Error creating product mapping:', error);
     res.status(500).json({ message: 'Error creating product mapping', error: error.message });
   }
 });
 
-// Update product mapping
 app.put('/api/product-mappings/:id', async (req, res) => {
   try {
     const { productName, subcategory, category } = req.body;
@@ -1040,15 +980,8 @@ app.put('/api/product-mappings/:id', async (req, res) => {
     if (subcategory) updates.subcategory = subcategory.trim();
     if (category) updates.category = category.trim();
 
-    const mapping = await ProductMapping.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-      runValidators: true
-    });
-
-    if (!mapping) {
-      return res.status(404).json({ message: 'Product mapping not found' });
-    }
-
+    const mapping = await ProductMapping.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+    if (!mapping) return res.status(404).json({ message: 'Product mapping not found' });
     res.json({ success: true, mapping });
   } catch (error) {
     console.error('Error updating product mapping:', error);
@@ -1056,13 +989,10 @@ app.put('/api/product-mappings/:id', async (req, res) => {
   }
 });
 
-// Delete product mapping
 app.delete('/api/product-mappings/:id', async (req, res) => {
   try {
     const mapping = await ProductMapping.findByIdAndDelete(req.params.id);
-    if (!mapping) {
-      return res.status(404).json({ message: 'Product mapping not found' });
-    }
+    if (!mapping) return res.status(404).json({ message: 'Product mapping not found' });
     res.json({ success: true, message: 'Product mapping deleted successfully' });
   } catch (error) {
     console.error('Error deleting product mapping:', error);
@@ -1070,9 +1000,10 @@ app.delete('/api/product-mappings/:id', async (req, res) => {
   }
 });
 
-// CATEGORIES
+/* -------------------------
+   CATEGORIES
+   ------------------------- */
 
-// Get all categories
 app.get('/api/categories', async (req, res) => {
   try {
     const categories = await Category.find().sort({ createdAt: -1 });
@@ -1082,65 +1013,44 @@ app.get('/api/categories', async (req, res) => {
   }
 });
 
-// Get single category
 app.get('/api/categories/:id', async (req, res) => {
   try {
     const category = await Category.findById(req.params.id);
-    if (!category) {
-      return res.status(404).json({ message: 'Category not found' });
-    }
+    if (!category) return res.status(404).json({ message: 'Category not found' });
     res.json(category);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching category', error: error.message });
   }
 });
 
-// Create category
 app.post('/api/categories', async (req, res) => {
   try {
     const categoryData = req.body;
-    
-    // Check if category with same name already exists
     const existingCategory = await Category.findOne({ name: categoryData.name });
     if (existingCategory) {
-      return res.status(409).json({ 
-        message: 'Category with this name already exists', 
+      return res.status(409).json({
+        message: 'Category with this name already exists',
         error: 'DUPLICATE_CATEGORY',
         existingCategory: existingCategory
       });
     }
-    
     const category = new Category(categoryData);
     const savedCategory = await category.save();
     res.status(201).json({ id: savedCategory._id, success: true, message: 'Category created successfully' });
   } catch (error) {
     console.error('Error creating category:', error);
-    
-    // Handle MongoDB duplicate key error specifically
     if (error.code === 11000) {
-      return res.status(409).json({ 
-        message: 'Category with this name already exists', 
-        error: 'DUPLICATE_CATEGORY'
-      });
+      return res.status(409).json({ message: 'Category with this name already exists', error: 'DUPLICATE_CATEGORY' });
     }
-    
     res.status(500).json({ message: 'Error creating category', error: error.message });
   }
 });
 
-// Update category
 app.put('/api/categories/:id', async (req, res) => {
   try {
     const updates = { ...req.body, updatedAt: new Date() };
-    const category = await Category.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-      runValidators: true
-    });
-
-    if (!category) {
-      return res.status(404).json({ message: 'Category not found' });
-    }
-
+    const category = await Category.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+    if (!category) return res.status(404).json({ message: 'Category not found' });
     res.json({ success: true, category });
   } catch (error) {
     console.error('Error updating category:', error);
@@ -1148,13 +1058,10 @@ app.put('/api/categories/:id', async (req, res) => {
   }
 });
 
-// Delete category
 app.delete('/api/categories/:id', async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
-    if (!category) {
-      return res.status(404).json({ message: 'Category not found' });
-    }
+    if (!category) return res.status(404).json({ message: 'Category not found' });
     res.json({ success: true, message: 'Category deleted successfully' });
   } catch (error) {
     console.error('Error deleting category:', error);
@@ -1162,18 +1069,18 @@ app.delete('/api/categories/:id', async (req, res) => {
   }
 });
 
-// ANALYTICS
+/* -------------------------
+   ANALYTICS (kept intact the logic you had)
+   ------------------------- */
 
-// Get comprehensive analytics
 app.get('/api/analytics', async (req, res) => {
   try {
     const { timeRange = '30d' } = req.query;
-    
-    // Calculate date ranges
+
     const now = new Date();
     let startDate = new Date();
     let previousStartDate = new Date();
-    
+
     switch (timeRange) {
       case '7d':
         startDate.setDate(now.getDate() - 7);
@@ -1197,26 +1104,17 @@ app.get('/api/analytics', async (req, res) => {
     }
 
     const orders = await Order.find({ createdAt: { $gte: startDate } });
-    const previousOrders = await Order.find({ 
-      createdAt: { $gte: previousStartDate, $lt: startDate } 
+    const previousOrders = await Order.find({
+      createdAt: { $gte: previousStartDate, $lt: startDate }
     });
     const customers = await Customer.find();
     const products = await Product.find();
 
-    // Calculate revenue metrics
-    const totalRevenue = orders.reduce(
-      (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
-      0
-    );
-    
-    const previousRevenue = previousOrders.reduce(
-      (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
-      0
-    );
-    
-    const revenueGrowth = previousRevenue > 0 ? 
-      ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0;
-    
+    const totalRevenue = orders.reduce((sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0), 0);
+    const previousRevenue = previousOrders.reduce((sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0), 0);
+
+    const revenueGrowth = previousRevenue > 0 ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0;
+
     const completedOrders = orders.filter((o) => o.paymentStatus === 'completed');
     const monthlyRevenue = completedOrders
       .filter((o) => {
@@ -1225,7 +1123,6 @@ app.get('/api/analytics', async (req, res) => {
       })
       .reduce((sum, order) => sum + order.total, 0);
 
-    // Order statistics
     const orderStats = {
       total: orders.length,
       pending: orders.filter((o) => o.status === 'pending').length,
@@ -1233,7 +1130,6 @@ app.get('/api/analytics', async (req, res) => {
       cancelled: orders.filter((o) => o.status === 'cancelled').length
     };
 
-    // Customer statistics
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const newCustomers = customers.filter((c) => new Date(c.createdAt) >= thirtyDaysAgo).length;
 
@@ -1244,7 +1140,6 @@ app.get('/api/analytics', async (req, res) => {
       inactive: customers.filter((c) => c.status === 'inactive').length
     };
 
-    // Product statistics
     const productStats = {
       total: products.length,
       inStock: products.filter((p) => p.inStock && p.stock > 5).length,
@@ -1252,29 +1147,20 @@ app.get('/api/analytics', async (req, res) => {
       outOfStock: products.filter((p) => !p.inStock || p.stock === 0).length
     };
 
-    // Top products (computed from completed orders within the selected range)
     const productStatsMap = new Map();
     for (const order of completedOrders) {
       for (const item of order.items) {
         const key = item.id || item._id || item.name;
         if (!productStatsMap.has(key)) {
-          productStatsMap.set(key, {
-            id: key,
-            name: item.name,
-            sales: 0,
-            revenue: 0
-          });
+          productStatsMap.set(key, { id: key, name: item.name, sales: 0, revenue: 0 });
         }
         const stats = productStatsMap.get(key);
         stats.sales += Number(item.quantity) || 0;
         stats.revenue += Number(item.totalPrice) || 0;
       }
     }
-    const topProducts = Array.from(productStatsMap.values())
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 10);
+    const topProducts = Array.from(productStatsMap.values()).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
 
-    // Top categories by revenue (aggregate all completed order items)
     const productIdToCategory = new Map(products.map((p) => [String(p._id), p.category || 'Uncategorized']));
     const categoryStatsMap = new Map();
     for (const order of completedOrders) {
@@ -1289,11 +1175,8 @@ app.get('/api/analytics', async (req, res) => {
         catStats.revenue += Number(item.totalPrice) || 0;
       }
     }
-    const topCategories = Array.from(categoryStatsMap.values())
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 10);
+    const topCategories = Array.from(categoryStatsMap.values()).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
 
-    // Monthly data (simplified - last 12 months)
     const monthlyData = [];
     for (let i = 11; i >= 0; i--) {
       const date = new Date();
@@ -1312,21 +1195,14 @@ app.get('/api/analytics', async (req, res) => {
 
       monthlyData.push({
         month: monthName,
-        revenue: monthOrders.reduce(
-          (sum, o) => sum + (o.paymentStatus === 'completed' ? o.total : 0),
-          0
-        ),
+        revenue: monthOrders.reduce((sum, o) => sum + (o.paymentStatus === 'completed' ? o.total : 0), 0),
         orders: monthOrders.length,
         customers: monthCustomers.length
       });
     }
 
     const analyticsData = {
-      revenue: {
-        total: totalRevenue,
-        monthly: monthlyRevenue,
-        growth: revenueGrowth
-      },
+      revenue: { total: totalRevenue, monthly: monthlyRevenue, growth: revenueGrowth },
       orders: orderStats,
       customers: customerStats,
       products: productStats,
@@ -1342,14 +1218,10 @@ app.get('/api/analytics', async (req, res) => {
   }
 });
 
-// Individual analytics endpoints
 app.get('/api/analytics/revenue', async (req, res) => {
   try {
     const orders = await Order.find();
-    const totalRevenue = orders.reduce(
-      (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
-      0
-    );
+    const totalRevenue = orders.reduce((sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0), 0);
 
     const now = new Date();
     const monthlyRevenue = orders
@@ -1357,16 +1229,9 @@ app.get('/api/analytics/revenue', async (req, res) => {
         const orderDate = new Date(o.createdAt);
         return orderDate.getMonth() === now.getMonth() && orderDate.getFullYear() === now.getFullYear();
       })
-      .reduce(
-        (sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0),
-        0
-      );
+      .reduce((sum, order) => sum + (order.paymentStatus === 'completed' ? order.total : 0), 0);
 
-    res.json({
-      total: totalRevenue,
-      monthly: monthlyRevenue,
-      growth: 12.5 // Mock growth rate
-    });
+    res.json({ total: totalRevenue, monthly: monthlyRevenue, growth: 12.5 });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching revenue analytics', error: error.message });
   }
@@ -1375,14 +1240,12 @@ app.get('/api/analytics/revenue', async (req, res) => {
 app.get('/api/analytics/orders', async (req, res) => {
   try {
     const orders = await Order.find();
-
     const stats = {
       total: orders.length,
       pending: orders.filter((o) => o.status === 'pending').length,
       completed: orders.filter((o) => o.status === 'delivered' || o.paymentStatus === 'completed').length,
       cancelled: orders.filter((o) => o.status === 'cancelled').length
     };
-
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching order analytics', error: error.message });
@@ -1394,14 +1257,12 @@ app.get('/api/analytics/customers', async (req, res) => {
     const customers = await Customer.find();
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
     const stats = {
       total: customers.length,
       new: customers.filter((c) => new Date(c.createdAt) >= thirtyDaysAgo).length,
       active: customers.filter((c) => c.status === 'active').length,
       inactive: customers.filter((c) => c.status === 'inactive').length
     };
-
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching customer analytics', error: error.message });
@@ -1411,128 +1272,82 @@ app.get('/api/analytics/customers', async (req, res) => {
 app.get('/api/analytics/products', async (req, res) => {
   try {
     const products = await Product.find();
-
     const stats = {
       total: products.length,
       inStock: products.filter((p) => p.inStock && p.stock > 5).length,
       lowStock: products.filter((p) => p.inStock && p.stock <= 5 && p.stock > 0).length,
       outOfStock: products.filter((p) => !p.inStock || p.stock === 0).length
     };
-
     res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching product analytics', error: error.message });
   }
 });
 
-// Add live top products endpoint
 app.get('/api/analytics/top-products', async (req, res) => {
   try {
     const { timeRange = '30d' } = req.query;
-
     const now = new Date();
     let startDate = new Date();
     switch (timeRange) {
-      case '7d':
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case '30d':
-        startDate.setDate(now.getDate() - 30);
-        break;
-      case '90d':
-        startDate.setDate(now.getDate() - 90);
-        break;
-      case '1y':
-        startDate.setFullYear(now.getFullYear() - 1);
-        break;
-      default:
-        startDate.setDate(now.getDate() - 30);
+      case '7d': startDate.setDate(now.getDate() - 7); break;
+      case '30d': startDate.setDate(now.getDate() - 30); break;
+      case '90d': startDate.setDate(now.getDate() - 90); break;
+      case '1y': startDate.setFullYear(now.getFullYear() - 1); break;
+      default: startDate.setDate(now.getDate() - 30);
     }
-
     const orders = await Order.find({ createdAt: { $gte: startDate } });
     const completedOrders = orders.filter((o) => o.paymentStatus === 'completed' || o.status === 'delivered');
-
     const productStatsMap = new Map();
     for (const order of completedOrders) {
       for (const item of order.items) {
         const key = item.id || item._id || item.name;
-        if (!productStatsMap.has(key)) {
-          productStatsMap.set(key, { id: key, name: item.name, sales: 0, revenue: 0 });
-        }
+        if (!productStatsMap.has(key)) productStatsMap.set(key, { id: key, name: item.name, sales: 0, revenue: 0 });
         const stats = productStatsMap.get(key);
         stats.sales += Number(item.quantity) || 0;
         stats.revenue += Number(item.totalPrice) || 0;
       }
     }
-
-    const topProducts = Array.from(productStatsMap.values())
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 10);
-
+    const topProducts = Array.from(productStatsMap.values()).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
     res.json(topProducts);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching top products', error: error.message });
   }
 });
 
-// Add live top categories endpoint
 app.get('/api/analytics/top-categories', async (req, res) => {
   try {
     const { timeRange = '30d' } = req.query;
-
     const now = new Date();
     let startDate = new Date();
     switch (timeRange) {
-      case '7d':
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case '30d':
-        startDate.setDate(now.getDate() - 30);
-        break;
-      case '90d':
-        startDate.setDate(now.getDate() - 90);
-        break;
-      case '1y':
-        startDate.setFullYear(now.getFullYear() - 1);
-        break;
-      default:
-        startDate.setDate(now.getDate() - 30);
+      case '7d': startDate.setDate(now.getDate() - 7); break;
+      case '30d': startDate.setDate(now.getDate() - 30); break;
+      case '90d': startDate.setDate(now.getDate() - 90); break;
+      case '1y': startDate.setFullYear(now.getFullYear() - 1); break;
+      default: startDate.setDate(now.getDate() - 30);
     }
-
-    const [orders, products] = await Promise.all([
-      Order.find({ createdAt: { $gte: startDate } }),
-      Product.find()
-    ]);
-
+    const [orders, products] = await Promise.all([Order.find({ createdAt: { $gte: startDate } }), Product.find()]);
     const completedOrders = orders.filter((o) => o.paymentStatus === 'completed' || o.status === 'delivered');
-
     const productIdToCategory = new Map(products.map((p) => [String(p._id), p.category || 'Uncategorized']));
-
     const categoryStatsMap = new Map();
     for (const order of completedOrders) {
       for (const item of order.items) {
         const productId = String(item.id || item._id || '');
         const categoryName = productIdToCategory.get(productId) || 'Uncategorized';
-        if (!categoryStatsMap.has(categoryName)) {
-          categoryStatsMap.set(categoryName, { name: categoryName, sales: 0, revenue: 0 });
-        }
+        if (!categoryStatsMap.has(categoryName)) categoryStatsMap.set(categoryName, { name: categoryName, sales: 0, revenue: 0 });
         const cat = categoryStatsMap.get(categoryName);
         cat.sales += Number(item.quantity) || 0;
         cat.revenue += Number(item.totalPrice) || 0;
       }
     }
-
-    const topCategories = Array.from(categoryStatsMap.values())
-      .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 10);
-
+    const topCategories = Array.from(categoryStatsMap.values()).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
     res.json(topCategories);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching top categories', error: error.message });
   }
 });
 
-// Add live monthly analytics endpoint
 app.get('/api/analytics/monthly', async (req, res) => {
   try {
     const orders = await Order.find();
@@ -1568,9 +1383,10 @@ app.get('/api/analytics/monthly', async (req, res) => {
   }
 });
 
-// ADMIN MANAGEMENT
+/* -------------------------
+   ADMIN MANAGEMENT
+   ------------------------- */
 
-// Admin Schema for storing admin credentials
 const adminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   passwordHash: { type: String, required: true },
@@ -1579,69 +1395,40 @@ const adminSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });
-
 const Admin = mongoose.model('Admin', adminSchema);
 
-// Simple hash function for passwords (in production, use bcrypt)
 function hashPassword(password) {
   const crypto = require('crypto');
   return crypto.createHash('sha256').update(password).digest('hex');
 }
 
-// Get admin profile
 app.get('/api/admin/profile', async (req, res) => {
   try {
-    // In a real app, you'd get the admin ID from the authenticated session
-    // For now, we'll return the first admin
     const admin = await Admin.findOne({ role: 'admin' }).select('-passwordHash');
-    if (!admin) {
-      return res.status(404).json({ message: 'Admin not found' });
-    }
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
     res.json(admin);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching admin profile', error: error.message });
   }
 });
 
-// Update admin credentials
 app.put('/api/admin/credentials', async (req, res) => {
   try {
     const { currentPassword, newPassword, email, name } = req.body;
-    
-    // Find the admin (in a real app, use the authenticated admin's ID)
     const admin = await Admin.findOne({ role: 'admin' });
-    if (!admin) {
-      return res.status(404).json({ message: 'Admin not found' });
-    }
-    
-    // Verify current password
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+
     const currentPasswordHash = hashPassword(currentPassword);
     if (admin.passwordHash !== currentPasswordHash) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
-    
-    // Update admin credentials
-    const updates = {
-      updatedAt: new Date()
-    };
-    
-    if (newPassword) {
-      updates.passwordHash = hashPassword(newPassword);
-    }
-    
-    if (email) {
-      updates.email = email;
-    }
-    
-    if (name) {
-      updates.name = name;
-    }
-    
-    const updatedAdmin = await Admin.findByIdAndUpdate(admin._id, updates, {
-      new: true,
-      runValidators: true
-    }).select('-passwordHash');
-    
+
+    const updates = { updatedAt: new Date() };
+    if (newPassword) updates.passwordHash = hashPassword(newPassword);
+    if (email) updates.email = email;
+    if (name) updates.name = name;
+
+    const updatedAdmin = await Admin.findByIdAndUpdate(admin._id, updates, { new: true, runValidators: true }).select('-passwordHash');
     res.json({ success: true, admin: updatedAdmin, message: 'Credentials updated successfully' });
   } catch (error) {
     console.error('Error updating admin credentials:', error);
@@ -1649,53 +1436,27 @@ app.put('/api/admin/credentials', async (req, res) => {
   }
 });
 
-// Admin Login Endpoint
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    
-    // Find admin/staff user
     const admin = await Admin.findOne({ email });
-    if (!admin) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
-    // Check password
+    if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
     const passwordHash = hashPassword(password);
-    if (admin.passwordHash !== passwordHash) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
-    // Return admin without password
-    const adminResponse = {
-      _id: admin._id,
-      email: admin.email,
-      name: admin.name,
-      role: admin.role
-    };
-    
-    res.json({ 
-      success: true, 
-      admin: adminResponse, 
-      message: 'Login successful' 
-    });
+    if (admin.passwordHash !== passwordHash) return res.status(401).json({ message: 'Invalid credentials' });
+
+    const adminResponse = { _id: admin._id, email: admin.email, name: admin.name, role: admin.role };
+    res.json({ success: true, admin: adminResponse, message: 'Login successful' });
   } catch (error) {
     console.error('Error during admin login:', error);
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 });
 
-// Simple admin authentication middleware (in production, use proper JWT/session auth)
 const requireAdminAuth = (req, res, next) => {
-  // In a real application, you would verify JWT tokens or session cookies here
-  // For now, we'll skip the check but keep the middleware structure for future enhancement
-  // TODO: Implement proper JWT verification in production
+  // Placeholder middleware for future JWT/session validation
   next();
 };
 
-// Staff Management Endpoints (Admin Only)
-
-// Get all staff members
 app.get('/api/admin/staff', requireAdminAuth, async (req, res) => {
   try {
     const staff = await Admin.find({ role: 'staff' }).select('-passwordHash');
@@ -1706,109 +1467,68 @@ app.get('/api/admin/staff', requireAdminAuth, async (req, res) => {
   }
 });
 
-// Create new staff member (Admin only)
 app.post('/api/admin/staff', requireAdminAuth, async (req, res) => {
   try {
     const { email, name, password } = req.body;
-    
-    // Check if email already exists
     const existingUser = await Admin.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email already exists' });
-    }
-    
-    // Create new staff member
-    const newStaff = new Admin({
-      email,
-      name,
-      passwordHash: hashPassword(password),
-      role: 'staff'
-    });
-    
+    if (existingUser) return res.status(400).json({ message: 'Email already exists' });
+
+    const newStaff = new Admin({ email, name, passwordHash: hashPassword(password), role: 'staff' });
     await newStaff.save();
-    
-    // Return staff without password
     const staffResponse = await Admin.findById(newStaff._id).select('-passwordHash');
-    res.status(201).json({ 
-      success: true, 
-      staff: staffResponse, 
-      message: 'Staff member created successfully' 
-    });
+    res.status(201).json({ success: true, staff: staffResponse, message: 'Staff member created successfully' });
   } catch (error) {
     console.error('Error creating staff:', error);
     res.status(500).json({ message: 'Error creating staff member', error: error.message });
   }
 });
 
-// Update staff password (Admin only)
 app.put('/api/admin/staff/:id/password', requireAdminAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { newPassword } = req.body;
-    
-    // Find the staff member
     const staff = await Admin.findOne({ _id: id, role: 'staff' });
-    if (!staff) {
-      return res.status(404).json({ message: 'Staff member not found' });
-    }
-    
-    // Update password
+    if (!staff) return res.status(404).json({ message: 'Staff member not found' });
     staff.passwordHash = hashPassword(newPassword);
     staff.updatedAt = new Date();
     await staff.save();
-    
-    res.json({ 
-      success: true, 
-      message: 'Staff password updated successfully' 
-    });
+    res.json({ success: true, message: 'Staff password updated successfully' });
   } catch (error) {
     console.error('Error updating staff password:', error);
     res.status(500).json({ message: 'Error updating staff password', error: error.message });
   }
 });
 
-// Delete staff member (Admin only)
 app.delete('/api/admin/staff/:id', requireAdminAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    
-    // Find and delete the staff member
     const staff = await Admin.findOneAndDelete({ _id: id, role: 'staff' });
-    if (!staff) {
-      return res.status(404).json({ message: 'Staff member not found' });
-    }
-    
-    res.json({ 
-      success: true, 
-      message: 'Staff member deleted successfully' 
-    });
+    if (!staff) return res.status(404).json({ message: 'Staff member not found' });
+    res.json({ success: true, message: 'Staff member deleted successfully' });
   } catch (error) {
     console.error('Error deleting staff:', error);
     res.status(500).json({ message: 'Error deleting staff member', error: error.message });
   }
 });
 
-// Initialize default admin and staff if none exist
 async function initializeDefaultAdmin() {
   try {
     const adminCount = await Admin.countDocuments();
     if (adminCount === 0) {
-      // Create default admin
       const defaultAdmin = new Admin({
         email: 'admin@rurident.com',
         passwordHash: hashPassword('secure123'),
         name: 'Admin User',
         role: 'admin'
       });
-      
-      // Create default staff
+
       const defaultStaff = new Admin({
         email: 'staff@rurident.com',
         passwordHash: hashPassword('staff123'),
         name: 'Staff Member',
         role: 'staff'
       });
-      
+
       await defaultAdmin.save();
       await defaultStaff.save();
       console.log('✅ Default admin and staff users created');
@@ -1818,19 +1538,15 @@ async function initializeDefaultAdmin() {
   }
 }
 
-// Initialize default admin on server start
 initializeDefaultAdmin();
 
-// Settings Schema for storing application settings
 const settingsSchema = new mongoose.Schema({
   key: { type: String, required: true, unique: true },
   value: { type: mongoose.Schema.Types.Mixed, required: true },
   updatedAt: { type: Date, default: Date.now }
 });
-
 const Settings = mongoose.model('Settings', settingsSchema);
 
-// Get all settings
 app.get('/api/settings', async (req, res) => {
   try {
     const settings = await Settings.find();
@@ -1838,8 +1554,7 @@ app.get('/api/settings', async (req, res) => {
     settings.forEach(setting => {
       settingsObj[setting.key] = setting.value;
     });
-    
-    // Return default settings if none exist
+
     const defaultSettings = {
       storeName: 'Rurident Health Supplies',
       storeDescription: 'Professional dental equipment and supplies',
@@ -1860,29 +1575,20 @@ app.get('/api/settings', async (req, res) => {
       sessionTimeout: 30,
       passwordExpiry: 90
     };
-    
+
     res.json({ ...defaultSettings, ...settingsObj });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching settings', error: error.message });
   }
 });
 
-// Update settings
 app.put('/api/settings', async (req, res) => {
   try {
     const updates = req.body;
     const updatePromises = [];
-    
     for (const [key, value] of Object.entries(updates)) {
-      updatePromises.push(
-        Settings.findOneAndUpdate(
-          { key },
-          { key, value, updatedAt: new Date() },
-          { upsert: true, new: true }
-        )
-      );
+      updatePromises.push(Settings.findOneAndUpdate({ key }, { key, value, updatedAt: new Date() }, { upsert: true, new: true }));
     }
-    
     await Promise.all(updatePromises);
     res.json({ success: true, message: 'Settings updated successfully' });
   } catch (error) {
@@ -1891,56 +1597,29 @@ app.put('/api/settings', async (req, res) => {
   }
 });
 
-/* =========================
-   REVIEW SYSTEM API ENDPOINTS
-   ========================= */
+/* -------------------------
+   REVIEW SYSTEM
+   ------------------------- */
 
-// Get all reviews for a product (public endpoint)
 app.get('/api/reviews/:productId', async (req, res) => {
   try {
     const { productId } = req.params;
     const { sort = 'newest', page = 1, limit = 10 } = req.query;
-    
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
-    // Build sort object
+
     let sortObj = {};
     switch (sort) {
-      case 'newest':
-        sortObj = { createdAt: -1 };
-        break;
-      case 'oldest':
-        sortObj = { createdAt: 1 };
-        break;
-      case 'highest':
-        sortObj = { rating: -1, createdAt: -1 };
-        break;
-      case 'lowest':
-        sortObj = { rating: 1, createdAt: -1 };
-        break;
-      case 'helpful':
-        sortObj = { helpfulVotes: -1, createdAt: -1 };
-        break;
-      default:
-        sortObj = { createdAt: -1 };
+      case 'newest': sortObj = { createdAt: -1 }; break;
+      case 'oldest': sortObj = { createdAt: 1 }; break;
+      case 'highest': sortObj = { rating: -1, createdAt: -1 }; break;
+      case 'lowest': sortObj = { rating: 1, createdAt: -1 }; break;
+      case 'helpful': sortObj = { helpfulVotes: -1, createdAt: -1 }; break;
+      default: sortObj = { createdAt: -1 };
     }
-    
-    // Get approved reviews only for public display
-    const reviews = await Review.find({ 
-      productId, 
-      status: 'approved' 
-    })
-    .sort(sortObj)
-    .skip(skip)
-    .limit(parseInt(limit));
-    
-    // Get total count for pagination
-    const totalReviews = await Review.countDocuments({ 
-      productId, 
-      status: 'approved' 
-    });
-    
-    // Get review statistics
+
+    const reviews = await Review.find({ productId, status: 'approved' }).sort(sortObj).skip(skip).limit(parseInt(limit));
+    const totalReviews = await Review.countDocuments({ productId, status: 'approved' });
+
     const reviewStats = await Review.aggregate([
       { $match: { productId: mongoose.Types.ObjectId(productId), status: 'approved' } },
       {
@@ -1954,15 +1633,14 @@ app.get('/api/reviews/:productId', async (req, res) => {
         }
       }
     ]);
-    
-    // Calculate rating distribution
+
     const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     if (reviewStats.length > 0) {
       reviewStats[0].ratingDistribution.forEach(rating => {
-        distribution[rating]++;
+        distribution[rating] = (distribution[rating] || 0) + 1;
       });
     }
-    
+
     const stats = reviewStats.length > 0 ? {
       averageRating: Math.round(reviewStats[0].averageRating * 10) / 10,
       totalReviews: reviewStats[0].totalReviews,
@@ -1972,7 +1650,7 @@ app.get('/api/reviews/:productId', async (req, res) => {
       totalReviews: 0,
       distribution
     };
-    
+
     res.json({
       reviews,
       stats,
@@ -1990,55 +1668,28 @@ app.get('/api/reviews/:productId', async (req, res) => {
   }
 });
 
-// Submit a new review (customer endpoint)
 app.post('/api/reviews', async (req, res) => {
   try {
     const { productId, userId, userName, userEmail, rating, title, comment, photos, orderId } = req.body;
-    
-    // Validate required fields
     if (!productId || !userId || !userName || !userEmail || !rating || !comment) {
-      return res.status(400).json({ 
-        message: 'Missing required fields: productId, userId, userName, userEmail, rating, comment' 
-      });
+      return res.status(400).json({ message: 'Missing required fields: productId, userId, userName, userEmail, rating, comment' });
     }
-    
-    // Validate rating
-    if (rating < 1 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
-    }
-    
-    // Check if product exists
+    if (rating < 1 || rating > 5) return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+
     const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-    
-    // Check if user already reviewed this product
-    const existingReview = await Review.findOne({ 
-      productId, 
-      userId,
-      status: { $ne: 'rejected' } // Allow resubmission if previous was rejected
-    });
-    
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+
+    const existingReview = await Review.findOne({ productId, userId, status: { $ne: 'rejected' } });
     if (existingReview) {
-      return res.status(409).json({ 
-        message: 'You have already reviewed this product',
-        existingReviewId: existingReview._id
-      });
+      return res.status(409).json({ message: 'You have already reviewed this product', existingReviewId: existingReview._id });
     }
-    
-    // Verify purchase if orderId is provided
+
     let isVerifiedBuyer = false;
     if (orderId) {
-      const order = await Order.findOne({ 
-        orderId,
-        'customerInfo.email': userEmail,
-        'items.id': productId
-      });
+      const order = await Order.findOne({ orderId, 'customerInfo.email': userEmail, 'items.id': productId });
       isVerifiedBuyer = !!order;
     }
-    
-    // Create new review
+
     const review = new Review({
       productId,
       userId,
@@ -2050,73 +1701,46 @@ app.post('/api/reviews', async (req, res) => {
       photos: photos || [],
       orderId,
       isVerifiedBuyer,
-      status: 'pending' // Requires admin approval
+      status: 'pending'
     });
-    
+
     await review.save();
-    
-    res.status(201).json({ 
-      success: true, 
-      message: 'Review submitted successfully and pending approval',
-      reviewId: review._id
-    });
+    res.status(201).json({ success: true, message: 'Review submitted successfully and pending approval', reviewId: review._id });
   } catch (error) {
     console.error('Error submitting review:', error);
     res.status(500).json({ message: 'Error submitting review', error: error.message });
   }
 });
 
-// Vote on review helpfulness (public endpoint)
 app.post('/api/reviews/:reviewId/vote', async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const { vote } = req.body; // 'helpful' or 'notHelpful'
-    
-    if (!['helpful', 'notHelpful'].includes(vote)) {
-      return res.status(400).json({ message: 'Invalid vote type' });
-    }
-    
+    const { vote } = req.body;
+    if (!['helpful', 'notHelpful'].includes(vote)) return res.status(400).json({ message: 'Invalid vote type' });
+
     const review = await Review.findById(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
-    }
-    
-    if (vote === 'helpful') {
-      review.helpfulVotes += 1;
-    } else {
-      review.notHelpfulVotes += 1;
-    }
-    
+    if (!review) return res.status(404).json({ message: 'Review not found' });
+
+    if (vote === 'helpful') review.helpfulVotes += 1;
+    else review.notHelpfulVotes += 1;
+
     await review.save();
-    
-    res.json({ 
-      success: true, 
-      helpfulVotes: review.helpfulVotes,
-      notHelpfulVotes: review.notHelpfulVotes
-    });
+    res.json({ success: true, helpfulVotes: review.helpfulVotes, notHelpfulVotes: review.notHelpfulVotes });
   } catch (error) {
     console.error('Error voting on review:', error);
     res.status(500).json({ message: 'Error voting on review', error: error.message });
   }
 });
 
-// ADMIN REVIEW MANAGEMENT ENDPOINTS
+/* ADMIN REVIEW MANAGEMENT (kept intact) */
 
-// Get all reviews for admin (with filtering and pagination)
+// ... admin review endpoints (list, moderate, respond, pin, delete, fake-review) - same as your original logic
+
 app.get('/api/admin/reviews', async (req, res) => {
   try {
-    const { 
-      status, 
-      productId, 
-      sort = 'newest', 
-      page = 1, 
-      limit = 20,
-      search 
-    } = req.query;
-    
+    const { status, productId, sort = 'newest', page = 1, limit = 20, search } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
-    
-    // Build filter object
+
     const filter = {};
     if (status) filter.status = status;
     if (productId) filter.productId = productId;
@@ -2127,37 +1751,20 @@ app.get('/api/admin/reviews', async (req, res) => {
         { title: { $regex: search, $options: 'i' } }
       ];
     }
-    
-    // Build sort object
+
     let sortObj = {};
     switch (sort) {
-      case 'newest':
-        sortObj = { createdAt: -1 };
-        break;
-      case 'oldest':
-        sortObj = { createdAt: 1 };
-        break;
-      case 'highest':
-        sortObj = { rating: -1, createdAt: -1 };
-        break;
-      case 'lowest':
-        sortObj = { rating: 1, createdAt: -1 };
-        break;
-      case 'pending':
-        sortObj = { status: 1, createdAt: -1 };
-        break;
-      default:
-        sortObj = { createdAt: -1 };
+      case 'newest': sortObj = { createdAt: -1 }; break;
+      case 'oldest': sortObj = { createdAt: 1 }; break;
+      case 'highest': sortObj = { rating: -1, createdAt: -1 }; break;
+      case 'lowest': sortObj = { rating: 1, createdAt: -1 }; break;
+      case 'pending': sortObj = { status: 1, createdAt: -1 }; break;
+      default: sortObj = { createdAt: -1 };
     }
-    
-    const reviews = await Review.find(filter)
-      .populate('productId', 'name image')
-      .sort(sortObj)
-      .skip(skip)
-      .limit(parseInt(limit));
-    
+
+    const reviews = await Review.find(filter).populate('productId', 'name image').sort(sortObj).skip(skip).limit(parseInt(limit));
     const totalReviews = await Review.countDocuments(filter);
-    
+
     res.json({
       reviews,
       pagination: {
@@ -2174,182 +1781,120 @@ app.get('/api/admin/reviews', async (req, res) => {
   }
 });
 
-// Moderate a review (approve/reject/hide)
 app.put('/api/admin/reviews/:reviewId/moderate', async (req, res) => {
   try {
     const { reviewId } = req.params;
     const { status, moderationNotes, moderatedBy } = req.body;
-    
-    if (!['pending', 'approved', 'rejected', 'hidden'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status' });
-    }
-    
+    if (!['pending', 'approved', 'rejected', 'hidden'].includes(status)) return res.status(400).json({ message: 'Invalid status' });
+
     const review = await Review.findById(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
-    }
-    
+    if (!review) return res.status(404).json({ message: 'Review not found' });
+
     review.status = status;
     review.moderatedBy = moderatedBy;
     review.moderatedAt = new Date();
     review.moderationNotes = moderationNotes;
-    
     await review.save();
-    
-    // Update product rating if review is approved/rejected
+
     if (status === 'approved' || status === 'rejected') {
       await updateProductRating(review.productId);
     }
-    
-    res.json({ 
-      success: true, 
-      message: `Review ${status} successfully`,
-      review
-    });
+
+    res.json({ success: true, message: `Review ${status} successfully`, review });
   } catch (error) {
     console.error('Error moderating review:', error);
     res.status(500).json({ message: 'Error moderating review', error: error.message });
   }
 });
 
-// Add admin response to a review
 app.post('/api/admin/reviews/:reviewId/respond', async (req, res) => {
   try {
     const { reviewId } = req.params;
     const { content, respondedBy } = req.body;
-    
-    if (!content || !respondedBy) {
-      return res.status(400).json({ message: 'Content and respondedBy are required' });
-    }
-    
+    if (!content || !respondedBy) return res.status(400).json({ message: 'Content and respondedBy are required' });
+
     const review = await Review.findById(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
-    }
-    
-    review.adminResponse = {
-      content,
-      respondedBy,
-      respondedAt: new Date()
-    };
-    
+    if (!review) return res.status(404).json({ message: 'Review not found' });
+
+    review.adminResponse = { content, respondedBy, respondedAt: new Date() };
     await review.save();
-    
-    res.json({ 
-      success: true, 
-      message: 'Admin response added successfully',
-      adminResponse: review.adminResponse
-    });
+
+    res.json({ success: true, message: 'Admin response added successfully', adminResponse: review.adminResponse });
   } catch (error) {
     console.error('Error adding admin response:', error);
     res.status(500).json({ message: 'Error adding admin response', error: error.message });
   }
 });
 
-// Pin/unpin a review
 app.put('/api/admin/reviews/:reviewId/pin', async (req, res) => {
   try {
     const { reviewId } = req.params;
     const { isPinned } = req.body;
-    
+
     const review = await Review.findById(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
-    }
-    
-    review.isPinned = isPinned;
+    if (!review) return res.status(404).json({ message: 'Review not found' });
+
+    review.isPinned = Boolean(isPinned);
     await review.save();
-    
-    res.json({ 
-      success: true, 
-      message: `Review ${isPinned ? 'pinned' : 'unpinned'} successfully`,
-      isPinned: review.isPinned
-    });
+
+    res.json({ success: true, message: `Review ${isPinned ? 'pinned' : 'unpinned'} successfully`, isPinned: review.isPinned });
   } catch (error) {
     console.error('Error pinning review:', error);
     res.status(500).json({ message: 'Error pinning review', error: error.message });
   }
 });
 
-// Delete a review (admin only)
 app.delete('/api/admin/reviews/:reviewId', async (req, res) => {
   try {
     const { reviewId } = req.params;
-    
     const review = await Review.findByIdAndDelete(reviewId);
-    if (!review) {
-      return res.status(404).json({ message: 'Review not found' });
-    }
-    
-    // Update product rating
+    if (!review) return res.status(404).json({ message: 'Review not found' });
+
     await updateProductRating(review.productId);
-    
-    res.json({ 
-      success: true, 
-      message: 'Review deleted successfully'
-    });
+    res.json({ success: true, message: 'Review deleted successfully' });
   } catch (error) {
     console.error('Error deleting review:', error);
     res.status(500).json({ message: 'Error deleting review', error: error.message });
   }
 });
 
-// Create fake review (admin only)
 app.post('/api/admin/fake-review', async (req, res) => {
   try {
     const { productId, userName, rating, comment, isVerifiedBuyer, soldCount } = req.body;
-    
-    // Validate required fields
-    if (!productId || !userName || !rating || !comment) {
-      return res.status(400).json({ message: 'Missing required fields' });
-    }
+    if (!productId || !userName || !rating || !comment) return res.status(400).json({ message: 'Missing required fields' });
 
-    // Check if product exists
     const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    // Create fake review
     const fakeReview = new Review({
       productId,
-      userId: 'fake-user-' + Date.now(), // Generate fake user ID
+      userId: 'fake-user-' + Date.now(),
       userName,
       rating,
       comment,
       isVerifiedBuyer: isVerifiedBuyer || false,
-      status: 'approved', // Auto-approve fake reviews
+      status: 'approved',
       createdAt: new Date(),
       updatedAt: new Date(),
-      helpfulVotes: Math.floor(Math.random() * 10), // Random helpful votes
-      notHelpfulVotes: Math.floor(Math.random() * 3) // Random not helpful votes
+      helpfulVotes: Math.floor(Math.random() * 10),
+      notHelpfulVotes: Math.floor(Math.random() * 3)
     });
 
     await fakeReview.save();
 
-    // Update product with fake sold count if provided
     if (soldCount && soldCount > 0) {
-      // Add fake sold count to product (you might want to add a field for this)
-      await Product.findByIdAndUpdate(productId, {
-        $inc: { soldCount: soldCount }
-      });
+      await Product.findByIdAndUpdate(productId, { $inc: { soldCount: soldCount } });
     }
 
-    // Update product rating
     await updateProductRating(productId);
 
-    res.json({
-      success: true,
-      message: 'Fake review created successfully',
-      review: fakeReview
-    });
+    res.json({ success: true, message: 'Fake review created successfully', review: fakeReview });
   } catch (error) {
     console.error('Error creating fake review:', error);
     res.status(500).json({ message: 'Error creating fake review', error: error.message });
   }
 });
 
-// Helper function to update product rating
 async function updateProductRating(productId) {
   try {
     const reviewStats = await Review.aggregate([
@@ -2362,17 +1907,14 @@ async function updateProductRating(productId) {
         }
       }
     ]);
-    
+
     if (reviewStats.length > 0) {
       await Product.findByIdAndUpdate(productId, {
         rating: Math.round(reviewStats[0].averageRating * 10) / 10,
         reviewCount: reviewStats[0].reviewCount
       });
     } else {
-      await Product.findByIdAndUpdate(productId, {
-        rating: 0,
-        reviewCount: 0
-      });
+      await Product.findByIdAndUpdate(productId, { rating: 0, reviewCount: 0 });
     }
   } catch (error) {
     console.error('Error updating product rating:', error);
@@ -2380,19 +1922,74 @@ async function updateProductRating(productId) {
 }
 
 /* =========================
-   SERVE REACT FRONTEND
+   SERVE REACT FRONTEND (only if built)
    ========================= */
 
-// IMPORTANT: Ensure your React build outputs to ../dist relative to this file.
-const distPath = path.join(__dirname, '..', 'dist');
-app.use(express.static(distPath));
+// Determine dist path - allow override with env var FRONTEND_DIST.
+// If FRONTEND_DIST not set, try common locations: ../dist (server folder -> repo root dist), ./dist (root), ../../dist (if nested).
+function findDistPath() {
+  const envPath = process.env.FRONTEND_DIST;
+  const candidates = [
+    envPath,
+    path.join(__dirname, '..', 'dist'),
+    path.join(__dirname, '..', '..', 'dist'),
+    path.join(process.cwd(), 'dist'),
+    path.join(process.cwd(), 'frontend', 'dist'),
+    path.join(process.cwd(), 'rurident-frontend', 'dist')
+  ].filter(Boolean);
 
-// Catch-all so React Router handles client routes
-app.get('*', (req, res) => {
-  res.sendFile(path.join(distPath, 'index.html'));
+  for (const p of candidates) {
+    if (!p) continue;
+    try {
+      const resolved = path.resolve(p);
+      if (fs.existsSync(resolved) && fs.statSync(resolved).isDirectory()) {
+        // ensure index.html exists
+        const indexFile = path.join(resolved, 'index.html');
+        if (fs.existsSync(indexFile)) return resolved;
+      }
+    } catch (e) {
+      // ignore and continue
+    }
+  }
+  return null;
+}
+
+const distPath = findDistPath();
+if (distPath) {
+  app.use(express.static(distPath));
+  // catch-all for client side routing but keep API routes first
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+  console.log(`✅ Frontend static server enabled. Serving from: ${distPath}`);
+} else {
+  console.log('⚠️ Frontend build NOT found. Static serving disabled. If you want the server to serve the frontend, set FRONTEND_DIST to the build folder or place a dist/ with index.html in the repo root.');
+}
+
+/* =========================
+   START SERVER
+   ========================= */
+
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('SIGINT received: shutting down');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      console.log('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received: shutting down');
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      console.log('MongoDB connection closed');
+      process.exit(0);
+    });
+  });
 });
