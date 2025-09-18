@@ -16,7 +16,9 @@ export interface Category {
 }
 
 class CategoryService {
-  private baseURL = '/api';
+  private baseURL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
+    ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api`
+    : '/api';
 
   async getCategories(): Promise<{ success: boolean; data?: Category[]; error?: string }> {
     try {

@@ -26,7 +26,9 @@ export interface Product {
 }
 
 class APIService {
-  private baseURL = '/api';
+  private baseURL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
+    ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api`
+    : '/api';
   // When true, the service will not attempt to use mock data; it will surface real errors instead
   private alwaysUseLiveApi = true;
 
