@@ -27,6 +27,9 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefin
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const apiBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
+    ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}`
+    : '';
 
   useEffect(() => {
     // Check if user is already logged in
@@ -54,7 +57,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     try {
       // Authenticate with server
-      const response = await fetch('/api/admin/login', {
+      const response = await fetch(`${apiBase}/api/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +131,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     if (!user) return false;
 
     try {
-      const response = await fetch('/api/admin/credentials', {
+      const response = await fetch(`${apiBase}/api/admin/credentials`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
