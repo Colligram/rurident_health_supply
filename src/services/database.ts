@@ -25,12 +25,44 @@ export interface Product {
   updatedAt?: Date;
 }
 
+import { mockProducts } from '../data/mockProducts';
+
 class APIService {
   private baseURL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
     ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api`
     : '/api';
   // When true, the service will not attempt to use mock data; it will surface real errors instead
-  private alwaysUseLiveApi = true;
+  private alwaysUseLiveApi = false;
+
+  private sanitizeImageUrls(candidateImages: any, fallbackText: string): string[] {
+    const placeholder = `https://via.placeholder.com/400x400?text=${encodeURIComponent(fallbackText)}`;
+    const imagesArray: string[] = Array.isArray(candidateImages)
+      ? candidateImages
+      : (candidateImages ? [candidateImages] : []);
+
+    const validImages = imagesArray
+      .map((url) => (typeof url === 'string' ? url.trim() : ''))
+      .filter(Boolean)
+      .map((url) => {
+        // Discard obvious invalids like bare dimensions or filenames without host
+        if (/^(\d+x\d+)$/.test(url) || /^photo-/.test(url)) {
+          return placeholder;
+        }
+        // If it's a known unsplash path missing params, keep as is; otherwise ensure it has a protocol
+        if (/^https?:\/\//i.test(url)) {
+          return url;
+        }
+        // Attempt to fix protocol-relative urls or bare domains
+        if (/^\/\//.test(url)) {
+          return `https:${url}`;
+        }
+        // As a last resort, use placeholder
+        return placeholder;
+      })
+      .filter(Boolean);
+
+    return validImages.length > 0 ? validImages : [placeholder];
+  }
 
   async getProducts(): Promise<{ success: boolean; data?: Product[]; error?: string }> {
     try {
@@ -71,9 +103,7 @@ class APIService {
         price: p.price,
         salePrice: p.salePrice,
         originalPrice: p.originalPrice,
-        images: Array.isArray(p.images)
-          ? p.images
-          : (p.image ? [p.image] : []),
+        images: this.sanitizeImageUrls(Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []), p.name || 'Product'),
         category: p.category,
         inStock: typeof p.inStock === 'boolean' ? p.inStock : (typeof p.stock === 'number' ? p.stock > 0 : true),
         stock: typeof p.stock === 'number' ? p.stock : (p.inStock ? 1 : 0),
@@ -90,6 +120,17 @@ class APIService {
         createdAt: p.createdAt ? new Date(p.createdAt) : undefined,
         updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined,
       }));
+
+      // Fallback to mock data if API returns empty or invalid data and we allow fallback
+      if ((!mapped || mapped.length === 0) && !this.alwaysUseLiveApi) {
+        console.warn('⚠️ DatabaseService: API returned no products. Falling back to mock products.');
+        const mocked = mockProducts.map((p) => ({
+          ...p,
+          images: this.sanitizeImageUrls(p.images, p.name || 'Product')
+        }));
+        console.log('✅ DatabaseService: Using mock products:', mocked.length);
+        return { success: true, data: mocked };
+      }
 
       console.log('✅ DatabaseService: Mapped products:', mapped.length, 'products');
       return { success: true, data: mapped };
