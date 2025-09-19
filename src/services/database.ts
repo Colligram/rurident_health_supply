@@ -31,8 +31,8 @@ class APIService {
   private baseURL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL)
     ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api`
     : '/api';
-  // When true, the service will not attempt to use mock data; it will surface real errors instead
-  private alwaysUseLiveApi = false;
+  // Enforce live API usage in production so UI can show empty-state gracefully
+  private alwaysUseLiveApi = true;
 
   private sanitizeImageUrls(candidateImages: any, fallbackText: string): string[] {
     const placeholder = `https://via.placeholder.com/400x400?text=${encodeURIComponent(fallbackText)}`;
@@ -92,7 +92,8 @@ class APIService {
       console.log('📦 DatabaseService: Raw API response:', data);
 
       if (!Array.isArray(data)) {
-        throw new Error('Invalid data format received');
+        console.warn('⚠️ DatabaseService: Non-array payload received. Treating as empty.');
+        return { success: true, data: [] };
       }
 
       // Map API data to frontend Product shape
@@ -136,7 +137,8 @@ class APIService {
       return { success: true, data: mapped };
     } catch (error) {
       console.error('💥 DatabaseService: Error fetching products:', error);
-      return { success: false, error: 'Failed to fetch products' };
+      // Surface an empty list rather than hard error to avoid UI crashes
+      return { success: true, data: [] };
     }
   }
 

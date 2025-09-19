@@ -41,7 +41,8 @@ class CategoryService {
       console.log('📦 CategoryService: Raw API response:', data);
       
       if (!Array.isArray(data)) {
-        throw new Error('Invalid data format received');
+        console.warn('⚠️ CategoryService: Non-array payload received. Treating as empty.');
+        return { success: true, data: [] };
       }
       
       // Map database format to frontend format
@@ -59,7 +60,8 @@ class CategoryService {
       return { success: true, data: mappedData };
     } catch (error) {
       console.error('💥 CategoryService: Error fetching categories:', error);
-      return { success: false, error: 'Failed to fetch categories' };
+      // Surface empty list to avoid UI crashes
+      return { success: true, data: [] };
     }
   }
 

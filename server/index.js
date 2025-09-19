@@ -32,6 +32,7 @@ app.use((req, res, next) => {
    ========================= */
 const MONGODB_URI =
   process.env.MONGODB_URI ||
+  process.env.MONGO_URI ||
   process.env.MONGO_URL ||
   'mongodb://localhost:27017/rurident';
 
@@ -511,7 +512,9 @@ app.get('/api/placeholder/:w/:h', (req, res) => {
 // Get all products
 app.get('/api/products', async (req, res) => {
   try {
+    console.log('GET /api/products hit. Mongo readyState:', mongoose.connection.readyState);
     const products = await Product.find().sort({ createdAt: -1 });
+    console.log('GET /api/products returning', Array.isArray(products) ? products.length : 0, 'items');
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching products', error: error.message });
@@ -1006,7 +1009,9 @@ app.delete('/api/product-mappings/:id', async (req, res) => {
 
 app.get('/api/categories', async (req, res) => {
   try {
+    console.log('GET /api/categories hit. Mongo readyState:', mongoose.connection.readyState);
     const categories = await Category.find().sort({ createdAt: -1 });
+    console.log('GET /api/categories returning', Array.isArray(categories) ? categories.length : 0, 'items');
     res.json(categories);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching categories', error: error.message });
